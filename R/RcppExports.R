@@ -77,16 +77,32 @@ magick_coder_info <- function(format) {
     .Call('magick_magick_coder_info', PACKAGE = 'magick', format)
 }
 
-magick_image_read <- function(x) {
-    .Call('magick_magick_image_read', PACKAGE = 'magick', x)
+magick_config_internal <- function() {
+    .Call('magick_magick_config_internal', PACKAGE = 'magick')
+}
+
+magick_image_readbitmap_raw <- function(x) {
+    .Call('magick_magick_image_readbitmap_raw', PACKAGE = 'magick', x)
+}
+
+magick_image_readbitmap_double <- function(x) {
+    .Call('magick_magick_image_readbitmap_double', PACKAGE = 'magick', x)
+}
+
+magick_image_readbin <- function(x) {
+    .Call('magick_magick_image_readbin', PACKAGE = 'magick', x)
+}
+
+magick_image_readpath <- function(paths) {
+    .Call('magick_magick_image_readpath', PACKAGE = 'magick', paths)
 }
 
 magick_image_read_list <- function(list) {
     .Call('magick_magick_image_read_list', PACKAGE = 'magick', list)
 }
 
-magick_image_write <- function(image) {
-    .Call('magick_magick_image_write', PACKAGE = 'magick', image)
+magick_image_write <- function(input, format, quality) {
+    .Call('magick_magick_image_write', PACKAGE = 'magick', input, format, quality)
 }
 
 magick_image_display <- function(image, animate) {
@@ -105,8 +121,8 @@ magick_image_coalesce <- function(image) {
     .Call('magick_magick_image_coalesce', PACKAGE = 'magick', image)
 }
 
-magick_image_flatten <- function(image) {
-    .Call('magick_magick_image_flatten', PACKAGE = 'magick', image)
+magick_image_flatten <- function(input, composite) {
+    .Call('magick_magick_image_flatten', PACKAGE = 'magick', input, composite)
 }
 
 magick_image_fft <- function(image) {
@@ -223,6 +239,10 @@ magick_image_contrast <- function(input, sharpen) {
 
 magick_image_background <- function(input, color) {
     .Call('magick_magick_image_background', PACKAGE = 'magick', input, color)
+}
+
+magick_image_page <- function(input, pagesize, density) {
+    .Call('magick_magick_image_page', PACKAGE = 'magick', input, pagesize, density)
 }
 
 magick_image_crop <- function(input, geometry) {

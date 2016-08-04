@@ -225,14 +225,57 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
-// magick_image_read
-XPtrImage magick_image_read(Rcpp::RawVector x);
-RcppExport SEXP magick_magick_image_read(SEXP xSEXP) {
+// magick_config_internal
+Rcpp::List magick_config_internal();
+RcppExport SEXP magick_magick_config_internal() {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    __result = Rcpp::wrap(magick_config_internal());
+    return __result;
+END_RCPP
+}
+// magick_image_readbitmap_raw
+XPtrImage magick_image_readbitmap_raw(Rcpp::RawVector x);
+RcppExport SEXP magick_magick_image_readbitmap_raw(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< Rcpp::RawVector >::type x(xSEXP);
-    __result = Rcpp::wrap(magick_image_read(x));
+    __result = Rcpp::wrap(magick_image_readbitmap_raw(x));
+    return __result;
+END_RCPP
+}
+// magick_image_readbitmap_double
+XPtrImage magick_image_readbitmap_double(Rcpp::NumericVector x);
+RcppExport SEXP magick_magick_image_readbitmap_double(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type x(xSEXP);
+    __result = Rcpp::wrap(magick_image_readbitmap_double(x));
+    return __result;
+END_RCPP
+}
+// magick_image_readbin
+XPtrImage magick_image_readbin(Rcpp::RawVector x);
+RcppExport SEXP magick_magick_image_readbin(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< Rcpp::RawVector >::type x(xSEXP);
+    __result = Rcpp::wrap(magick_image_readbin(x));
+    return __result;
+END_RCPP
+}
+// magick_image_readpath
+XPtrImage magick_image_readpath(Rcpp::CharacterVector paths);
+RcppExport SEXP magick_magick_image_readpath(SEXP pathsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type paths(pathsSEXP);
+    __result = Rcpp::wrap(magick_image_readpath(paths));
     return __result;
 END_RCPP
 }
@@ -248,13 +291,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // magick_image_write
-Rcpp::RawVector magick_image_write(XPtrImage image);
-RcppExport SEXP magick_magick_image_write(SEXP imageSEXP) {
+Rcpp::RawVector magick_image_write(XPtrImage input, Rcpp::CharacterVector format, Rcpp::IntegerVector quality);
+RcppExport SEXP magick_magick_image_write(SEXP inputSEXP, SEXP formatSEXP, SEXP qualitySEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< XPtrImage >::type image(imageSEXP);
-    __result = Rcpp::wrap(magick_image_write(image));
+    Rcpp::traits::input_parameter< XPtrImage >::type input(inputSEXP);
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type format(formatSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type quality(qualitySEXP);
+    __result = Rcpp::wrap(magick_image_write(input, format, quality));
     return __result;
 END_RCPP
 }
@@ -305,13 +350,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // magick_image_flatten
-XPtrImage magick_image_flatten(XPtrImage image);
-RcppExport SEXP magick_magick_image_flatten(SEXP imageSEXP) {
+XPtrImage magick_image_flatten(XPtrImage input, Rcpp::CharacterVector composite);
+RcppExport SEXP magick_magick_image_flatten(SEXP inputSEXP, SEXP compositeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< XPtrImage >::type image(imageSEXP);
-    __result = Rcpp::wrap(magick_image_flatten(image));
+    Rcpp::traits::input_parameter< XPtrImage >::type input(inputSEXP);
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type composite(compositeSEXP);
+    __result = Rcpp::wrap(magick_image_flatten(input, composite));
     return __result;
 END_RCPP
 }
@@ -661,6 +707,19 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< XPtrImage >::type input(inputSEXP);
     Rcpp::traits::input_parameter< const char * >::type color(colorSEXP);
     __result = Rcpp::wrap(magick_image_background(input, color));
+    return __result;
+END_RCPP
+}
+// magick_image_page
+XPtrImage magick_image_page(XPtrImage input, Rcpp::CharacterVector pagesize, Rcpp::CharacterVector density);
+RcppExport SEXP magick_magick_image_page(SEXP inputSEXP, SEXP pagesizeSEXP, SEXP densitySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< XPtrImage >::type input(inputSEXP);
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type pagesize(pagesizeSEXP);
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type density(densitySEXP);
+    __result = Rcpp::wrap(magick_image_page(input, pagesize, density));
     return __result;
 END_RCPP
 }

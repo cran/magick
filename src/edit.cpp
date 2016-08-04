@@ -5,10 +5,46 @@
 
 #include "magick_types.h"
 
+XPtrImage magick_image_bitmap(void * data, Magick::StorageType type, size_t slices, size_t width, size_t height){
+  const char * format;
+  switch ( slices ){
+    case 1 : format = "G"; break;
+    case 2 : format = "GA"; break;
+    case 3 : format = "RGB"; break;
+    case 4 : format = "RGBA"; break;
+    default: throw std::runtime_error("Invalid number of channels (must be 4 or less)");
+  }
+  Frame frame(width, height, format, type , data);
+  frame.magick("png");
+  XPtrImage image = create();
+  image->push_back(frame);
+  return image;
+}
+
 // [[Rcpp::export]]
-XPtrImage magick_image_read(Rcpp::RawVector x){
+XPtrImage magick_image_readbitmap_raw(Rcpp::RawVector x){
+  Rcpp::IntegerVector dims(x.attr("dim"));
+  return magick_image_bitmap(x.begin(), Magick::CharPixel, dims[0], dims[1], dims[2]);
+}
+
+// [[Rcpp::export]]
+XPtrImage magick_image_readbitmap_double(Rcpp::NumericVector x){
+  Rcpp::IntegerVector dims(x.attr("dim"));
+  return magick_image_bitmap(x.begin(), Magick::DoublePixel, dims[0], dims[1], dims[2]);
+}
+
+// [[Rcpp::export]]
+XPtrImage magick_image_readbin(Rcpp::RawVector x){
   XPtrImage image = create();
   Magick::readImages(image.get(), Magick::Blob(x.begin(), x.length()));
+  return image;
+}
+
+// [[Rcpp::export]]
+XPtrImage magick_image_readpath(Rcpp::CharacterVector paths){
+  XPtrImage image = create();
+  for(int i = 0; i < paths.size(); i++)
+    Magick::readImages(image.get(), std::string(paths[i]));
   return image;
 }
 
@@ -25,9 +61,14 @@ XPtrImage magick_image_read_list(Rcpp::List list){
 }
 
 // [[Rcpp::export]]
-Rcpp::RawVector magick_image_write( XPtrImage image){
-  if(!image->size())
+Rcpp::RawVector magick_image_write( XPtrImage input, Rcpp::CharacterVector format, Rcpp::IntegerVector quality){
+  if(!input->size())
     return Rcpp::RawVector(0);
+  XPtrImage image = copy(input);
+  if(format.size())
+    for_each ( image->begin(), image->end(), Magick::magickImage(std::string(format[0])));
+  if(quality.size())
+    for_each ( image->begin(), image->end(), Magick::qualityImage(quality[0]));
   Magick::Blob output;
   writeImages( image->begin(), image->end(),  &output );
   Rcpp::RawVector res(output.length());
@@ -78,8 +119,11 @@ XPtrImage magick_image_coalesce( XPtrImage image){
 }
 
 // [[Rcpp::export]]
-XPtrImage magick_image_flatten( XPtrImage image){
+XPtrImage magick_image_flatten( XPtrImage input, Rcpp::CharacterVector composite){
   Frame frame;
+  XPtrImage image = copy(input);
+  if(composite.size())
+    for_each ( image->begin(), image->end(), Magick::composeImage(Composite(std::string(composite[0]).c_str())));
   flattenImages( &frame, image->begin(), image->end());
   XPtrImage out = create();
   out->push_back(frame);

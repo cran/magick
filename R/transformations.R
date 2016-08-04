@@ -26,9 +26,16 @@ image_trim <- function(image){
 
 #' @export
 #' @rdname transformations
-image_background <- function(image, color){
+#' @examples
+#' image_background(logo, "pink", flatten = TRUE)
+image_background <- function(image, color, flatten = FALSE){
   assert_image(image)
-  magick_image_background(image, color)
+  out <- magick_image_background(image, color)
+  if(isTRUE(flatten)){
+    image_flatten(out)
+  } else {
+    return(out)
+  }
 }
 
 #' @export
@@ -216,8 +223,8 @@ image_rotate <- function(image, degrees){
 #' Use this option to match colors that are close to the target color in RGB space.
 #' I think max distance (from #000000 to #FFFFFF) is 256^3.
 #' @examples
-#' image_fill(logo, "red")
-#' image_fill(logo, "red", fuzz = 256^2)
+#' image_fill(image_flatten(logo), "red")
+#' image_fill(image_flatten(logo), "red", fuzz = 25600)
 image_fill <- function(image, color, point = "1x1", fuzz = 0){
   assert_image(image)
   magick_image_fill(image, color, point, fuzz)
@@ -241,6 +248,18 @@ image_chop <- function(image, geometry){
 image_colorize <- function(image, opacity, color){
   assert_image(image)
   magick_image_colorize(image, opacity, color)
+}
+
+#' @export
+#' @rdname transformations
+#' @param pagesize geometry string with preferred size and location of an image canvas.
+#' @param density geometry string with vertical and horizontal resolution in pixels of
+#' the image. Specifies an image density when decoding a Postscript or PDF.
+image_page <- function(image, pagesize = NULL, density = NULL){
+  assert_image(image)
+  pagesize <- as.character(pagesize)
+  density <- as.character(density)
+  magick_image_page(image, pagesize, density)
 }
 
 #' @export
@@ -306,6 +325,7 @@ image_annotate <- function(image, text, gravity = "northwest", location = "+0+0"
 #' @export
 #' @rdname transformations
 #' @param format output format such as \code{png}, \code{jpeg}, \code{gif} or \code{pdf}.
+#' Can also be a bitmap type such as \code{rgba} or \code{rgb}.
 image_convert <- function(image, format){
   assert_image(image)
   magick_image_format(image, format)

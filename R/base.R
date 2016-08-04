@@ -6,11 +6,23 @@
   magick_image_subset(x, i)
 }
 
+#TODO: return 3 ch 'rgb' or 1 ch greyscale bitmap depending on colorspace
 #' @export
 "[[.magick-image" <- function(x, i){
   assert_image(x)
-  stop("[[ not yet implemented")
-  #magick_image_frame(x, i)
+  image <- x[i]
+  info <- image_info(image)
+  bitmap <- image_write(image, format = "rgba")
+  dim(bitmap) <- c(4, info$width, info$height)
+  class(bitmap) <- c("bitmap", "rgba")
+  return(bitmap)
+}
+
+#' @export
+"print.bitmap" <- function(x, ...){
+  dims <- dim(x)
+  cat(sprintf("%d channel %dx%d bitmap array:", dims[1], dims[2], dims[3]))
+  utils::str(x)
 }
 
 #' @export
@@ -48,4 +60,20 @@
   }
   print(image_info(x))
   invisible()
+}
+
+## apply is slow, can easily be optimized in c++.
+#' @export
+#' @importFrom grDevices as.raster
+"as.raster.magick-image" <- function(x, flatten = TRUE, ...){
+  image <- x[1]
+  # flatten can change length/dimensions!
+  if(isTRUE(flatten)){
+    image <- image_flatten(image)
+  }
+  info <- image_info(image)
+  bitmap <- as.character(image_write(image, format = "rgb"))
+  dim(bitmap) <- c(3, info$width, info$height)
+  raster <- apply(bitmap, 3:2, function(x){paste0(c('#', x), collapse = "")})
+  as.raster(raster)
 }

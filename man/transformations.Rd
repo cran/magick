@@ -25,6 +25,7 @@
 \alias{image_noise}
 \alias{image_normalize}
 \alias{image_oilpaint}
+\alias{image_page}
 \alias{image_rotate}
 \alias{image_sample}
 \alias{image_scale}
@@ -34,7 +35,7 @@
 \usage{
 image_trim(image)
 
-image_background(image, color)
+image_background(image, color, flatten = FALSE)
 
 image_crop(image, geometry = "")
 
@@ -80,6 +81,8 @@ image_chop(image, geometry)
 
 image_colorize(image, opacity, color)
 
+image_page(image, pagesize = NULL, density = NULL)
+
 image_composite(image, composite_image = image[1], operator = "atop",
   offset = "0x0")
 
@@ -95,6 +98,9 @@ image_convert(image, format)
 \item{image}{object returned by \code{image_read}}
 
 \item{color}{a valid \href{https://www.imagemagick.org/Magick++/Color.html}{color string}}
+
+\item{flatten}{should image be flattened before writing? This also replaces
+transparency with background color.}
 
 \item{geometry}{a string with \href{https://www.imagemagick.org/Magick++/Geometry.html}{geometry syntax}
 for example \code{"10x10+5-5"}.}
@@ -117,6 +123,11 @@ Use this option to match colors that are close to the target color in RGB space.
 I think max distance (from #000000 to #FFFFFF) is 256^3.}
 
 \item{opacity}{percentage of transparency}
+
+\item{pagesize}{geometry string with preferred size and location of an image canvas.}
+
+\item{density}{geometry string with vertical and horizontal resolution in pixels of
+the image. Specifies an image density when decoding a Postscript or PDF.}
 
 \item{composite_image}{composition image}
 
@@ -142,7 +153,8 @@ I think max distance (from #000000 to #FFFFFF) is 256^3.}
 
 \item{boxcolor}{background color that annotation text is rendered on.}
 
-\item{format}{output format such as \code{png}, \code{jpeg}, \code{gif} or \code{pdf}.}
+\item{format}{output format such as \code{png}, \code{jpeg}, \code{gif} or \code{pdf}.
+Can also be a bitmap type such as \code{rgba} or \code{rgb}.}
 }
 \description{
 Vectorized functions for transforming images. These functions apply
@@ -160,6 +172,7 @@ into that kind of stuff.
 logo <- image_read(system.file("Rlogo.png", package = "magick"))
 logo <- image_scale(logo, "400")
 image_trim(logo)
+image_background(logo, "pink", flatten = TRUE)
 image_crop(logo, "400x400+200+200")
 image_scale(logo, "200x200")
 image_sample(logo, "200x200")
@@ -179,8 +192,8 @@ image_implode(logo)
 image_negate(logo)
 image_normalize(logo)
 image_rotate(logo, 45)
-image_fill(logo, "red")
-image_fill(logo, "red", fuzz = 256^2)
+image_fill(image_flatten(logo), "red")
+image_fill(image_flatten(logo), "red", fuzz = 25600)
 image_chop(logo, "100x20")
 image_colorize(logo, 50, "red")
 # Compose images using one of many operators

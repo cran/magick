@@ -24,7 +24,8 @@
 \usage{
 image_read(path)
 
-image_write(image, path = NULL, format = NULL)
+image_write(image, path = NULL, format = NULL, quality = NULL,
+  flatten = FALSE)
 
 image_display(image, animate = TRUE)
 
@@ -36,7 +37,7 @@ image_average(image)
 
 image_coalesce(image)
 
-image_flatten(image)
+image_flatten(image, operator = NULL)
 
 image_fft(image)
 
@@ -60,13 +61,22 @@ image_animate(image, fps = 10, loop = 0, dispose = c("background",
 
 \item{image}{object returned by \code{image_read}}
 
-\item{format}{output format such as \code{png}, \code{jpeg}, \code{gif} or \code{pdf}.}
+\item{format}{output format such as \code{png}, \code{jpeg}, \code{gif} or \code{pdf}.
+Can also be a bitmap type such as \code{rgba} or \code{rgb}.}
+
+\item{quality}{number between 0 and 100 for jpeg quality. Defaults to 75.}
+
+\item{flatten}{should image be flattened before writing? This also replaces
+transparency with background color.}
 
 \item{animate}{support animations in the X11 display}
 
 \item{browser}{argument passed to \link[utils:browseURL]{browseURL}}
 
 \item{stack}{place images top-to-bottom (TRUE) or left-to-right (FALSE)}
+
+\item{operator}{string with a
+\href{https://www.imagemagick.org/Magick++/Enumerations.html#CompositeOperator}{composite operator}.}
 
 \item{map}{reference image to map colors from}
 
@@ -92,8 +102,8 @@ explains meaning of each function and parameter.
 }
 \details{
 Besides these functions also R-base functions such as \code{c()}, \code{[},
-\code{as.list()}, \code{rev}, \code{length}, and \code{print} can be used
-to work with image frames.
+\code{as.list()}, \code{as.raster()}, \code{rev}, \code{length}, and \code{print}
+can be used to work with image frames.
 See \link{transformations} for vectorized
 image manipulation functions such as cutting and applying effects.
 
@@ -104,8 +114,18 @@ svg to a png using the \href{https://cran.r-project.org/package=rsvg}{rsvg packa
 \examples{
 # Download image from the web
 frink <- image_read("https://jeroenooms.github.io/images/frink.png")
-frink2 <- image_crop(frink)
+frink2 <- image_trim(frink)
 image_write(frink2, "output.png")
+
+# Plot to graphics device via legacy raster format
+raster <- as.raster(frink)
+par(ask=FALSE)
+plot(raster)
+
+# Read bitmap arrays
+image_read(png::readPNG(system.file("Rlogo.png", package = "magick")))
+image_read(rsvg::rsvg(system.file("tiger.svg", package = "magick")))
+image_read(webp::read_webp(system.file("example.webp", package = "magick")))
 # Create thumbnails from GIF
 banana <- image_read(system.file("banana.gif", package = "magick"))
 length(banana)

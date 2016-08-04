@@ -7,8 +7,8 @@
 #' explains meaning of each function and parameter.
 #'
 #' Besides these functions also R-base functions such as \code{c()}, \code{[},
-#' \code{as.list()}, \code{rev}, \code{length}, and \code{print} can be used
-#' to work with image frames.
+#' \code{as.list()}, \code{as.raster()}, \code{rev}, \code{length}, and \code{print}
+#' can be used to work with image frames.
 #' See \link{transformations} for vectorized
 #' image manipulation functions such as cutting and applying effects.
 #'
@@ -29,29 +29,71 @@
 #' @examples
 #' # Download image from the web
 #' frink <- image_read("https://jeroenooms.github.io/images/frink.png")
-#' frink2 <- image_crop(frink)
+#' frink2 <- image_trim(frink)
 #' image_write(frink2, "output.png")
+#'
+#' # Plot to graphics device via legacy raster format
+#' raster <- as.raster(frink)
+#' par(ask=FALSE)
+#' plot(raster)
+#'
+#' # Read bitmap arrays
+#' image_read(png::readPNG(system.file("Rlogo.png", package = "magick")))
+#' image_read(rsvg::rsvg(system.file("tiger.svg", package = "magick")))
+#' image_read(webp::read_webp(system.file("example.webp", package = "magick")))
 image_read <- function(path){
-  if(is.character(path)){
-    buflist <- lapply(path, read_path)
-    magick_image_read_list(buflist)
+  image <- if(is.character(path)){
+    path <- vapply(path, replace_url, character(1))
+    magick_image_readpath(path)
+  } else if(is.array(path)){
+    image_readbitmap(path)
+  } else if(is.raw(path)) {
+    magick_image_readbin(path)
   } else {
-    buf <- read_path(path)
-    magick_image_read(buf)
+    stop("path must be URL, filename or raw vector")
   }
+  if(!isTRUE(magick_config()$rsvg)){
+    if(any(grepl("\\.svg$", tolower(path))) || any(grepl("svg|mvg", tolower(image_info(image)$format)))){
+      warning("ImageMagick was built without librsvg which causes poor qualty of SVG rendering.
+For better results, rebuild ImageMagick --with-librsvg or use the 'rsvg' package in R.", call. = FALSE)
+    }
+  }
+  return(image)
+}
+
+image_readbitmap <- function(x){
+  if(length(dim(x)) != 3)
+    stop("Only 3D arrays can be converted to bitmaps")
+  if(is.raw(x)){
+    magick_image_readbitmap_raw(x)
+  } else if(is.double(x)){
+    magick_image_readbitmap_double(aperm(x))
+  } else {
+    stop("Unsupported bitmap array type")
+  }
+}
+
+# Not exported for now
+image_rsvg <- function(path, width = NULL, height = NULL){
+  bitmap <- rsvg::rsvg_raw(path, width = width, height = height)
+  magick_image_readbitmap_raw(bitmap)
 }
 
 #' @export
 #' @inheritParams transformations
 #' @rdname edit
-image_write <- function(image, path = NULL, format = NULL){
+#' @param flatten should image be flattened before writing? This also replaces
+#' transparency with background color.
+#' @param quality number between 0 and 100 for jpeg quality. Defaults to 75.
+image_write <- function(image, path = NULL, format = NULL, quality = NULL, flatten = FALSE){
   assert_image(image)
   if(!length(image))
     warning("Writing image with 0 frames")
-  if(length(format)){
-    image <- magick_image_format(image, format)
-  }
-  buf <- magick_image_write(image)
+  if(isTRUE(flatten))
+    image <- image_flatten(image)
+  format <- as.character(format)
+  quality <- as.integer(quality)
+  buf <- magick_image_write(image, format, quality)
   if(is.character(path)){
     writeBin(buf, path)
     return(path)
@@ -110,9 +152,10 @@ image_coalesce <- function(image){
 
 #' @export
 #' @rdname edit
-image_flatten <- function(image){
+image_flatten <- function(image, operator = NULL){
   assert_image(image)
-  magick_image_flatten(image)
+  operator <- as.character(operator)
+  magick_image_flatten(image, operator)
 }
 
 #' @export
