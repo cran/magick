@@ -1,7 +1,7 @@
 Package: magick
 Type: Package
 Title: Advanced Image-Processing in R
-Version: 0.2.1
+Version: 0.2.2
 Author: Jeroen Ooms
 Maintainer: Jeroen Ooms <jeroen.ooms@stat.ucla.edu>
 Description: Bindings to ImageMagick: the most comprehensive open-source image
@@ -21,6 +21,6 @@ LinkingTo: Rcpp
 Suggests: rsvg, webp, png
 RoxygenNote: 5.0.1
 NeedsCompilation: yes
-Packaged: 2016-08-10 16:12:31 UTC; jeroen
+Packaged: 2016-08-19 13:39:11 UTC; jeroen
 Repository: CRAN
-Date/Publication: 2016-08-10 21:23:26
+Date/Publication: 2016-08-19 17:05:05
