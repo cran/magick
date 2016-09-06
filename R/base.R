@@ -6,16 +6,30 @@
   magick_image_subset(x, i)
 }
 
+#' @export
+"[<-.magick-image" <- function(x, i, value){
+  assert_image(x)
+  assert_image(value)
+  stopifnot(is.numeric(i))
+  i <- seq_along(x)[i]
+  magick_image_replace(x, i, value)
+}
+
 #TODO: return 3 ch 'rgb' or 1 ch greyscale bitmap depending on colorspace
 #' @export
 "[[.magick-image" <- function(x, i){
   assert_image(x)
   image <- x[i]
   info <- image_info(image)
-  bitmap <- image_write(image, format = "rgba")
+  bitmap <- image_write_frame(image, format = "rgba")
   dim(bitmap) <- c(4, info$width, info$height)
   class(bitmap) <- c("bitmap", "rgba")
   return(bitmap)
+}
+
+#' @export
+"[[<-.magick-image" <- function(x, i, value){
+  stop("[[ assignment not implemented. Try single bracket.")
 }
 
 #' @export
@@ -23,6 +37,22 @@
   dims <- dim(x)
   cat(sprintf("%d channel %dx%d bitmap array:", dims[1], dims[2], dims[3]))
   utils::str(x)
+}
+
+#' @export
+"as.integer.bitmap" <- function(x, transpose = TRUE, ...){
+  if(transpose){
+    x <- aperm(x)
+  }
+  structure(as.vector(x, mode = 'integer'), dim = dim(x))
+}
+
+#' @export
+"as.double.bitmap" <- function(x, transpose = TRUE, ...){
+  if(transpose){
+    x <- aperm(x)
+  }
+  structure(as.vector(x, mode = 'double') / 255, dim = dim(x))
 }
 
 #' @export
@@ -65,15 +95,20 @@
 ## apply is slow, can easily be optimized in c++.
 #' @export
 #' @importFrom grDevices as.raster
-"as.raster.magick-image" <- function(x, flatten = TRUE, ...){
-  image <- x[1]
-  # flatten can change length/dimensions!
-  if(isTRUE(flatten)){
-    image <- image_flatten(image)
-  }
+"as.raster.magick-image" <- function(image, ...){
+  assert_image(image)
   info <- image_info(image)
-  bitmap <- as.character(image_write(image, format = "rgb"))
+  buf <- image[[1]]
+  bitmap <- as.character(buf[1:3, , , drop = FALSE])
   dim(bitmap) <- c(3, info$width, info$height)
-  raster <- apply(bitmap, 3:2, function(x){paste0(c('#', x), collapse = "")})
+  alpha <- t(buf[4,,] == as.raw(0x00))
+  raster <- apply(bitmap, 3:2, function(z){paste0(c('#', z), collapse = "")})
+  raster[alpha] <- "transparent"
   as.raster(raster)
+}
+
+#' @export
+#' @importFrom graphics plot
+"plot.magick-image" <- function(x, ...){
+  plot(as.raster(x), ...)
 }

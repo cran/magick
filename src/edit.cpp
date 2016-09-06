@@ -34,17 +34,36 @@ XPtrImage magick_image_readbitmap_double(Rcpp::NumericVector x){
 }
 
 // [[Rcpp::export]]
-XPtrImage magick_image_readbin(Rcpp::RawVector x){
+XPtrImage magick_image_readbin(Rcpp::RawVector x, Rcpp::CharacterVector density, Rcpp::IntegerVector depth){
   XPtrImage image = create();
+#if MagickLibVersion >= 0x689
+  Magick::ReadOptions opts = Magick::ReadOptions();
+  if(density.size())
+    opts.density(std::string(density.at(0)).c_str());
+  if(depth.size())
+    opts.depth(depth.at(0));
+  Magick::readImages(image.get(), Magick::Blob(x.begin(), x.length()), opts);
+#else
   Magick::readImages(image.get(), Magick::Blob(x.begin(), x.length()));
+#endif
   return image;
 }
 
 // [[Rcpp::export]]
-XPtrImage magick_image_readpath(Rcpp::CharacterVector paths){
+XPtrImage magick_image_readpath(Rcpp::CharacterVector paths, Rcpp::CharacterVector density, Rcpp::IntegerVector depth){
   XPtrImage image = create();
+#if MagickLibVersion >= 0x689
+  Magick::ReadOptions opts = Magick::ReadOptions();
+  if(density.size())
+    opts.density(std::string(density.at(0)).c_str());
+  if(depth.size())
+    opts.depth(depth.at(0));
+  for(int i = 0; i < paths.size(); i++)
+    Magick::readImages(image.get(), std::string(paths[i]), opts);
+#else
   for(int i = 0; i < paths.size(); i++)
     Magick::readImages(image.get(), std::string(paths[i]));
+#endif
   return image;
 }
 
@@ -77,9 +96,21 @@ Rcpp::RawVector magick_image_write( XPtrImage input, Rcpp::CharacterVector forma
 }
 
 // [[Rcpp::export]]
+Rcpp::RawVector magick_image_write_frame(XPtrImage input, const char * format){
+  if(input->size() < 1)
+    throw std::runtime_error("Image must have at least 1 frame to write a bitmap");
+  XPtrImage image = copy(input);
+  Magick::Blob output;
+  input->front().write(&output, format, 8L);
+  Rcpp::RawVector res(output.length());
+  memcpy(res.begin(), output.data(), output.length());
+  return res;
+}
+
+// [[Rcpp::export]]
 XPtrImage magick_image_display( XPtrImage image, bool animate){
 #ifndef MAGICKCORE_X11_DELEGATE
-  throw std::runtime_error("ImageMagick was build without X11 support");
+  throw std::runtime_error("ImageMagick was built without X11 support");
 #else
   XPtrImage output = copy(image);
   if(animate){
@@ -122,8 +153,10 @@ XPtrImage magick_image_coalesce( XPtrImage image){
 XPtrImage magick_image_flatten( XPtrImage input, Rcpp::CharacterVector composite){
   Frame frame;
   XPtrImage image = copy(input);
-  if(composite.size())
+  if(composite.size()){
+    for_each ( image->begin(), image->end(), Magick::commentImage("")); //required to force copy; weird bug in IM?
     for_each ( image->begin(), image->end(), Magick::composeImage(Composite(std::string(composite[0]).c_str())));
+  }
   flattenImages( &frame, image->begin(), image->end());
   XPtrImage out = create();
   out->push_back(frame);
@@ -163,7 +196,12 @@ XPtrImage magick_image_morph( XPtrImage image, int frames){
 }
 
 // [[Rcpp::export]]
-XPtrImage magick_image_mosaic( XPtrImage image){
+XPtrImage magick_image_mosaic( XPtrImage input, Rcpp::CharacterVector composite){
+  XPtrImage image = copy(input);
+  if(composite.size()){
+    for_each ( image->begin(), image->end(), Magick::commentImage("")); //required to force copy; weird bug in IM?
+    for_each ( image->begin(), image->end(), Magick::composeImage(Composite(std::string(composite[0]).c_str())));
+  }
   Frame frame;
   mosaicImages( &frame, image->begin(), image->end());
   XPtrImage out = create();

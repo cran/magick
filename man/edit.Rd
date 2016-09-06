@@ -22,7 +22,7 @@
 \alias{magick}
 \title{Image Editing}
 \usage{
-image_read(path)
+image_read(path, density = NULL, depth = NULL)
 
 image_write(image, path = NULL, format = NULL, quality = NULL,
   flatten = FALSE)
@@ -47,7 +47,7 @@ image_montage(image)
 
 image_morph(image, frames)
 
-image_mosaic(image)
+image_mosaic(image, operator = NULL)
 
 image_join(...)
 
@@ -58,6 +58,10 @@ image_animate(image, fps = 10, loop = 0, dispose = c("background",
 }
 \arguments{
 \item{path}{file path, URL, or raw vector with image data}
+
+\item{density}{resolution to render pdf or svg}
+
+\item{depth}{image depth. Must be 8 or 6.}
 
 \item{image}{object returned by \code{image_read}}
 
@@ -114,8 +118,8 @@ svg to a png using the \href{https://cran.r-project.org/package=rsvg}{rsvg packa
 \examples{
 # Download image from the web
 frink <- image_read("https://jeroenooms.github.io/images/frink.png")
-frink2 <- image_trim(frink)
-image_write(frink2, "output.png")
+worldcup_frink <- image_fill(frink, "orange", "+100+200", 30000)
+image_write(worldcup_frink, "output.png")
 
 # Plot to graphics device via legacy raster format
 raster <- as.raster(frink)
@@ -123,11 +127,16 @@ par(ask=FALSE)
 plot(raster)
 
 # Read bitmap arrays
-image_read(png::readPNG(system.file("Rlogo.png", package = "magick")))
-image_read(rsvg::rsvg(system.file("tiger.svg", package = "magick")))
-image_read(webp::read_webp(system.file("example.webp", package = "magick")))
+curl::curl_download("https://www.r-project.org/logo/Rlogo.png", "Rlogo.png")
+image_read(png::readPNG("Rlogo.png"))
+
+curl::curl_download("https://jeroenooms.github.io/images/example.webp", "example.webp")
+image_read(webp::read_webp("example.webp"))
+
+curl::curl_download("http://jeroenooms.github.io/images/tiger.svg", "tiger.svg")
+image_read(rsvg::rsvg("tiger.svg"))
 # Create thumbnails from GIF
-banana <- image_read(system.file("banana.gif", package = "magick"))
+banana <- image_read("https://jeroenooms.github.io/images/banana.gif")
 length(banana)
 image_average(banana)
 image_flatten(banana)
@@ -137,8 +146,8 @@ image_append(banana, stack = TRUE)
 # Append images together
 image_append(image_scale(c(image_append(banana[c(1,3)], stack = TRUE), frink)))
 # Combine with another image
-logo <- image_read(system.file("Rlogo.png", package = "magick"))
-oldlogo <- image_read(system.file("Rlogo-old.png", package = "magick"))
+logo <- image_read("https://www.r-project.org/logo/Rlogo.png")
+oldlogo <- image_read("https://developer.r-project.org/Logo/Rlogo-3.png")
 
 # Create morphing animation
 both <- image_scale(c(oldlogo, logo), "400")

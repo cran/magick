@@ -69,6 +69,10 @@ magick_image_subset <- function(image, index) {
     .Call('magick_magick_image_subset', PACKAGE = 'magick', image, index)
 }
 
+magick_image_replace <- function(image, index, value) {
+    .Call('magick_magick_image_replace', PACKAGE = 'magick', image, index, value)
+}
+
 autobrewed <- function() {
     .Call('magick_autobrewed', PACKAGE = 'magick')
 }
@@ -89,12 +93,12 @@ magick_image_readbitmap_double <- function(x) {
     .Call('magick_magick_image_readbitmap_double', PACKAGE = 'magick', x)
 }
 
-magick_image_readbin <- function(x) {
-    .Call('magick_magick_image_readbin', PACKAGE = 'magick', x)
+magick_image_readbin <- function(x, density, depth) {
+    .Call('magick_magick_image_readbin', PACKAGE = 'magick', x, density, depth)
 }
 
-magick_image_readpath <- function(paths) {
-    .Call('magick_magick_image_readpath', PACKAGE = 'magick', paths)
+magick_image_readpath <- function(paths, density, depth) {
+    .Call('magick_magick_image_readpath', PACKAGE = 'magick', paths, density, depth)
 }
 
 magick_image_read_list <- function(list) {
@@ -103,6 +107,10 @@ magick_image_read_list <- function(list) {
 
 magick_image_write <- function(input, format, quality) {
     .Call('magick_magick_image_write', PACKAGE = 'magick', input, format, quality)
+}
+
+magick_image_write_frame <- function(input, format) {
+    .Call('magick_magick_image_write_frame', PACKAGE = 'magick', input, format)
 }
 
 magick_image_display <- function(image, animate) {
@@ -141,8 +149,8 @@ magick_image_morph <- function(image, frames) {
     .Call('magick_magick_image_morph', PACKAGE = 'magick', image, frames)
 }
 
-magick_image_mosaic <- function(image) {
-    .Call('magick_magick_image_mosaic', PACKAGE = 'magick', image)
+magick_image_mosaic <- function(input, composite) {
+    .Call('magick_magick_image_mosaic', PACKAGE = 'magick', input, composite)
 }
 
 magick_image_animate <- function(input, delay, iter, method) {
@@ -221,8 +229,8 @@ magick_image_implode <- function(input, factor) {
     .Call('magick_magick_image_implode', PACKAGE = 'magick', input, factor)
 }
 
-magick_image_format <- function(input, format) {
-    .Call('magick_magick_image_format', PACKAGE = 'magick', input, format)
+magick_image_format <- function(input, format, depth) {
+    .Call('magick_magick_image_format', PACKAGE = 'magick', input, format, depth)
 }
 
 magick_image_trim <- function(input) {

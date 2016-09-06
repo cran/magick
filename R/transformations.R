@@ -16,7 +16,7 @@
 #' @export
 #' @rdname transformations
 #' @examples
-#' logo <- image_read(system.file("Rlogo.png", package = "magick"))
+#' logo <- image_read("https://www.r-project.org/logo/Rlogo.png")
 #' logo <- image_scale(logo, "400")
 #' image_trim(logo)
 image_trim <- function(image){
@@ -269,7 +269,7 @@ image_page <- function(image, pagesize = NULL, density = NULL){
 #' \href{https://www.imagemagick.org/Magick++/Enumerations.html#CompositeOperator}{composite operator}.
 #' @param composite_image composition image
 #' @examples # Compose images using one of many operators
-#' oldlogo <- image_read(system.file("Rlogo-old.png", package = "magick"))
+#' oldlogo <- image_read("https://developer.r-project.org/Logo/Rlogo-3.png")
 #' image_composite(logo, oldlogo)
 #' image_composite(logo, oldlogo, operator = "copyred")
 #'
@@ -326,7 +326,11 @@ image_annotate <- function(image, text, gravity = "northwest", location = "+0+0"
 #' @rdname transformations
 #' @param format output format such as \code{png}, \code{jpeg}, \code{gif} or \code{pdf}.
 #' Can also be a bitmap type such as \code{rgba} or \code{rgb}.
-image_convert <- function(image, format){
+#' @param depth color depth, must be 8 or 16
+image_convert <- function(image, format, depth = NULL){
   assert_image(image)
-  magick_image_format(image, format)
+  depth <- as.integer(depth)
+  if(length(depth) && is.na(match(depth, c(8, 16))))
+    stop('depth must be 8 or 16 bit')
+  magick_image_format(image, format, depth)
 }

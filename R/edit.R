@@ -25,12 +25,14 @@
 #' @name editing
 #' @param path file path, URL, or raw vector with image data
 #' @param image object returned by \code{image_read}
+#' @param density resolution to render pdf or svg
+#' @param depth image depth. Must be 8 or 6.
 #' @references Magick++ Image STL: \url{https://www.imagemagick.org/Magick++/STL.html}
 #' @examples
 #' # Download image from the web
 #' frink <- image_read("https://jeroenooms.github.io/images/frink.png")
-#' frink2 <- image_trim(frink)
-#' image_write(frink2, "output.png")
+#' worldcup_frink <- image_fill(frink, "orange", "+100+200", 30000)
+#' image_write(worldcup_frink, "output.png")
 #'
 #' # Plot to graphics device via legacy raster format
 #' raster <- as.raster(frink)
@@ -38,17 +40,24 @@
 #' plot(raster)
 #'
 #' # Read bitmap arrays
-#' image_read(png::readPNG(system.file("Rlogo.png", package = "magick")))
-#' image_read(rsvg::rsvg(system.file("tiger.svg", package = "magick")))
-#' image_read(webp::read_webp(system.file("example.webp", package = "magick")))
-image_read <- function(path){
+#' curl::curl_download("https://www.r-project.org/logo/Rlogo.png", "Rlogo.png")
+#' image_read(png::readPNG("Rlogo.png"))
+#'
+#' curl::curl_download("https://jeroenooms.github.io/images/example.webp", "example.webp")
+#' image_read(webp::read_webp("example.webp"))
+#'
+#' curl::curl_download("http://jeroenooms.github.io/images/tiger.svg", "tiger.svg")
+#' image_read(rsvg::rsvg("tiger.svg"))
+image_read <- function(path, density = NULL, depth = NULL){
+  density <- as.character(density)
+  depth <- as.integer(depth)
   image <- if(is.character(path)){
     path <- vapply(path, replace_url, character(1))
-    magick_image_readpath(path)
+    magick_image_readpath(path, density, depth)
   } else if(is.array(path)){
     image_readbitmap(path)
   } else if(is.raw(path)) {
-    magick_image_readbin(path)
+    magick_image_readbin(path, density, depth)
   } else {
     stop("path must be URL, filename or raw vector")
   }
@@ -96,9 +105,14 @@ image_write <- function(image, path = NULL, format = NULL, quality = NULL, flatt
   buf <- magick_image_write(image, format, quality)
   if(is.character(path)){
     writeBin(buf, path)
-    return(path)
+    return(invisible(path))
   }
   return(buf)
+}
+
+image_write_frame <- function(image, format = "rgb"){
+  assert_image(image)
+  magick_image_write_frame(image, format)
 }
 
 #' @export
@@ -123,7 +137,7 @@ image_browse <- function(image, browser = getOption("browser")){
 #' @param stack place images top-to-bottom (TRUE) or left-to-right (FALSE)
 #' @examples
 #' # Create thumbnails from GIF
-#' banana <- image_read(system.file("banana.gif", package = "magick"))
+#' banana <- image_read("https://jeroenooms.github.io/images/banana.gif")
 #' length(banana)
 #' image_average(banana)
 #' image_flatten(banana)
@@ -187,8 +201,8 @@ image_montage <- function(image){
 #' @rdname edit
 #' @examples
 #' # Combine with another image
-#' logo <- image_read(system.file("Rlogo.png", package = "magick"))
-#' oldlogo <- image_read(system.file("Rlogo-old.png", package = "magick"))
+#' logo <- image_read("https://www.r-project.org/logo/Rlogo.png")
+#' oldlogo <- image_read("https://developer.r-project.org/Logo/Rlogo-3.png")
 #'
 #' # Create morphing animation
 #' both <- image_scale(c(oldlogo, logo), "400")
@@ -203,9 +217,10 @@ image_morph <- function(image, frames){
 
 #' @export
 #' @rdname edit
-image_mosaic <- function(image){
+image_mosaic <- function(image, operator = NULL){
   assert_image(image)
-  magick_image_mosaic(image)
+  operator <- as.character(operator)
+  magick_image_mosaic(image, operator)
 }
 
 #' @export

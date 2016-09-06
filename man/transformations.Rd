@@ -92,7 +92,7 @@ image_annotate(image, text, gravity = "northwest", location = "+0+0",
   degrees = 0, size = 10, font = NULL, color = NULL,
   strokecolor = NULL, boxcolor = NULL)
 
-image_convert(image, format)
+image_convert(image, format, depth = NULL)
 }
 \arguments{
 \item{image}{object returned by \code{image_read}}
@@ -155,6 +155,8 @@ the image. Specifies an image density when decoding a Postscript or PDF.}
 
 \item{format}{output format such as \code{png}, \code{jpeg}, \code{gif} or \code{pdf}.
 Can also be a bitmap type such as \code{rgba} or \code{rgb}.}
+
+\item{depth}{color depth, must be 8 or 16}
 }
 \description{
 Vectorized functions for transforming images. These functions apply
@@ -169,7 +171,7 @@ be unaffected. Therefore operations can be piped with magrittr if you're
 into that kind of stuff.
 }
 \examples{
-logo <- image_read(system.file("Rlogo.png", package = "magick"))
+logo <- image_read("https://www.r-project.org/logo/Rlogo.png")
 logo <- image_scale(logo, "400")
 image_trim(logo)
 image_background(logo, "pink", flatten = TRUE)
@@ -197,7 +199,7 @@ image_fill(image_flatten(logo), "red", fuzz = 25600)
 image_chop(logo, "100x20")
 image_colorize(logo, 50, "red")
 # Compose images using one of many operators
-oldlogo <- image_read(system.file("Rlogo-old.png", package = "magick"))
+oldlogo <- image_read("https://developer.r-project.org/Logo/Rlogo-3.png")
 image_composite(logo, oldlogo)
 image_composite(logo, oldlogo, operator = "copyred")
 
