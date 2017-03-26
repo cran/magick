@@ -28,6 +28,16 @@ Magick::NoiseType Noise(const char * str){
   return (Magick::NoiseType) val;
 }
 
+#if MagickLibVersion >= 0x687
+Magick::MetricType Metric(const char * str){
+  ssize_t val = MagickCore::ParseCommandOption(
+    MagickCore::MagickMetricOptions, Magick::MagickFalse, str);
+  if(val < 0)
+    throw std::runtime_error(std::string("Invalid MetricType value: ") + str);
+  return (Magick::MetricType) val;
+}
+#endif
+
 Magick::CompositeOperator Composite(const char * str){
   ssize_t val = MagickCore::ParseCommandOption(
     MagickCore::MagickComposeOptions, Magick::MagickFalse, str);
@@ -102,6 +112,19 @@ XPtrImage magick_image_edge( XPtrImage input, size_t radius){
   return output;
 }
 
+/* Added in f78d1802df605fe2a0bd2551f4e4a27702e12828 */
+// [[Rcpp::export]]
+XPtrImage magick_image_deskew( XPtrImage input, double treshold){
+  XPtrImage output = copy(input);
+#if MagickLibVersion >= 0x686
+  for (Iter it = output->begin(); it != output->end(); ++it)
+    it->deskew(treshold);
+#else
+  throw std::runtime_error("deskew not supported, ImageMagick too old");
+#endif
+  return output;
+}
+
 // [[Rcpp::export]]
 XPtrImage magick_image_emboss( XPtrImage input, const double radius = 1, const double sigma = 0.5){
   XPtrImage output = copy(input);
@@ -144,6 +167,18 @@ XPtrImage magick_image_fill( XPtrImage input, const char * color, const char * p
     for_each ( output->begin(), output->end(), Magick::colorFuzzImage(fuzz));
   for_each ( output->begin(), output->end(), Magick::floodFillColorImage(
       Magick::Geometry(Geom(point)), Color(color)));
+  if(fuzz != 0)
+    for_each ( output->begin(), output->end(), Magick::colorFuzzImage(input->front().colorFuzz()));
+  return output;
+}
+
+// [[Rcpp::export]]
+XPtrImage magick_image_transparent( XPtrImage input, const char * color, double fuzz){
+  XPtrImage output = copy(input);
+  if(fuzz != 0)
+    for_each ( output->begin(), output->end(), Magick::colorFuzzImage(fuzz));
+  Rprintf("set fuzz to %f\n", fuzz);
+  for_each ( output->begin(), output->end(), Magick::transparentImage(Color(color)));
   if(fuzz != 0)
     for_each ( output->begin(), output->end(), Magick::colorFuzzImage(input->front().colorFuzz()));
   return output;
@@ -327,4 +362,17 @@ XPtrImage magick_image_annotate( XPtrImage input, const std::string text, const 
   if(size.size())
     for_each ( output->begin(), output->end(), Magick::fontPointsizeImage(fmin(10, input->front().fontPointsize())));
   return output;
+}
+
+// [[Rcpp::export]]
+double magick_image_compare( XPtrImage input, XPtrImage reference_image, const char  * metric){
+  if(strlen(metric)){
+#if MagickLibVersion >= 0x687
+    return input->front().compare(reference_image->front(), Metric(metric));
+#else
+    throw std::runtime_error("imagemagick too old, does not custom support metrics");
+#endif
+  } else {
+    return input->front().compare(reference_image->front());
+  }
 }

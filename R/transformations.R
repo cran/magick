@@ -232,6 +232,14 @@ image_fill <- function(image, color, point = "1x1", fuzz = 0){
 
 #' @export
 #' @rdname transformations
+image_transparent <- function(image, color, fuzz = 0){
+  assert_image(image)
+  magick_image_transparent(image, color, fuzz)
+}
+
+
+#' @export
+#' @rdname transformations
 #' @examples
 #' image_chop(logo, "100x20")
 image_chop <- function(image, geometry){
@@ -333,4 +341,26 @@ image_convert <- function(image, format, depth = NULL){
   if(length(depth) && is.na(match(depth, c(8, 16))))
     stop('depth must be 8 or 16 bit')
   magick_image_format(image, format, depth)
+}
+
+#' @export
+#' @rdname transformations
+#' @param reference_image another image to compare to
+#' @param metric string with a
+#' \href{http://www.imagemagick.org/script/command-line-options.php#metric}{metric type}
+#' @examples
+#' logo2 <- image_blur(logo)
+#' if(magick_config()$version >= "6.8.7")
+#'  image_compare(logo, logo2, metric = "phash")
+image_compare <- function(image, reference_image, metric = ""){
+  metric <- as.character(metric)
+  magick_image_compare(image, reference_image, metric)
+}
+
+#' @export
+#' @rdname transformations
+#' @param treshold straightens an image. A threshold of 40 works for most images.
+image_deskew <- function(image, treshold = 40){
+  assert_image(image)
+  magick_image_deskew(image, treshold)
 }

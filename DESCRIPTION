@@ -1,10 +1,10 @@
 Package: magick
 Type: Package
 Title: Advanced Image-Processing in R
-Version: 0.3
+Version: 0.4
 Author: Jeroen Ooms
-Maintainer: Jeroen Ooms <jeroen.ooms@stat.ucla.edu>
-Description: Bindings to ImageMagick: the most comprehensive open-source image
+Maintainer: Jeroen Ooms <jeroen@berkeley.edu>
+Description: Bindings to 'ImageMagick': the most comprehensive open-source image
     processing library available. Supports many common formats (png, jpeg, tiff,
     pdf, etc) and manipulations (rotate, scale, crop, trim, flip, blur, etc).
     All operations are vectorized via the Magick++ STL meaning they operate either
@@ -21,8 +21,8 @@ Imports: Rcpp (>= 0.12), curl
 LinkingTo: Rcpp
 Suggests: knitr, rmarkdown, magrittr, rsvg, webp, png, pdftools,
         ggplot2, raster
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1
 NeedsCompilation: yes
-Packaged: 2016-09-05 22:03:41 UTC; jeroen
+Packaged: 2017-03-26 22:42:04 UTC; jeroen
 Repository: CRAN
-Date/Publication: 2016-09-06 08:03:42
+Date/Publication: 2017-03-26 23:24:48 UTC

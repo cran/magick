@@ -2,24 +2,24 @@
 % Please edit documentation in R/edit.R
 \name{editing}
 \alias{editing}
-\alias{image_animate}
+\alias{image_read}
+\alias{magick}
+\alias{imagemagick}
+\alias{image_write}
+\alias{image_display}
+\alias{image_browse}
 \alias{image_append}
 \alias{image_average}
-\alias{image_browse}
 \alias{image_coalesce}
-\alias{image_display}
-\alias{image_fft}
 \alias{image_flatten}
-\alias{image_info}
-\alias{image_join}
+\alias{image_fft}
 \alias{image_map}
 \alias{image_montage}
 \alias{image_morph}
 \alias{image_mosaic}
-\alias{image_read}
-\alias{image_write}
-\alias{imagemagick}
-\alias{magick}
+\alias{image_join}
+\alias{image_info}
+\alias{image_animate}
 \title{Image Editing}
 \usage{
 image_read(path, density = NULL, depth = NULL)
@@ -117,7 +117,7 @@ svg to a png using the \href{https://cran.r-project.org/package=rsvg}{rsvg packa
 }
 \examples{
 # Download image from the web
-frink <- image_read("https://jeroenooms.github.io/images/frink.png")
+frink <- image_read("https://jeroen.github.io/images/frink.png")
 worldcup_frink <- image_fill(frink, "orange", "+100+200", 30000)
 image_write(worldcup_frink, "output.png")
 
@@ -130,13 +130,13 @@ plot(raster)
 curl::curl_download("https://www.r-project.org/logo/Rlogo.png", "Rlogo.png")
 image_read(png::readPNG("Rlogo.png"))
 
-curl::curl_download("https://jeroenooms.github.io/images/example.webp", "example.webp")
+curl::curl_download("https://jeroen.github.io/images/example.webp", "example.webp")
 image_read(webp::read_webp("example.webp"))
 
-curl::curl_download("http://jeroenooms.github.io/images/tiger.svg", "tiger.svg")
+curl::curl_download("http://jeroen.github.io/images/tiger.svg", "tiger.svg")
 image_read(rsvg::rsvg("tiger.svg"))
 # Create thumbnails from GIF
-banana <- image_read("https://jeroenooms.github.io/images/banana.gif")
+banana <- image_read("https://jeroen.github.io/images/banana.gif")
 length(banana)
 image_average(banana)
 image_flatten(banana)
@@ -168,4 +168,3 @@ Magick++ Image STL: \url{https://www.imagemagick.org/Magick++/STL.html}
 \seealso{
 Other image: \code{\link{transformations}}
 }
-
