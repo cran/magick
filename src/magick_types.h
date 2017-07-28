@@ -10,7 +10,7 @@ typedef std::vector<Frame> Image;
 //void finalize_frame(Frame *frame);
 
 void finalize_image(Image *image);
-typedef Rcpp::XPtr<Image, Rcpp::PreserveStorage, finalize_image> XPtrImage;
+typedef Rcpp::XPtr<Image, Rcpp::PreserveStorage, finalize_image, true> XPtrImage;
 typedef Image::iterator Iter;
 
 XPtrImage create ();
@@ -18,6 +18,8 @@ XPtrImage create (int len);
 XPtrImage copy (XPtrImage image);
 
 // Option parsers
+Magick::Geometry Geom(size_t width, size_t height, size_t x, size_t y);
+Magick::Geometry Geom(size_t width, size_t height);
 Magick::Geometry Geom(const char * str);
 Magick::Color Color(const char * str);
 Magick::DisposeType Dispose(const char * str);

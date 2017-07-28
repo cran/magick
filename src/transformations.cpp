@@ -5,6 +5,20 @@
 
 #include "magick_types.h"
 
+Magick::Geometry Geom(size_t width, size_t height, size_t x, size_t y){
+  Magick::Geometry geom(width, height, x, y);
+  if(!geom.isValid())
+    throw std::runtime_error(std::string("Invalid geometry dimensions"));
+  return geom;
+}
+
+Magick::Geometry Geom(size_t width, size_t height){
+  Magick::Geometry geom(width, height);
+  if(!geom.isValid())
+    throw std::runtime_error(std::string("Invalid geometry dimensions"));
+  return geom;
+}
+
 Magick::Geometry Geom(const char * str){
   Magick::Geometry geom(str);
   if(!geom.isValid())

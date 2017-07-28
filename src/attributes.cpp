@@ -8,6 +8,35 @@
 #define Option(type, val) MagickCore::CommandOptionToMnemonic(type, val);
 
 // [[Rcpp::export]]
+Rcpp::IntegerVector magick_attr_text_antialias( XPtrImage input, Rcpp::LogicalVector set){
+  if(set.size())
+#if MagickLibVersion >= 0x700
+    for_each ( input->begin(), input->end(), Magick::textAntiAliasImage(set[0]));
+#else
+    for_each ( input->begin(), input->end(), Magick::antiAliasImage(set[0]));
+#endif
+  Rcpp::IntegerVector out;
+  for (Iter it = input->begin(); it != input->end(); ++it)
+#if MagickLibVersion >= 0x700
+    out.push_back(it->textAntiAlias());
+#else
+    out.push_back(it->antiAlias());
+#endif
+  return out;
+}
+
+// [[Rcpp::export]]
+Rcpp::IntegerVector magick_attr_stroke_antialias( XPtrImage input, Rcpp::LogicalVector set){
+  Rcpp::IntegerVector out;
+  for (Iter it = input->begin(); it != input->end(); ++it){
+    if(set.size())
+      it->strokeAntiAlias(set[0]);
+    out.push_back(it->strokeAntiAlias());
+  }
+  return out;
+}
+
+// [[Rcpp::export]]
 Rcpp::IntegerVector magick_attr_animationdelay( XPtrImage input, Rcpp::IntegerVector delay){
   if(delay.size())
     for_each ( input->begin(), input->end(), Magick::animationDelayImage(delay[0]));
@@ -71,7 +100,7 @@ Rcpp::IntegerVector magick_attr_fontsize( XPtrImage input, Rcpp::IntegerVector p
 Rcpp::CharacterVector magick_attr_label( XPtrImage input, Rcpp::CharacterVector label){
   if(label.size())
     for_each ( input->begin(), input->end(), Magick::labelImage(std::string(label[0])));
-    Rcpp::CharacterVector out;
+  Rcpp::CharacterVector out;
   for (Iter it = input->begin(); it != input->end(); ++it)
     out.push_back(it->label());
   return out;
