@@ -25,7 +25,7 @@
 image_read(path, density = NULL, depth = NULL)
 
 image_write(image, path = NULL, format = NULL, quality = NULL,
-  flatten = FALSE)
+  depth = NULL, density = NULL, flatten = FALSE)
 
 image_display(image, animate = TRUE)
 
@@ -57,11 +57,11 @@ image_animate(image, fps = 10, loop = 0, dispose = c("background",
   "previous", "none"))
 }
 \arguments{
-\item{path}{file path, URL, or raw vector with image data}
+\item{path}{file path, URL, or raw array or \code{nativeRaster} with image data}
 
 \item{density}{resolution to render pdf or svg}
 
-\item{depth}{image depth. Must be 8 or 6.}
+\item{depth}{image depth. Must be 8 or 16}
 
 \item{image}{object returned by \code{image_read}}
 
@@ -158,9 +158,9 @@ image_composite(banana, image_scale(logo, "300"))
 
 # Break down and combine frames
 front <- image_scale(banana, "300")
-background <- image_scale(logo, "400")
-frames <- lapply(as.list(front), function(x) image_flatten(c(background, x)))
-image_animate(image_join(frames))
+background <- image_background(image_scale(logo, "400"), 'white')
+frames <- image_apply(front, function(x){image_composite(background, x, offset = "+70+30")})
+image_animate(frames, fps = 10)
 }
 \references{
 Magick++ Image STL: \url{https://www.imagemagick.org/Magick++/STL.html}

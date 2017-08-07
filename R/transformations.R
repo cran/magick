@@ -28,11 +28,11 @@ image_trim <- function(image){
 #' @rdname transformations
 #' @examples
 #' image_background(logo, "pink", flatten = TRUE)
-image_background <- function(image, color, flatten = FALSE){
+image_background <- function(image, color, flatten = TRUE){
   assert_image(image)
   out <- magick_image_background(image, color)
   if(isTRUE(flatten)){
-    image_flatten(out)
+    image_apply(out, image_flatten)
   } else {
     return(out)
   }
@@ -75,6 +75,31 @@ image_border <- function(image, color = "", geometry = ""){
 
 #' @export
 #' @rdname transformations
+#' @param times number of times to repeat the despeckle operation
+#' @examples image_despeckle(logo)
+image_despeckle <- function(image, times = 1L){
+  assert_image(image)
+  magick_image_despeckle(image, times)
+}
+
+#' @export
+#' @rdname transformations
+#' @examples image_median(logo)
+image_median <- function(image, radius = 1.0){
+  assert_image(image)
+  magick_image_median(image, radius)
+}
+
+#' @export
+#' @rdname transformations
+#' @examples image_reducenoise(logo)
+image_reducenoise <- function(image, radius = 1L){
+  assert_image(image)
+  magick_image_reducenoise(image, radius)
+}
+
+#' @export
+#' @rdname transformations
 #' @param noisetype integer betwee 0 and 5 with
 #' \href{https://www.imagemagick.org/Magick++/Enumerations.html#NoiseType}{noisetype}.
 #' @examples
@@ -86,7 +111,7 @@ image_noise <- function(image, noisetype = "gaussian"){
 
 #' @export
 #' @rdname transformations
-#' @param radius the radius of the Gaussian, in pixels, not counting the center pixel.
+#' @param radius radius, in pixels, for various transformations
 #' @param sigma the standard deviation of the Laplacian, in pixels.
 #' @examples
 #' image_blur(logo, 10, 10)
@@ -335,12 +360,14 @@ image_annotate <- function(image, text, gravity = "northwest", location = "+0+0"
 #' @param format output format such as \code{png}, \code{jpeg}, \code{gif} or \code{pdf}.
 #' Can also be a bitmap type such as \code{rgba} or \code{rgb}.
 #' @param depth color depth, must be 8 or 16
-image_convert <- function(image, format, depth = NULL){
+#' @param antialias (TRUE/FALSE) enable anti-aliasing for text and strokes
+image_convert <- function(image, format, depth = NULL, antialias = NULL){
   assert_image(image)
   depth <- as.integer(depth)
+  antialias <- as.logical(antialias)
   if(length(depth) && is.na(match(depth, c(8, 16))))
     stop('depth must be 8 or 16 bit')
-  magick_image_format(image, format, depth)
+  magick_image_format(image, toupper(format), depth, antialias)
 }
 
 #' @export

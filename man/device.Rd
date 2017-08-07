@@ -2,14 +2,18 @@
 % Please edit documentation in R/device.R
 \name{device}
 \alias{device}
+\alias{image_graph}
 \alias{image_device}
 \alias{image_draw}
+\alias{image_capture}
 \title{Magick Graphics Device}
 \usage{
-image_device(width = 800, height = 600, bg = "transparent",
-  pointsize = 12, res = 72, clip = TRUE)
+image_graph(width = 800, height = 600, bg = "transparent",
+  pointsize = 12, res = 72, clip = TRUE, antialias = TRUE)
 
-image_draw(image, pointsize = 12, res = 72, ...)
+image_draw(image, pointsize = 12, res = 72, antialias = TRUE, ...)
+
+image_capture()
 }
 \arguments{
 \item{width}{in pixels}
@@ -25,6 +29,8 @@ image_draw(image, pointsize = 12, res = 72, ...)
 \item{clip}{enable clipping in the device. Because clippig can slow things down
 a lot, you can disable it if you don't need it.}
 
+\item{antialias}{TRUE/FALSE: enables anti-aliasing for text and strokes}
+
 \item{image}{an existing image on which to start drawing}
 
 \item{...}{additional device parameters passed to \link{plot.window} such as
@@ -33,11 +39,12 @@ a lot, you can disable it if you don't need it.}
 \description{
 Graphics device that produces a Magick image. Can either be used like a regular
 device for making plots, or alternatively via \code{image_draw} to open a device
-which draws onto an existing image using pixel coordinates.
+which draws onto an existing image using pixel coordinates. The latter is vectorized,
+i.e. drawing operations are applied to each frame in the image.
 }
 \details{
 The device is a relatively recent feature of the package. It should support all
-operations but there might still be small inaccuracies. Also it a bit slower than
+operations but there might still be small inaccuracies. Also it is a bit slower than
 some of the other devices, in particular for rendering text and clipping. Hopefully
 this can be optimized in the next version.
 
@@ -46,13 +53,16 @@ match image size in pixels (width x height) where \code{(0,0)} is the top left c
 Note that this means the y axis increases from top to bottom which is the opposite
 of typical graphics coordinates.  You can override all this by passing custom
 \code{xlim}, \code{ylim} or \code{mar} values to \code{image_draw}.
+
+The \code{image_capture} function returns the current device as an image. This only
+works if the current device is a magick device or suppots \link{dev.capture}.
 }
 \examples{
 # Regular image
 frink <- image_read("https://jeroen.github.io/images/frink.png")
 
 # Produce image using graphics device
-fig <- image_device(res = 96)
+fig <- image_graph(res = 96)
 ggplot2::qplot(mpg, wt, data = mtcars, colour = cyl)
 dev.off()
 
@@ -68,6 +78,14 @@ text(10, 250, "Hoiven-Glaven", family = "courier", cex = 4, srt = 90)
 palette(rainbow(11, end = 0.9))
 symbols(rep(200, 11), seq(0, 400, 40), circles = runif(11, 5, 35),
   bg = 1:11, inches = FALSE, add = TRUE)
+dev.off()
+print(img)
+
+# Vectorized example with custom coordinates
+earth <- image_read("https://jeroen.github.io/images/earth.gif")
+img <- image_draw(earth, xlim = c(0,1), ylim = c(0,1))
+rect(.1, .1, .9, .9, border = "red", lty = "dashed", lwd = 5)
+text(.5, .9, "Our planet", cex = 3, col = "white")
 dev.off()
 print(img)
 }

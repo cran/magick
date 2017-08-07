@@ -23,10 +23,10 @@
 #' @family image
 #' @rdname edit
 #' @name editing
-#' @param path file path, URL, or raw vector with image data
+#' @param path file path, URL, or raw array or \code{nativeRaster} with image data
 #' @param image object returned by \code{image_read}
 #' @param density resolution to render pdf or svg
-#' @param depth image depth. Must be 8 or 6.
+#' @param depth image depth. Must be 8 or 16
 #' @references Magick++ Image STL: \url{https://www.imagemagick.org/Magick++/STL.html}
 #' @examples
 #' # Download image from the web
@@ -51,17 +51,23 @@
 image_read <- function(path, density = NULL, depth = NULL){
   density <- as.character(density)
   depth <- as.integer(depth)
-  image <- if(is.character(path)){
-    path <- vapply(path, replace_url, character(1))
-    magick_image_readpath(path, density, depth)
+  image <- if(inherits(path, "nativeRaster") || (is.matrix(path) && is.integer(path))){
+    image_read_nativeraster(path)
+  } else if (grDevices::is.raster(path)) {
+    image_read_raster2(path)
+  } else if (is.matrix(path) && is.character(path)){
+    image_read_raster2(grDevices::as.raster(path))
   } else if(is.array(path)){
     image_readbitmap(path)
   } else if(is.raw(path)) {
     magick_image_readbin(path, density, depth)
+  } else if(is.character(path) && all(nchar(path))){
+    path <- vapply(path, replace_url, character(1))
+    magick_image_readpath(path, density, depth)
   } else {
     stop("path must be URL, filename or raw vector")
   }
-  if(!isTRUE(magick_config()$rsvg)){
+  if(is.character(path) && !isTRUE(magick_config()$rsvg)){
     if(any(grepl("\\.svg$", tolower(path))) || any(grepl("svg|mvg", tolower(image_info(image)$format)))){
       warning("ImageMagick was built without librsvg which causes poor qualty of SVG rendering.
 For better results, rebuild ImageMagick --with-librsvg or use the 'rsvg' package in R.", call. = FALSE)
@@ -82,6 +88,24 @@ image_readbitmap <- function(x){
   }
 }
 
+# output of dev.caputure(native = TRUE)
+image_read_nativeraster <- function(x){
+  stopifnot(is.matrix(x) && is.integer(x))
+  magick_image_readbitmap_native(x)
+}
+
+# output of dev.caputure(native = FALSE) or as.raster()
+image_read_raster1 <- function(x){
+  stopifnot(is.matrix(x) && is.character(x))
+  magick_image_readbitmap_raster1(t(x))
+}
+
+# output of as.raster()
+image_read_raster2 <- function(x){
+  stopifnot(is.matrix(x) && is.character(x))
+  magick_image_readbitmap_raster2(x)
+}
+
 # Not exported for now
 image_rsvg <- function(path, width = NULL, height = NULL){
   bitmap <- rsvg::rsvg_raw(path, width = width, height = height)
@@ -94,15 +118,18 @@ image_rsvg <- function(path, width = NULL, height = NULL){
 #' @param flatten should image be flattened before writing? This also replaces
 #' transparency with background color.
 #' @param quality number between 0 and 100 for jpeg quality. Defaults to 75.
-image_write <- function(image, path = NULL, format = NULL, quality = NULL, flatten = FALSE){
+image_write <- function(image, path = NULL, format = NULL, quality = NULL,
+                        depth = NULL, density = NULL, flatten = FALSE){
   assert_image(image)
   if(!length(image))
     warning("Writing image with 0 frames")
   if(isTRUE(flatten))
     image <- image_flatten(image)
-  format <- as.character(format)
+  format <- toupper(as.character(format))
   quality <- as.integer(quality)
-  buf <- magick_image_write(image, format, quality)
+  depth <- as.integer(depth)
+  density <- as.character(density)
+  buf <- magick_image_write(image, format, quality, depth, density)
   if(is.character(path)){
     writeBin(buf, path)
     return(invisible(path))
@@ -234,9 +261,9 @@ image_mosaic <- function(image, operator = NULL){
 #'
 #' # Break down and combine frames
 #' front <- image_scale(banana, "300")
-#' background <- image_scale(logo, "400")
-#' frames <- lapply(as.list(front), function(x) image_flatten(c(background, x)))
-#' image_animate(image_join(frames))
+#' background <- image_background(image_scale(logo, "400"), 'white')
+#' frames <- image_apply(front, function(x){image_composite(background, x, offset = "+70+30")})
+#' image_animate(frames, fps = 10)
 image_join <- function(...){
   x <- unlist(list(...))
   stopifnot(all(vapply(x, inherits, logical(1), "magick-image")))

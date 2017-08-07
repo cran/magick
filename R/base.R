@@ -80,22 +80,24 @@
 }
 
 #' @export
-"print.magick-image" <- function(x, ...){
+"print.magick-image" <- function(x, info = TRUE, ...){
   img <- x
   viewer <- getOption("viewer")
   if(length(img) && is.function(viewer)){
-    if(length(img) > 1)
-      img <- image_animate(img, fps = 1)
     format <- tolower(image_info(img[1])$format)
-    if(format == "xc"){
+    if(length(img) > 1 && format != "gif"){
+      img <- image_animate(img, fps = 1)
+      format <- "gif"
+    } else if(format == "xc"){
+      img <- image_convert(img, "PNG")
       format <- 'png'
-      img <- image_convert(img, format)
     }
     tmp <- file.path(tempdir(), paste0("preview.", format))
     image_write(img, path = tmp, format = format)
     viewer(tmp)
   }
-  print(image_info(x))
+  if(isTRUE(info))
+    print(image_info(x))
   invisible()
 }
 

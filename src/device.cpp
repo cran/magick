@@ -13,27 +13,26 @@
 class MagickDevice {
 public:
   XPtrImage ptr;
-  bool multipage;
+  bool drawing;
+  bool antialias;
   double clipleft, clipright, cliptop, clipbottom;
-  MagickDevice(bool multipage_):
+  MagickDevice(bool drawing_, bool antialias_):
     ptr(XPtrImage(new Image())),
-    multipage(multipage_),
+    drawing(drawing_),
+    antialias(antialias_),
     clipleft(0), clipright(0), cliptop(0), clipbottom(0){}
-  MagickDevice(bool multipage_, Image * image):
+  MagickDevice(bool drawing_, bool antialias_, Image * image):
     ptr(XPtrImage(image)),
-    multipage(multipage_),
+    drawing(drawing_),
+    antialias(antialias_),
     clipleft(0), clipright(0), cliptop(0), clipbottom(0){}
 };
 
+// Get the 'latest' device
+static MagickDevice * dirty = NULL;
+
 //from 'svglite' source: 1 lwd = 1/96", but units in rest of document are 1/72"
 #define xlwd (72.0/96.0)
-
-/* IM7 uses vectors instead of lists */
-#if MagickLibVersion >= 0x700
-#define container vector
-#else
-#define container list
-#endif
 
 typedef std::container<Magick::Drawable> drawlist;
 typedef std::container<Magick::Coordinate> coordlist;
@@ -141,7 +140,6 @@ static void image_draw(drawlist x, const pGEcontext gc, pDevDesc dd, bool join =
   double multiplier = 1/dd->ipr[0]/72;
   double lwd = gc->lwd * xlwd * multiplier;
   double lty[10] = {0};
-  Frame * graph = getgraph(dd);
   drawlist draw;
   if(gc->col != NA_INTEGER)
     draw.push_back(Magick::DrawableStrokeColor(Color(col2name(gc->col))));
@@ -154,15 +152,21 @@ static void image_draw(drawlist x, const pGEcontext gc, pDevDesc dd, bool join =
   draw.push_back(Magick::DrawableMiterLimit(gc->lmitre));
   draw.push_back(Magick::DrawableFont(gc->fontfamily, style(gc->fontface), weight(gc->fontface), Magick::NormalStretch));
   draw.push_back(Magick::DrawablePointSize(gc->ps * gc->cex * multiplier));
+  draw.push_back(Magick::myDrawableDashArray(linetype(lty, gc->lty, lwd)));
 #if MagickLibVersion >= 0x700
-  draw.push_back(Magick::DrawableStrokeDashArray(linetype(lty, gc->lty, lwd)));
   draw.insert(draw.end(), x.begin(), x.end());
 #else
-  draw.push_back(Magick::DrawableDashArray(linetype(lty, gc->lty, lwd)));
   draw.splice(draw.end(), x);
 #endif
-  graph->gamma(gc->gamma);
-  graph->draw(draw);
+  if(getdev(dd)->drawing){
+    Image * image = getimage(dd);
+    for_each (image->begin(), image->end(), Magick::drawImage(draw));
+    for_each (image->begin(), image->end(), Magick::gammaImage(gc->gamma));
+  } else {
+    Frame * graph = getgraph(dd);
+    graph->draw(draw);
+    graph->gamma(gc->gamma);
+  }
 }
 
 static void image_draw(Magick::Drawable x, const pGEcontext gc, pDevDesc dd, bool join = true, bool fill = true){
@@ -176,10 +180,13 @@ static void image_draw(Magick::Drawable x, const pGEcontext gc, pDevDesc dd, boo
 static void image_new_page(const pGEcontext gc, pDevDesc dd) {
   BEGIN_RCPP
   Image *image = getimage(dd);
-  if(image->size() > 0 && getdev(dd)->multipage == false)
+  if(image->size() > 0 && getdev(dd)->drawing)
     throw std::runtime_error("Cannot open a new page on a drawing device");
   Frame x(Geom(dd->right, dd->bottom), Color(col2name(gc->fill)));
-  x.magick("png");
+  x.magick("PNG");
+  x.depth(8L);
+  x.strokeAntiAlias(getdev(dd)->antialias);
+  x.myAntiAlias(getdev(dd)->antialias);
   image->push_back(x);
   VOID_END_RCPP
 }
@@ -213,7 +220,13 @@ static void image_clip(double left, double right, double bottom, double top, pDe
   draw.push_back(Magick::DrawablePath(path));
   draw.push_back(Magick::DrawablePopClipPath());
   draw.push_back(Magick::DrawableClipPath(id));
-  getgraph(dd)->draw(draw);
+  if(getdev(dd)->drawing){
+    Image * image = getimage(dd);
+    for_each (image->begin(), image->end(), Magick::drawImage(draw));
+  } else {
+    Frame * graph = getgraph(dd);
+    graph->draw(draw);
+  }
   VOID_END_RCPP
 }
 
@@ -295,52 +308,98 @@ static void image_raster(unsigned int *raster, int w, int h,
                 Rboolean interpolate,
                 const pGEcontext gc, pDevDesc dd) {
   BEGIN_RCPP
-  Frame * graph = getgraph(dd);
+  //normalize
+  rot = fmod(-rot + 360.0, 360.0);
+  height = - height;
+  y = y - height;
+
+  //create the raster frame
   Frame frame(w, h, std::string("RGBA"), Magick::CharPixel, raster);
   frame.backgroundColor(Color("transparent"));
-  Magick::Geometry size = Geom(width, -height);
+  Magick::Geometry size = Geom(width, height);
   size.aspect(true); //resize without preserving aspect ratio
   interpolate ? frame.resize(size) : frame.scale(size);
-  frame.rotate(-rot);
-  //size may change after rotation
-  Magick::Geometry outsize = frame.size();
-  int xoff = (outsize.width() - width) / 2;
-  int yoff = (outsize.height() + height) / 2;
-  graph->composite(frame, x - xoff, y + height - yoff, Magick::OverCompositeOp);
+
+  //rotate minimum 1 degree. Adjust x,y to rotate around center
+  if(rot > 1){
+    frame.rotate(rot);
+    Magick::Geometry outsize = frame.size();
+    x = x - (outsize.width() - width) / 2;
+    y = y - (outsize.height() - height) / 2;
+    width = outsize.width();
+    height = outsize.height();
+  }
+
+  Magick::DrawableCompositeImage draw(x, y, width, height, frame, Magick::OverCompositeOp);
+  image_draw(draw, gc, dd);
   VOID_END_RCPP
 }
 
 /* TODO: somehow R adds another protect */
 static void image_close(pDevDesc dd) {
   BEGIN_RCPP
+  dirty = NULL;
   XPtrImage ptr = getptr(dd);
   MagickDevice * device = (MagickDevice *) dd->deviceSpecific;
   delete device;
   VOID_END_RCPP
 }
 
+SEXP image_capture(pDevDesc dd){
+  BEGIN_RCPP
+  Frame * graph = getgraph(dd);
+  Rcpp::IntegerMatrix out(dd->bottom, dd->right);
+  Magick::Blob output;
+  graph->write(&output, "rgba", 8L);
+  std::memcpy(out.begin(), output.data(), output.length());
+  return out;
+  VOID_END_RCPP
+  return R_NilValue;
+}
+
+void image_mode(int mode, pDevDesc dd){
+  if(!mode){
+    dirty = getdev(dd);
+  }
+}
+
 /* TODO: maybe port this to drawing as well, need affine transform. See:
  * https://github.com/ImageMagick/ImageMagick/blob/master/Magick%2B%2B/lib/Image.cpp#L1858
  */
+
+static void inline image_annotate(Frame * frame, double x, double y, const char *str, double rot, char * family,
+                                  int ps, int weight, Magick::StyleType style, Magick::Color col){
+#if MagickLibVersion >= 0x692
+  frame->fontFamily(family);
+  frame->fontWeight(weight);
+  frame->fontStyle(style);
+#else
+  frame->font(family);
+#endif
+  frame->fillColor(col);
+  frame->strokeColor(Magick::Color()); //unset: this is really ugly
+  frame->boxColor(Magick::Color());
+  frame->fontPointsize(ps);
+  frame->annotate(str, Geom(0, 0, x, y), Magick::ForgetGravity, -1 * rot);
+}
+
 static void image_text(double x, double y, const char *str, double rot,
                 double hadj, const pGEcontext gc, pDevDesc dd) {
   BEGIN_RCPP
   double multiplier = 1/dd->ipr[0]/72;
-  Frame * graph = getgraph(dd);
-#if MagickLibVersion >= 0x692
-  graph->fontFamily(gc->fontfamily);
-  graph->fontWeight(weight(gc->fontface));
-  graph->fontStyle(style(gc->fontface));
-#else
-  graph->font(gc->fontfamily);
-#endif
-  graph->fillColor(Color(col2name(gc->col)));
-  graph->strokeColor(Magick::Color()); //unset: this is really ugly
-  graph->fontPointsize(gc->ps * gc->cex * multiplier);
-  graph->annotate(str, Geom(0, 0, x, y), Magick::ForgetGravity, -1 * rot);
+  int ps = gc->ps * gc->cex * multiplier;
+  if(getdev(dd)->drawing){
+    Image * image = getimage(dd);
+    for (size_t i = 0; i < image->size(); i++){
+      image_annotate(&image->at(i), x, y, str, rot, gc->fontfamily, ps, weight(gc->fontface),
+                     style(gc->fontface), Color(col2name(gc->col)));
+    }
+  } else {
+    image_annotate(getgraph(dd), x, y, str, rot, gc->fontfamily, ps, weight(gc->fontface),
+                   style(gc->fontface), Color(col2name(gc->col)));
+  }
   VOID_END_RCPP
 }
-
 
 static void image_metric_info(int c, const pGEcontext gc, double* ascent,
                        double* descent, double* width, pDevDesc dd) {
@@ -429,9 +488,9 @@ static pDevDesc magick_driver_new(MagickDevice * device, int bg, int width, int 
   dd->polygon = image_polygon;
   dd->polyline = image_polyline;
   dd->path = image_path;
-  dd->mode = NULL;
+  dd->mode = image_mode;
   dd->metricInfo = image_metric_info;
-  dd->cap = NULL;
+  dd->cap = image_capture;
   dd->raster = image_raster;
 
   // UTF-8 support
@@ -467,6 +526,7 @@ static pDevDesc magick_driver_new(MagickDevice * device, int bg, int width, int 
   dd->haveTransparency = 2;
   dd->haveTransparentBg = 2;
   dd->haveRaster = 2;
+  dd->haveCapture = 2;
   dd->deviceSpecific = device;
   return dd;
 }
@@ -488,9 +548,29 @@ static void makeDevice(MagickDevice * device, std::string bg_, int width, int he
 
 // [[Rcpp::export]]
 XPtrImage magick_device_internal(std::string bg, int width, int height, double pointsize,
-                                 int res, bool clip, bool multipage) {
-  MagickDevice * device = new MagickDevice(multipage);
+                                 int res, bool clip, bool antialias, bool drawing) {
+  MagickDevice * device = new MagickDevice(drawing, antialias);
   device->ptr.attr("class") = Rcpp::CharacterVector::create("magick-image");
   makeDevice(device, bg, width, height, pointsize, res, clip);
+  return device->ptr;
+}
+
+
+// [[Rcpp::export]]
+XPtrImage magick_device_get(int n){
+  if(n <= 1)
+    throw std::runtime_error("No such graphics device");
+  pGEDevDesc gd = GEgetDevice(n - 1);
+  if(!gd)
+    throw std::runtime_error("No such graphics device");
+  return getptr(gd->dev);
+}
+
+// [[Rcpp::export]]
+SEXP magick_device_pop(){
+  if(dirty == NULL)
+    return R_NilValue;
+  MagickDevice * device = dirty;
+  dirty = NULL;
   return device->ptr;
 }

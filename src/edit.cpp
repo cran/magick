@@ -15,10 +15,34 @@ XPtrImage magick_image_bitmap(void * data, Magick::StorageType type, size_t slic
     default: throw std::runtime_error("Invalid number of channels (must be 4 or less)");
   }
   Frame frame(width, height, format, type , data);
-  frame.magick("png");
+  frame.magick("PNG");
   XPtrImage image = create();
   image->push_back(frame);
   return image;
+}
+
+// [[Rcpp::export]]
+XPtrImage magick_image_readbitmap_native(Rcpp::IntegerMatrix x){
+  Rcpp::IntegerVector dims(x.attr("dim"));
+  return magick_image_bitmap(x.begin(), Magick::CharPixel, 4, dims[1], dims[0]);
+}
+
+// [[Rcpp::export]]
+XPtrImage magick_image_readbitmap_raster1(Rcpp::CharacterMatrix x){
+  std::vector<rcolor> y(x.size());
+  for(size_t i = 0; i < y.size(); i++)
+    y[i] = R_GE_str2col(x[i]);
+  Rcpp::IntegerVector dims(x.attr("dim"));
+  return magick_image_bitmap(y.data(), Magick::CharPixel, 4, dims[0], dims[1]);
+}
+
+// [[Rcpp::export]]
+XPtrImage magick_image_readbitmap_raster2(Rcpp::CharacterMatrix x){
+  std::vector<rcolor> y(x.size());
+  for(size_t i = 0; i < y.size(); i++)
+    y[i] = R_GE_str2col(x[i]);
+  Rcpp::IntegerVector dims(x.attr("dim"));
+  return magick_image_bitmap(y.data(), Magick::CharPixel, 4, dims[1], dims[0]);
 }
 
 // [[Rcpp::export]]
@@ -80,7 +104,8 @@ XPtrImage magick_image_read_list(Rcpp::List list){
 }
 
 // [[Rcpp::export]]
-Rcpp::RawVector magick_image_write( XPtrImage input, Rcpp::CharacterVector format, Rcpp::IntegerVector quality){
+Rcpp::RawVector magick_image_write( XPtrImage input, Rcpp::CharacterVector format, Rcpp::IntegerVector quality,
+                                    Rcpp::IntegerVector depth, Rcpp::CharacterVector density){
   if(!input->size())
     return Rcpp::RawVector(0);
   XPtrImage image = copy(input);
@@ -88,10 +113,16 @@ Rcpp::RawVector magick_image_write( XPtrImage input, Rcpp::CharacterVector forma
     for_each ( image->begin(), image->end(), Magick::magickImage(std::string(format[0])));
   if(quality.size())
     for_each ( image->begin(), image->end(), Magick::qualityImage(quality[0]));
+  if(depth.size())
+    for_each ( image->begin(), image->end(), Magick::depthImage(depth[0]));
+  if(density.size()){
+    for_each ( image->begin(), image->end(), Magick::resolutionUnitsImage(Magick::PixelsPerInchResolution));
+    for_each ( image->begin(), image->end(), Magick::densityImage(Point(density[0])));
+  }
   Magick::Blob output;
   writeImages( image->begin(), image->end(),  &output );
   Rcpp::RawVector res(output.length());
-  memcpy(res.begin(), output.data(), output.length());
+  std::memcpy(res.begin(), output.data(), output.length());
   return res;
 }
 

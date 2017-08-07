@@ -85,6 +85,10 @@ magick_image_replace <- function(image, index, value) {
     .Call('_magick_magick_image_replace', PACKAGE = 'magick', image, index, value)
 }
 
+magick_image_copy <- function(image, add) {
+    .Call('_magick_magick_image_copy', PACKAGE = 'magick', image, add)
+}
+
 autobrewed <- function() {
     .Call('_magick_autobrewed', PACKAGE = 'magick')
 }
@@ -97,8 +101,28 @@ magick_config_internal <- function() {
     .Call('_magick_magick_config_internal', PACKAGE = 'magick')
 }
 
-magick_device_internal <- function(bg, width, height, pointsize, res, clip, multipage) {
-    .Call('_magick_magick_device_internal', PACKAGE = 'magick', bg, width, height, pointsize, res, clip, multipage)
+magick_device_internal <- function(bg, width, height, pointsize, res, clip, antialias, drawing) {
+    .Call('_magick_magick_device_internal', PACKAGE = 'magick', bg, width, height, pointsize, res, clip, antialias, drawing)
+}
+
+magick_device_get <- function(n) {
+    .Call('_magick_magick_device_get', PACKAGE = 'magick', n)
+}
+
+magick_device_pop <- function() {
+    .Call('_magick_magick_device_pop', PACKAGE = 'magick')
+}
+
+magick_image_readbitmap_native <- function(x) {
+    .Call('_magick_magick_image_readbitmap_native', PACKAGE = 'magick', x)
+}
+
+magick_image_readbitmap_raster1 <- function(x) {
+    .Call('_magick_magick_image_readbitmap_raster1', PACKAGE = 'magick', x)
+}
+
+magick_image_readbitmap_raster2 <- function(x) {
+    .Call('_magick_magick_image_readbitmap_raster2', PACKAGE = 'magick', x)
 }
 
 magick_image_readbitmap_raw <- function(x) {
@@ -121,8 +145,8 @@ magick_image_read_list <- function(list) {
     .Call('_magick_magick_image_read_list', PACKAGE = 'magick', list)
 }
 
-magick_image_write <- function(input, format, quality) {
-    .Call('_magick_magick_image_write', PACKAGE = 'magick', input, format, quality)
+magick_image_write <- function(input, format, quality, depth, density) {
+    .Call('_magick_magick_image_write', PACKAGE = 'magick', input, format, quality, depth, density)
 }
 
 magick_image_write_frame <- function(input, format) {
@@ -253,8 +277,8 @@ magick_image_implode <- function(input, factor) {
     .Call('_magick_magick_image_implode', PACKAGE = 'magick', input, factor)
 }
 
-magick_image_format <- function(input, format, depth) {
-    .Call('_magick_magick_image_format', PACKAGE = 'magick', input, format, depth)
+magick_image_format <- function(input, format, depth, antialias) {
+    .Call('_magick_magick_image_format', PACKAGE = 'magick', input, format, depth, antialias)
 }
 
 magick_image_trim <- function(input) {
@@ -291,6 +315,18 @@ magick_image_sample <- function(input, geometry) {
 
 magick_image_border <- function(input, color, geometry) {
     .Call('_magick_magick_image_border', PACKAGE = 'magick', input, color, geometry)
+}
+
+magick_image_despeckle <- function(input, times) {
+    .Call('_magick_magick_image_despeckle', PACKAGE = 'magick', input, times)
+}
+
+magick_image_median <- function(input, radius) {
+    .Call('_magick_magick_image_median', PACKAGE = 'magick', input, radius)
+}
+
+magick_image_reducenoise <- function(input, radius) {
+    .Call('_magick_magick_image_reducenoise', PACKAGE = 'magick', input, radius)
 }
 
 magick_image_annotate <- function(input, text, gravity, location, degrees, size, font, color, strokecolor, boxcolor) {

@@ -241,11 +241,17 @@ XPtrImage magick_image_implode( XPtrImage input, double factor){
 }
 
 // [[Rcpp::export]]
-XPtrImage magick_image_format( XPtrImage input, const char * format, Rcpp::IntegerVector depth){
+XPtrImage magick_image_format( XPtrImage input, const char * format, Rcpp::IntegerVector depth,
+                               Rcpp::LogicalVector antialias){
   XPtrImage output = copy(input);
-  for_each ( output->begin(), output->end(), Magick::magickImage(format));
   if(depth.size())
     for_each ( output->begin(), output->end(), Magick::depthImage(depth.at(0)));
+  if(antialias.size()){
+    for (Iter it = output->begin(); it != output->end(); ++it)
+      it->strokeAntiAlias(antialias.at(0));
+    for_each ( output->begin(), output->end(), Magick::myAntiAliasImage(antialias.at(0)));
+  }
+  for_each ( output->begin(), output->end(), Magick::magickImage(format));
   return output;
 }
 
@@ -287,18 +293,14 @@ XPtrImage magick_image_page( XPtrImage input, Rcpp::CharacterVector pagesize, Rc
   if(pagesize.size())
     for_each (output->begin(), output->end(), Magick::pageImage(Geom(pagesize[0])));
   if(density.size())
-#if MagickLibVersion >= 0x700
-    for_each (output->begin(), output->end(), Magick::densityImage(Point(density[0])));
-#else
-    for_each (output->begin(), output->end(), Magick::densityImage(Geom(density[0])));
-#endif
+  for_each (output->begin(), output->end(), Magick::densityImage(Point(density[0])));
   return output;
 }
 
 // [[Rcpp::export]]
 XPtrImage magick_image_crop( XPtrImage input, const char * geometry){
   XPtrImage output = copy(input);
-  if(strlen(geometry)){
+  if(std::strlen(geometry)){
     for_each (output->begin(), output->end(), Magick::cropImage(Geom(geometry)));
   } else {
     if(input->size())
@@ -342,7 +344,28 @@ XPtrImage magick_image_border( XPtrImage input, const char * color, const char *
   return output;
 }
 
+// [[Rcpp::export]]
+XPtrImage magick_image_despeckle( XPtrImage input, int times){
+  XPtrImage output = copy(input);
+  for (int i=0; i < times; i++) {
+    for_each ( output->begin(), output->end(), Magick::despeckleImage());
+  }
+  return output;
+}
 
+// [[Rcpp::export]]
+XPtrImage magick_image_median( XPtrImage input, double radius){
+  XPtrImage output = copy(input);
+  for_each ( output->begin(), output->end(), Magick::myMedianImage(radius));
+  return output;
+}
+
+// [[Rcpp::export]]
+XPtrImage magick_image_reducenoise( XPtrImage input, const size_t radius){
+  XPtrImage output = copy(input);
+  for_each ( output->begin(), output->end(), Magick::reduceNoiseImage(radius));
+  return output;
+}
 /* STL is broken for annotateImage.
  * https://github.com/ImageMagick/ImageMagick/commit/903e501876d405ffd6f9f38f5e72db9acc3d15e8
  */

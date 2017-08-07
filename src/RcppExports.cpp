@@ -7,7 +7,7 @@
 using namespace Rcpp;
 
 // magick_attr_text_antialias
-Rcpp::IntegerVector magick_attr_text_antialias(XPtrImage input, Rcpp::LogicalVector set);
+Rcpp::LogicalVector magick_attr_text_antialias(XPtrImage input, Rcpp::LogicalVector set);
 RcppExport SEXP _magick_magick_attr_text_antialias(SEXP inputSEXP, SEXP setSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -19,7 +19,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // magick_attr_stroke_antialias
-Rcpp::IntegerVector magick_attr_stroke_antialias(XPtrImage input, Rcpp::LogicalVector set);
+Rcpp::LogicalVector magick_attr_stroke_antialias(XPtrImage input, Rcpp::LogicalVector set);
 RcppExport SEXP _magick_magick_attr_stroke_antialias(SEXP inputSEXP, SEXP setSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -252,6 +252,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// magick_image_copy
+XPtrImage magick_image_copy(XPtrImage image, XPtrImage add);
+RcppExport SEXP _magick_magick_image_copy(SEXP imageSEXP, SEXP addSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtrImage >::type image(imageSEXP);
+    Rcpp::traits::input_parameter< XPtrImage >::type add(addSEXP);
+    rcpp_result_gen = Rcpp::wrap(magick_image_copy(image, add));
+    return rcpp_result_gen;
+END_RCPP
+}
 // autobrewed
 bool autobrewed();
 RcppExport SEXP _magick_autobrewed() {
@@ -284,8 +296,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // magick_device_internal
-XPtrImage magick_device_internal(std::string bg, int width, int height, double pointsize, int res, bool clip, bool multipage);
-RcppExport SEXP _magick_magick_device_internal(SEXP bgSEXP, SEXP widthSEXP, SEXP heightSEXP, SEXP pointsizeSEXP, SEXP resSEXP, SEXP clipSEXP, SEXP multipageSEXP) {
+XPtrImage magick_device_internal(std::string bg, int width, int height, double pointsize, int res, bool clip, bool antialias, bool drawing);
+RcppExport SEXP _magick_magick_device_internal(SEXP bgSEXP, SEXP widthSEXP, SEXP heightSEXP, SEXP pointsizeSEXP, SEXP resSEXP, SEXP clipSEXP, SEXP antialiasSEXP, SEXP drawingSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -295,8 +307,63 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type pointsize(pointsizeSEXP);
     Rcpp::traits::input_parameter< int >::type res(resSEXP);
     Rcpp::traits::input_parameter< bool >::type clip(clipSEXP);
-    Rcpp::traits::input_parameter< bool >::type multipage(multipageSEXP);
-    rcpp_result_gen = Rcpp::wrap(magick_device_internal(bg, width, height, pointsize, res, clip, multipage));
+    Rcpp::traits::input_parameter< bool >::type antialias(antialiasSEXP);
+    Rcpp::traits::input_parameter< bool >::type drawing(drawingSEXP);
+    rcpp_result_gen = Rcpp::wrap(magick_device_internal(bg, width, height, pointsize, res, clip, antialias, drawing));
+    return rcpp_result_gen;
+END_RCPP
+}
+// magick_device_get
+XPtrImage magick_device_get(int n);
+RcppExport SEXP _magick_magick_device_get(SEXP nSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    rcpp_result_gen = Rcpp::wrap(magick_device_get(n));
+    return rcpp_result_gen;
+END_RCPP
+}
+// magick_device_pop
+SEXP magick_device_pop();
+RcppExport SEXP _magick_magick_device_pop() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(magick_device_pop());
+    return rcpp_result_gen;
+END_RCPP
+}
+// magick_image_readbitmap_native
+XPtrImage magick_image_readbitmap_native(Rcpp::IntegerMatrix x);
+RcppExport SEXP _magick_magick_image_readbitmap_native(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(magick_image_readbitmap_native(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// magick_image_readbitmap_raster1
+XPtrImage magick_image_readbitmap_raster1(Rcpp::CharacterMatrix x);
+RcppExport SEXP _magick_magick_image_readbitmap_raster1(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::CharacterMatrix >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(magick_image_readbitmap_raster1(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// magick_image_readbitmap_raster2
+XPtrImage magick_image_readbitmap_raster2(Rcpp::CharacterMatrix x);
+RcppExport SEXP _magick_magick_image_readbitmap_raster2(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::CharacterMatrix >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(magick_image_readbitmap_raster2(x));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -360,15 +427,17 @@ BEGIN_RCPP
 END_RCPP
 }
 // magick_image_write
-Rcpp::RawVector magick_image_write(XPtrImage input, Rcpp::CharacterVector format, Rcpp::IntegerVector quality);
-RcppExport SEXP _magick_magick_image_write(SEXP inputSEXP, SEXP formatSEXP, SEXP qualitySEXP) {
+Rcpp::RawVector magick_image_write(XPtrImage input, Rcpp::CharacterVector format, Rcpp::IntegerVector quality, Rcpp::IntegerVector depth, Rcpp::CharacterVector density);
+RcppExport SEXP _magick_magick_image_write(SEXP inputSEXP, SEXP formatSEXP, SEXP qualitySEXP, SEXP depthSEXP, SEXP densitySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< XPtrImage >::type input(inputSEXP);
     Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type format(formatSEXP);
     Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type quality(qualitySEXP);
-    rcpp_result_gen = Rcpp::wrap(magick_image_write(input, format, quality));
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type depth(depthSEXP);
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type density(densitySEXP);
+    rcpp_result_gen = Rcpp::wrap(magick_image_write(input, format, quality, depth, density));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -757,15 +826,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // magick_image_format
-XPtrImage magick_image_format(XPtrImage input, const char * format, Rcpp::IntegerVector depth);
-RcppExport SEXP _magick_magick_image_format(SEXP inputSEXP, SEXP formatSEXP, SEXP depthSEXP) {
+XPtrImage magick_image_format(XPtrImage input, const char * format, Rcpp::IntegerVector depth, Rcpp::LogicalVector antialias);
+RcppExport SEXP _magick_magick_image_format(SEXP inputSEXP, SEXP formatSEXP, SEXP depthSEXP, SEXP antialiasSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< XPtrImage >::type input(inputSEXP);
     Rcpp::traits::input_parameter< const char * >::type format(formatSEXP);
     Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type depth(depthSEXP);
-    rcpp_result_gen = Rcpp::wrap(magick_image_format(input, format, depth));
+    Rcpp::traits::input_parameter< Rcpp::LogicalVector >::type antialias(antialiasSEXP);
+    rcpp_result_gen = Rcpp::wrap(magick_image_format(input, format, depth, antialias));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -880,6 +950,42 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// magick_image_despeckle
+XPtrImage magick_image_despeckle(XPtrImage input, int times);
+RcppExport SEXP _magick_magick_image_despeckle(SEXP inputSEXP, SEXP timesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtrImage >::type input(inputSEXP);
+    Rcpp::traits::input_parameter< int >::type times(timesSEXP);
+    rcpp_result_gen = Rcpp::wrap(magick_image_despeckle(input, times));
+    return rcpp_result_gen;
+END_RCPP
+}
+// magick_image_median
+XPtrImage magick_image_median(XPtrImage input, double radius);
+RcppExport SEXP _magick_magick_image_median(SEXP inputSEXP, SEXP radiusSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtrImage >::type input(inputSEXP);
+    Rcpp::traits::input_parameter< double >::type radius(radiusSEXP);
+    rcpp_result_gen = Rcpp::wrap(magick_image_median(input, radius));
+    return rcpp_result_gen;
+END_RCPP
+}
+// magick_image_reducenoise
+XPtrImage magick_image_reducenoise(XPtrImage input, const size_t radius);
+RcppExport SEXP _magick_magick_image_reducenoise(SEXP inputSEXP, SEXP radiusSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtrImage >::type input(inputSEXP);
+    Rcpp::traits::input_parameter< const size_t >::type radius(radiusSEXP);
+    rcpp_result_gen = Rcpp::wrap(magick_image_reducenoise(input, radius));
+    return rcpp_result_gen;
+END_RCPP
+}
 // magick_image_annotate
 XPtrImage magick_image_annotate(XPtrImage input, const std::string text, const char * gravity, const char * location, double degrees, Rcpp::IntegerVector size, Rcpp::CharacterVector font, Rcpp::CharacterVector color, Rcpp::CharacterVector strokecolor, Rcpp::CharacterVector boxcolor);
 RcppExport SEXP _magick_magick_image_annotate(SEXP inputSEXP, SEXP textSEXP, SEXP gravitySEXP, SEXP locationSEXP, SEXP degreesSEXP, SEXP sizeSEXP, SEXP fontSEXP, SEXP colorSEXP, SEXP strokecolorSEXP, SEXP boxcolorSEXP) {
@@ -936,16 +1042,22 @@ static const R_CallMethodDef CallEntries[] = {
     {"_magick_magick_image_join", (DL_FUNC) &_magick_magick_image_join, 1},
     {"_magick_magick_image_subset", (DL_FUNC) &_magick_magick_image_subset, 2},
     {"_magick_magick_image_replace", (DL_FUNC) &_magick_magick_image_replace, 3},
+    {"_magick_magick_image_copy", (DL_FUNC) &_magick_magick_image_copy, 2},
     {"_magick_autobrewed", (DL_FUNC) &_magick_autobrewed, 0},
     {"_magick_magick_coder_info", (DL_FUNC) &_magick_magick_coder_info, 1},
     {"_magick_magick_config_internal", (DL_FUNC) &_magick_magick_config_internal, 0},
-    {"_magick_magick_device_internal", (DL_FUNC) &_magick_magick_device_internal, 7},
+    {"_magick_magick_device_internal", (DL_FUNC) &_magick_magick_device_internal, 8},
+    {"_magick_magick_device_get", (DL_FUNC) &_magick_magick_device_get, 1},
+    {"_magick_magick_device_pop", (DL_FUNC) &_magick_magick_device_pop, 0},
+    {"_magick_magick_image_readbitmap_native", (DL_FUNC) &_magick_magick_image_readbitmap_native, 1},
+    {"_magick_magick_image_readbitmap_raster1", (DL_FUNC) &_magick_magick_image_readbitmap_raster1, 1},
+    {"_magick_magick_image_readbitmap_raster2", (DL_FUNC) &_magick_magick_image_readbitmap_raster2, 1},
     {"_magick_magick_image_readbitmap_raw", (DL_FUNC) &_magick_magick_image_readbitmap_raw, 1},
     {"_magick_magick_image_readbitmap_double", (DL_FUNC) &_magick_magick_image_readbitmap_double, 1},
     {"_magick_magick_image_readbin", (DL_FUNC) &_magick_magick_image_readbin, 3},
     {"_magick_magick_image_readpath", (DL_FUNC) &_magick_magick_image_readpath, 3},
     {"_magick_magick_image_read_list", (DL_FUNC) &_magick_magick_image_read_list, 1},
-    {"_magick_magick_image_write", (DL_FUNC) &_magick_magick_image_write, 3},
+    {"_magick_magick_image_write", (DL_FUNC) &_magick_magick_image_write, 5},
     {"_magick_magick_image_write_frame", (DL_FUNC) &_magick_magick_image_write_frame, 2},
     {"_magick_magick_image_display", (DL_FUNC) &_magick_magick_image_display, 2},
     {"_magick_magick_image_append", (DL_FUNC) &_magick_magick_image_append, 2},
@@ -978,7 +1090,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_magick_magick_image_oilpaint", (DL_FUNC) &_magick_magick_image_oilpaint, 2},
     {"_magick_magick_image_rotate", (DL_FUNC) &_magick_magick_image_rotate, 2},
     {"_magick_magick_image_implode", (DL_FUNC) &_magick_magick_image_implode, 2},
-    {"_magick_magick_image_format", (DL_FUNC) &_magick_magick_image_format, 3},
+    {"_magick_magick_image_format", (DL_FUNC) &_magick_magick_image_format, 4},
     {"_magick_magick_image_trim", (DL_FUNC) &_magick_magick_image_trim, 1},
     {"_magick_magick_image_composite", (DL_FUNC) &_magick_magick_image_composite, 4},
     {"_magick_magick_image_contrast", (DL_FUNC) &_magick_magick_image_contrast, 2},
@@ -988,6 +1100,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_magick_magick_image_scale", (DL_FUNC) &_magick_magick_image_scale, 2},
     {"_magick_magick_image_sample", (DL_FUNC) &_magick_magick_image_sample, 2},
     {"_magick_magick_image_border", (DL_FUNC) &_magick_magick_image_border, 3},
+    {"_magick_magick_image_despeckle", (DL_FUNC) &_magick_magick_image_despeckle, 2},
+    {"_magick_magick_image_median", (DL_FUNC) &_magick_magick_image_median, 2},
+    {"_magick_magick_image_reducenoise", (DL_FUNC) &_magick_magick_image_reducenoise, 2},
     {"_magick_magick_image_annotate", (DL_FUNC) &_magick_magick_image_annotate, 10},
     {"_magick_magick_image_compare", (DL_FUNC) &_magick_magick_image_compare, 3},
     {NULL, NULL, 0}

@@ -24,3 +24,19 @@ Magick::Geometry Geom(const char * str);
 Magick::Color Color(const char * str);
 Magick::DisposeType Dispose(const char * str);
 Magick::CompositeOperator Composite(const char * str);
+
+#if MagickLibVersion >= 0x700
+Magick::Point Point(const char * str);
+#define container vector
+#define myAntiAliasImage textAntiAliasImage
+#define myAntiAlias textAntiAlias
+#define myDrawableDashArray DrawableStrokeDashArray
+#define myMedianImage medianConvolveImage
+#else
+#define container list
+#define Point Geom
+#define myAntiAliasImage antiAliasImage
+#define myAntiAlias antiAlias
+#define myDrawableDashArray DrawableDashArray
+#define myMedianImage medianFilterImage
+#endif
