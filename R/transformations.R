@@ -297,27 +297,10 @@ image_page <- function(image, pagesize = NULL, density = NULL){
 
 #' @export
 #' @rdname transformations
-#' @param offset geometry string with offset
-#' @param operator string with a
-#' \href{https://www.imagemagick.org/Magick++/Enumerations.html#CompositeOperator}{composite operator}.
-#' @param composite_image composition image
-#' @examples # Compose images using one of many operators
-#' oldlogo <- image_read("https://developer.r-project.org/Logo/Rlogo-3.png")
-#' image_composite(logo, oldlogo)
-#' image_composite(logo, oldlogo, operator = "copyred")
-#'
-image_composite <- function(image, composite_image = image[1], operator = "atop", offset = "0x0"){
-  assert_image(image)
-  stopifnot(inherits(composite_image, "magick-image"))
-  magick_image_composite(image, composite_image, offset, operator)
-}
-
-#' @export
-#' @rdname transformations
 #' @param sharpen enhance intensity differences in image
 #' @examples
 #' # Lights up the R logo
-#' frames <- image_scale(oldlogo, "400x400")
+#' frames <- image_scale(logo, "400x400")
 #' for(i in 1:7) frames <- c(frames, image_contrast(frames[i]))
 #' (blink <- image_animate(c(frames, rev(frames)), fps = 20, loop = 1))
 #'

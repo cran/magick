@@ -8,6 +8,7 @@
  */
 #include "magick_types.h"
 #include <R_ext/GraphicsEngine.h>
+#define pi 3.14159265359
 
 // Magick Device Parameters
 class MagickDevice {
@@ -73,7 +74,11 @@ static inline bool is_italic(int face) {
   return face == 3 || face == 4;
 }
 
-inline double scale_lty(int lty, double lwd) {
+static inline bool is_symbol(int face) {
+  return face == 5;
+}
+
+static inline double scale_lty(int lty, double lwd) {
   return ((lwd > 1) ? lwd : 1) * (lty & 15);
 }
 
@@ -128,6 +133,18 @@ static inline int weight(int face){
   return is_bold(face) ? 700 : 400;
 }
 
+static inline std::string fontname(const pGEcontext gc){
+  if(is_symbol(gc->fontface))
+    return std::string("symbol");
+  if(!strlen(gc->fontfamily))
+    return std::string("sans-serif");
+  if(!strncmp(gc->fontfamily, "sans", 4) || !strncmp(gc->fontfamily, "Sans", 4))
+    return std::string("sans-serif");
+  if(!strncmp(gc->fontfamily, "mono", 4) || !strncmp(gc->fontfamily, "Mono", 4))
+    return std::string("monospace");
+  return std::string(gc->fontfamily);
+}
+
 static inline coordlist coord(int n, double * x, double * y){
   coordlist coordinates;
   for(int i = 0; i < n; i++)
@@ -147,17 +164,13 @@ static void image_draw(drawlist x, const pGEcontext gc, pDevDesc dd, bool join =
     draw.push_back(Magick::DrawableFillColor(Color(col2name(gc->fill))));
   draw.push_back(Magick::DrawableStrokeWidth(lwd));
   draw.push_back(Magick::DrawableStrokeLineCap(linecap(gc->lend)));
+  draw.push_back(Magick::DrawableStrokeAntialias(getdev(dd)->antialias));
   if(join == true)
     draw.push_back(Magick::DrawableStrokeLineJoin(linejoin(gc->ljoin)));
-  draw.push_back(Magick::DrawableMiterLimit(gc->lmitre));
-  draw.push_back(Magick::DrawableFont(gc->fontfamily, style(gc->fontface), weight(gc->fontface), Magick::NormalStretch));
-  draw.push_back(Magick::DrawablePointSize(gc->ps * gc->cex * multiplier));
+  draw.push_back(Magick::DrawableMiterLimit(gc->lmitre * multiplier));
   draw.push_back(Magick::myDrawableDashArray(linetype(lty, gc->lty, lwd)));
-#if MagickLibVersion >= 0x700
-  draw.insert(draw.end(), x.begin(), x.end());
-#else
-  draw.splice(draw.end(), x);
-#endif
+  for ( drawlist::iterator it = x.begin(); it!= x.end(); ++it )
+    draw.push_back(*it);
   if(getdev(dd)->drawing){
     Image * image = getimage(dd);
     for_each (image->begin(), image->end(), Magick::drawImage(draw));
@@ -311,26 +324,29 @@ static void image_raster(unsigned int *raster, int w, int h,
   //normalize
   rot = fmod(-rot + 360.0, 360.0);
   height = - height;
-  y = y - height;
 
   //create the raster frame
   Frame frame(w, h, std::string("RGBA"), Magick::CharPixel, raster);
   frame.backgroundColor(Color("transparent"));
   Magick::Geometry size = Geom(width, height);
   size.aspect(true); //resize without preserving aspect ratio
-  interpolate ? frame.resize(size) : frame.scale(size);
+  frame.filterType(interpolate ? Magick::TriangleFilter : Magick::PointFilter);
+  frame.resize(size);
 
-  //rotate minimum 1 degree. Adjust x,y to rotate around center
+  //rotate minimum 1 degree. Adjust positioning to rotate around (x,y)
   if(rot > 1){
     frame.rotate(rot);
-    Magick::Geometry outsize = frame.size();
-    x = x - (outsize.width() - width) / 2;
-    y = y - (outsize.height() - height) / 2;
+    double rad = (rot * pi) / 180;
+    x += round(width * fmin(0.0, cos(rad)) + height * fmin(0.0, sin(rad)));
+    y -= round(height * fmin(0.0, cos(rad)) + width * fmin(0.0, -sin(rad)));
+
+    //calculate new values
+    Magick::Geometry outsize(frame.size());
     width = outsize.width();
     height = outsize.height();
   }
 
-  Magick::DrawableCompositeImage draw(x, y, width, height, frame, Magick::OverCompositeOp);
+  Magick::DrawableCompositeImage draw(x, y - height, width, height, frame, Magick::OverCompositeOp);
   image_draw(draw, gc, dd);
   VOID_END_RCPP
 }
@@ -363,41 +379,49 @@ void image_mode(int mode, pDevDesc dd){
   }
 }
 
-/* TODO: maybe port this to drawing as well, need affine transform. See:
- * https://github.com/ImageMagick/ImageMagick/blob/master/Magick%2B%2B/lib/Image.cpp#L1858
- */
-
-static void inline image_annotate(Frame * frame, double x, double y, const char *str, double rot, char * family,
-                                  int ps, int weight, Magick::StyleType style, Magick::Color col){
-#if MagickLibVersion >= 0x692
-  frame->fontFamily(family);
-  frame->fontWeight(weight);
-  frame->fontStyle(style);
-#else
-  frame->font(family);
-#endif
-  frame->fillColor(col);
-  frame->strokeColor(Magick::Color()); //unset: this is really ugly
-  frame->boxColor(Magick::Color());
-  frame->fontPointsize(ps);
-  frame->annotate(str, Geom(0, 0, x, y), Magick::ForgetGravity, -1 * rot);
+static inline Magick::DrawableAffine RotateDrawing(double deg, double x, double y){
+  double rad = (deg * pi) / 180;
+  double sx = cos(rad);
+  double sy = cos(rad);
+  double rx = sin(rad);
+  double ry = -sin(rad);
+  double tx = x + x * sx + y * rx;
+  double ty = y + y * sy + x * ry;
+  return Magick::DrawableAffine(sx, sy, rx, ry, tx, ty);
 }
 
 static void image_text(double x, double y, const char *str, double rot,
                 double hadj, const pGEcontext gc, pDevDesc dd) {
   BEGIN_RCPP
   double multiplier = 1/dd->ipr[0]/72;
-  int ps = gc->ps * gc->cex * multiplier;
-  if(getdev(dd)->drawing){
-    Image * image = getimage(dd);
-    for (size_t i = 0; i < image->size(); i++){
-      image_annotate(&image->at(i), x, y, str, rot, gc->fontfamily, ps, weight(gc->fontface),
-                     style(gc->fontface), Color(col2name(gc->col)));
-    }
-  } else {
-    image_annotate(getgraph(dd), x, y, str, rot, gc->fontfamily, ps, weight(gc->fontface),
-                   style(gc->fontface), Color(col2name(gc->col)));
-  }
+  double deg = fmod(-rot + 360.0, 360.0);
+  double ps = gc->ps * gc->cex * multiplier;
+
+  /* text color */
+  Magick::Color fill(col2name(gc->col));
+  Magick::Color stroke;
+
+  /* there is a bug in IM that prefers these properties over the draw list ones */
+  Frame * graph = getgraph(dd);
+  graph->fontPointsize(ps);
+  graph->strokeColor(stroke);
+  graph->fillColor(fill);
+#if MagickLibVersion >= 0x692
+  graph->fontFamily(fontname(gc));
+  graph->fontWeight(weight(gc->fontface));
+  graph->fontStyle(style(gc->fontface));
+#endif
+
+  drawlist draw;
+  draw.push_back(Magick::DrawableStrokeColor(stroke));
+  draw.push_back(Magick::DrawableFillColor(fill));
+  draw.push_back(Magick::DrawableFont(fontname(gc), style(gc->fontface), weight(gc->fontface), Magick::NormalStretch));
+  draw.push_back(Magick::DrawablePointSize(ps));
+  draw.push_back(Magick::DrawableTextAntialias(getdev(dd)->antialias));
+  draw.push_back(Magick::DrawableText(x, y, std::string(str), "UTF-8"));
+  if(deg > 1)
+    draw.push_back(RotateDrawing(deg, x, y));
+  image_draw(draw, gc, dd);
   VOID_END_RCPP
 }
 
@@ -424,16 +448,14 @@ static void image_metric_info(int c, const pGEcontext gc, double* ascent,
   double multiplier = 1/dd->ipr[0]/72;
   graph->fontPointsize(gc->ps * gc->cex * multiplier);
 #if MagickLibVersion >= 0x692
-  graph->fontFamily(gc->fontfamily);
+  graph->fontFamily(fontname(gc));
   graph->fontWeight(weight(gc->fontface));
   graph->fontStyle(style(gc->fontface));
-#else
-  graph->font(gc->fontfamily);
 #endif
   Magick::TypeMetric tm;
   graph->fontTypeMetrics(str, &tm);
   *ascent = tm.ascent();
-  *descent = tm.descent();
+  *descent = std::abs(tm.descent()); //I think this should be positive?
   *width = tm.textWidth();
   VOID_END_RCPP
 }
@@ -442,11 +464,9 @@ static double image_strwidth(const char *str, const pGEcontext gc, pDevDesc dd) 
   BEGIN_RCPP
   Frame * graph = getgraph(dd);
 #if MagickLibVersion >= 0x692
-  graph->fontFamily(gc->fontfamily);
+  graph->fontFamily(fontname(gc));
   graph->fontWeight(weight(gc->fontface));
   graph->fontStyle(style(gc->fontface));
-#else
-  graph->font(gc->fontfamily);
 #endif
   double multiplier = 1/dd->ipr[0]/72;
   graph->fontPointsize(gc->ps * gc->cex * multiplier);
@@ -493,8 +513,13 @@ static pDevDesc magick_driver_new(MagickDevice * device, int bg, int width, int 
   dd->cap = image_capture;
   dd->raster = image_raster;
 
-  // UTF-8 support
-  dd->wantSymbolUTF8 = (Rboolean) 1;
+  // See also BMDeviceDriver
+#ifdef __APPLE__
+  dd->wantSymbolUTF8 = TRUE;
+#else
+  dd->wantSymbolUTF8 = FALSE;
+#endif
+
   dd->hasTextUTF8 = (Rboolean) 1;
   dd->textUTF8 = image_text;
   dd->strWidthUTF8 = image_strwidth;
