@@ -3,30 +3,66 @@
 \name{composite}
 \alias{composite}
 \alias{image_composite}
-\title{Magick Composite}
+\alias{image_border}
+\alias{image_frame}
+\title{Image Composite}
 \usage{
 image_composite(image, composite_image = image[1], operator = "atop",
   offset = "0x0", compose_args = "")
+
+image_border(image, color = "lightgray", geometry = "10x10",
+  operator = "copy")
+
+image_frame(image, color = "lightgray", geometry = "25x25+6+6")
 }
 \arguments{
-\item{image}{object returned by \code{image_read}}
+\item{image}{magick image object returned by \code{\link[=image_read]{image_read()}} or \code{\link[=image_graph]{image_graph()}}}
 
 \item{composite_image}{composition image}
 
 \item{operator}{string with a
-\href{https://www.imagemagick.org/Magick++/Enumerations.html#CompositeOperator}{composite operator}.}
+\href{https://www.imagemagick.org/Magick++/Enumerations.html#CompositeOperator}{composite operator}}
 
 \item{offset}{geometry string with offset}
 
 \item{compose_args}{additional arguments needed for some composite operations}
+
+\item{color}{a valid \href{https://www.imagemagick.org/Magick++/Color.html}{color string} such as
+\code{"navyblue"} or \code{"#000080"}}
+
+\item{geometry}{a \href{https://www.imagemagick.org/Magick++/Geometry.html}{geometry string}
+to set height and width of the border, e.g. \code{"10x8"}. In addition \link{image_frame} allows
+for adding shadow by setting an offset e.g. \code{"20x10+7+2"}.}
 }
 \description{
-Similar to the ImageMagick `composite` command.
+Similar to the ImageMagick \code{composite} utility: compose an image on top of another one using a
+\href{https://www.imagemagick.org/Magick++/Enumerations.html#CompositeOperator}{CompositeOperator}.
+}
+\details{
+Basically \link{image_border} creates a slighly larger solid color frame and then composes the
+image frame on top. The \link{image_frame} function is similar but has an additional feature to
+create a shadow effect on the border (which is really ugly).
 }
 \examples{
 # Compose images using one of many operators
 imlogo <- image_scale(image_read("logo:"), "x275")
 rlogo <- image_read("https://developer.r-project.org/Logo/Rlogo-3.png")
+
+# Standard is atop
 image_composite(imlogo, rlogo)
+
+# Same as 'blend 50' in the command line
 image_composite(imlogo, rlogo, operator = "blend", compose_args="50")
+
+# Add a border frame around the image
+image_border(imlogo, "red", "10x10")
+image_frame(imlogo)
+}
+\seealso{
+Other image: \code{\link{analysis}},
+  \code{\link{animation}}, \code{\link{attributes}},
+  \code{\link{color}}, \code{\link{device}},
+  \code{\link{editing}}, \code{\link{effects}},
+  \code{\link{index}}, \code{\link{ocr}},
+  \code{\link{painting}}, \code{\link{transform}}
 }

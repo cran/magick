@@ -34,12 +34,34 @@ Magick::GravityType Gravity(const char * str){
   return (Magick::GravityType) val;
 }
 
+Magick::ImageType Type(const char * str){
+  ssize_t val = MagickCore::ParseCommandOption( MagickCore::MagickTypeOptions, Magick::MagickFalse, str);
+  if(val < 0)
+    throw std::runtime_error(std::string("Invalid ImageType value: ") + str);
+  return (Magick::ImageType) val;
+}
+
+Magick::ColorspaceType ColorSpace(const char * str){
+  ssize_t val = MagickCore::ParseCommandOption( MagickCore::MagickColorspaceOptions, Magick::MagickFalse, str);
+  if(val < 0)
+    throw std::runtime_error(std::string("Invalid ColorspaceType value: ") + str);
+  return (Magick::ColorspaceType) val;
+}
+
 Magick::NoiseType Noise(const char * str){
   ssize_t val = MagickCore::ParseCommandOption(
     MagickCore::MagickNoiseOptions, Magick::MagickFalse, str);
   if(val < 0)
     throw std::runtime_error(std::string("Invalid NoiseType value: ") + str);
   return (Magick::NoiseType) val;
+}
+
+Magick::myFilterType Filter(const char * str){
+  ssize_t val = MagickCore::ParseCommandOption(
+    MagickCore::MagickFilterOptions, Magick::MagickFalse, str);
+  if(val < 0)
+    throw std::runtime_error(std::string("Invalid FilterType value: ") + str);
+  return (Magick::myFilterType) val;
 }
 
 #if MagickLibVersion >= 0x687
@@ -106,20 +128,6 @@ XPtrImage magick_image_charcoal( XPtrImage input, const double radius = 1, const
 }
 
 // [[Rcpp::export]]
-XPtrImage magick_image_chop( XPtrImage input, const char * geometry){
-  XPtrImage output = copy(input);
-  for_each ( output->begin(), output->end(), Magick::chopImage(Geom(geometry)));
-  return output;
-}
-
-// [[Rcpp::export]]
-XPtrImage magick_image_colorize( XPtrImage input, const size_t opacity, const char * color){
-  XPtrImage output = copy(input);
-  for_each ( output->begin(), output->end(), Magick::colorizeImage(opacity, Color(color)));
-  return output;
-}
-
-// [[Rcpp::export]]
 XPtrImage magick_image_edge( XPtrImage input, size_t radius){
   XPtrImage output = copy(input);
   for_each ( output->begin(), output->end(), Magick::edgeImage(radius));
@@ -147,34 +155,6 @@ XPtrImage magick_image_emboss( XPtrImage input, const double radius = 1, const d
 }
 
 // [[Rcpp::export]]
-XPtrImage magick_image_enhance( XPtrImage input){
-  XPtrImage output = copy(input);
-  for_each ( output->begin(), output->end(), Magick::enhanceImage());
-  return output;
-}
-
-// [[Rcpp::export]]
-XPtrImage magick_image_equalize( XPtrImage input){
-  XPtrImage output = copy(input);
-  for_each ( output->begin(), output->end(), Magick::equalizeImage());
-  return output;
-}
-
-// [[Rcpp::export]]
-XPtrImage magick_image_flip( XPtrImage input){
-  XPtrImage output = copy(input);
-  for_each ( output->begin(), output->end(), Magick::flipImage());
-  return output;
-}
-
-// [[Rcpp::export]]
-XPtrImage magick_image_flop( XPtrImage input){
-  XPtrImage output = copy(input);
-  for_each ( output->begin(), output->end(), Magick::flopImage());
-  return output;
-}
-
-// [[Rcpp::export]]
 XPtrImage magick_image_fill( XPtrImage input, const char * color, const char * point, double fuzz){
   XPtrImage output = copy(input);
   if(fuzz != 0)
@@ -187,35 +167,9 @@ XPtrImage magick_image_fill( XPtrImage input, const char * color, const char * p
 }
 
 // [[Rcpp::export]]
-XPtrImage magick_image_transparent( XPtrImage input, const char * color, double fuzz){
-  XPtrImage output = copy(input);
-  if(fuzz != 0)
-    for_each ( output->begin(), output->end(), Magick::colorFuzzImage(fuzz));
-  Rprintf("set fuzz to %f\n", fuzz);
-  for_each ( output->begin(), output->end(), Magick::transparentImage(Color(color)));
-  if(fuzz != 0)
-    for_each ( output->begin(), output->end(), Magick::colorFuzzImage(input->front().colorFuzz()));
-  return output;
-}
-
-// [[Rcpp::export]]
-XPtrImage magick_image_frame( XPtrImage input, const char * geometry){
-  XPtrImage output = copy(input);
-  for_each ( output->begin(), output->end(), Magick::frameImage(Geom(geometry)));
-  return output;
-}
-
-// [[Rcpp::export]]
 XPtrImage magick_image_negate( XPtrImage input){
   XPtrImage output = copy(input);
   for_each ( output->begin(), output->end(), Magick::negateImage());
-  return output;
-}
-
-// [[Rcpp::export]]
-XPtrImage magick_image_normalize( XPtrImage input){
-  XPtrImage output = copy(input);
-  for_each ( output->begin(), output->end(), Magick::normalizeImage());
   return output;
 }
 
@@ -227,13 +181,6 @@ XPtrImage magick_image_oilpaint( XPtrImage input, size_t radius){
 }
 
 // [[Rcpp::export]]
-XPtrImage magick_image_rotate( XPtrImage input, double degrees){
-  XPtrImage output = copy(input);
-  for_each ( output->begin(), output->end(), Magick::rotateImage(degrees));
-  return output;
-}
-
-// [[Rcpp::export]]
 XPtrImage magick_image_implode( XPtrImage input, double factor){
   XPtrImage output = copy(input);
   for_each ( output->begin(), output->end(), Magick::implodeImage(factor));
@@ -241,38 +188,22 @@ XPtrImage magick_image_implode( XPtrImage input, double factor){
 }
 
 // [[Rcpp::export]]
-XPtrImage magick_image_format( XPtrImage input, const char * format, Rcpp::IntegerVector depth,
-                               Rcpp::LogicalVector antialias){
+XPtrImage magick_image_format( XPtrImage input, Rcpp::CharacterVector format, Rcpp::CharacterVector type,
+                               Rcpp::CharacterVector space, Rcpp::IntegerVector depth, Rcpp::LogicalVector antialias){
   XPtrImage output = copy(input);
-  if(depth.size())
-    for_each ( output->begin(), output->end(), Magick::depthImage(depth.at(0)));
   if(antialias.size()){
     for (Iter it = output->begin(); it != output->end(); ++it)
       it->strokeAntiAlias(antialias.at(0));
     for_each ( output->begin(), output->end(), Magick::myAntiAliasImage(antialias.at(0)));
   }
-  for_each ( output->begin(), output->end(), Magick::magickImage(format));
-  return output;
-}
-
-// [[Rcpp::export]]
-XPtrImage magick_image_trim( XPtrImage input){
-  XPtrImage output = copy(input);
-  for_each ( output->begin(), output->end(), Magick::trimImage());
-  return output;
-}
-
-// [[Rcpp::export]]
-XPtrImage magick_image_contrast( XPtrImage input, size_t sharpen){
-  XPtrImage output = copy(input);
-  for_each(output->begin(), output->end(), Magick::contrastImage(sharpen));
-  return output;
-}
-
-// [[Rcpp::export]]
-XPtrImage magick_image_background( XPtrImage input, const char * color){
-  XPtrImage output = copy(input);
-  for_each (output->begin(), output->end(), Magick::backgroundColorImage(Color(color)));
+  if(type.size())
+    for_each ( output->begin(), output->end(), Magick::typeImage(Type(type.at(0))));
+  if(space.size())
+    for_each ( output->begin(), output->end(), Magick::colorSpaceImage(ColorSpace(space.at(0))));
+  if(depth.size())
+    for_each ( output->begin(), output->end(), Magick::depthImage(depth.at(0)));
+  if(format.size())
+    for_each ( output->begin(), output->end(), Magick::magickImage(std::string(format.at(0))));
   return output;
 }
 
@@ -282,54 +213,7 @@ XPtrImage magick_image_page( XPtrImage input, Rcpp::CharacterVector pagesize, Rc
   if(pagesize.size())
     for_each (output->begin(), output->end(), Magick::pageImage(Geom(pagesize[0])));
   if(density.size())
-  for_each (output->begin(), output->end(), Magick::densityImage(Point(density[0])));
-  return output;
-}
-
-// [[Rcpp::export]]
-XPtrImage magick_image_crop( XPtrImage input, const char * geometry){
-  XPtrImage output = copy(input);
-  if(std::strlen(geometry)){
-    for_each (output->begin(), output->end(), Magick::cropImage(Geom(geometry)));
-  } else {
-    if(input->size())
-      for_each (output->begin(), output->end(), Magick::cropImage(input->front().size()));
-  }
-  return output;
-}
-
-// [[Rcpp::export]]
-XPtrImage magick_image_scale( XPtrImage input, const char * geometry){
-  XPtrImage output = copy(input);
-  if(strlen(geometry)){
-    for_each (output->begin(), output->end(), Magick::scaleImage(Geom(geometry)));
-  } else {
-    if(input->size())
-      for_each (output->begin(), output->end(), Magick::scaleImage(input->front().size()));
-  }
-  return output;
-}
-
-// [[Rcpp::export]]
-XPtrImage magick_image_sample( XPtrImage input, const char * geometry){
-  XPtrImage output = copy(input);
-  if(strlen(geometry)){
-    for_each (output->begin(), output->end(), Magick::sampleImage(Geom(geometry)));
-  } else {
-    if(input->size())
-      for_each (output->begin(), output->end(), Magick::sampleImage(input->front().size()));
-  }
-  return output;
-}
-
-// [[Rcpp::export]]
-XPtrImage magick_image_border( XPtrImage input, const char * color, const char * geometry){
-  XPtrImage output = copy(input);
-  //need to set color before adding the border!
-  if(strlen(color))
-    for_each ( output->begin(), output->end(), Magick::borderColorImage(color));
-  if(strlen(geometry))
-    for_each ( output->begin(), output->end(), Magick::borderImage(Geom(geometry)));
+    for_each (output->begin(), output->end(), Magick::densityImage(Point(density[0])));
   return output;
 }
 
@@ -339,13 +223,6 @@ XPtrImage magick_image_despeckle( XPtrImage input, int times){
   for (int i=0; i < times; i++) {
     for_each ( output->begin(), output->end(), Magick::despeckleImage());
   }
-  return output;
-}
-
-// [[Rcpp::export]]
-XPtrImage magick_image_median( XPtrImage input, double radius){
-  XPtrImage output = copy(input);
-  for_each ( output->begin(), output->end(), Magick::myMedianImage(radius));
   return output;
 }
 

@@ -17,14 +17,7 @@ XPtrImage create ();
 XPtrImage create (int len);
 XPtrImage copy (XPtrImage image);
 
-// Option parsers
-Magick::Geometry Geom(size_t width, size_t height, size_t x, size_t y);
-Magick::Geometry Geom(size_t width, size_t height);
-Magick::Geometry Geom(const char * str);
-Magick::Color Color(const char * str);
-Magick::DisposeType Dispose(const char * str);
-Magick::CompositeOperator Composite(const char * str);
-
+//IM 6~7 compatiblity
 #if MagickLibVersion >= 0x700
 Magick::Point Point(const char * str);
 #define container vector
@@ -32,6 +25,7 @@ Magick::Point Point(const char * str);
 #define myAntiAlias textAntiAlias
 #define myDrawableDashArray DrawableStrokeDashArray
 #define myMedianImage medianConvolveImage
+#define myFilterType FilterType
 #else
 #define container list
 #define Point Geom
@@ -39,4 +33,15 @@ Magick::Point Point(const char * str);
 #define myAntiAlias antiAlias
 #define myDrawableDashArray DrawableDashArray
 #define myMedianImage medianFilterImage
+#define myFilterType FilterTypes
 #endif
+
+// Option parsers
+Magick::Geometry Geom(size_t width, size_t height, size_t x, size_t y);
+Magick::Geometry Geom(size_t width, size_t height);
+Magick::Geometry Geom(const char * str);
+Magick::Color Color(const char * str);
+Magick::DisposeType Dispose(const char * str);
+Magick::CompositeOperator Composite(const char * str);
+Magick::ColorspaceType ColorSpace(const char * str);
+Magick::myFilterType Filter(const char * str);
