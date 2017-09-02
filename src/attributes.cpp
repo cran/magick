@@ -7,6 +7,24 @@
 
 #define Option(type, val) MagickCore::CommandOptionToMnemonic(type, val);
 
+//Workaround for GCC-7: https://github.com/ImageMagick/ImageMagick/issues/707
+std::string col_to_str(Magick::Color col){
+  char output[10] = "#";
+  Magick::Quantum red(col.myRedQ());
+  Magick::Quantum green(col.myGreenQ());
+  Magick::Quantum blue(col.myBlueQ());
+  Magick::Quantum alpha(col.myAlphaQ());
+  snprintf(&output[1], 3, "%02x", (unsigned char) red);
+  snprintf(&output[3], 3, "%02x", (unsigned char) green);
+  snprintf(&output[5], 3, "%02x", (unsigned char) blue);
+#if MagickLibVersion >= 0x700
+  snprintf(&output[7], 3, "%02x", (unsigned char) alpha);
+#else //NOTE: alpha scale is reverse on IM6
+  snprintf(&output[7], 3, "%02x", 255 - (unsigned char) alpha);
+#endif
+  return std::string(output);
+}
+
 // [[Rcpp::export]]
 Rcpp::CharacterVector magick_attr_comment( XPtrImage input, Rcpp::CharacterVector set){
   if(set.size())
@@ -54,7 +72,7 @@ Rcpp::CharacterVector magick_attr_backgroundcolor( XPtrImage input, Rcpp::Charac
     for_each ( input->begin(), input->end(), Magick::backgroundColorImage(Color(color[0])));
   Rcpp::CharacterVector out;
   for (Iter it = input->begin(); it != input->end(); ++it)
-    out.push_back(it->backgroundColor());
+    out.push_back(col_to_str(it->backgroundColor()));
   return out;
 }
 
@@ -64,7 +82,7 @@ Rcpp::CharacterVector magick_attr_boxcolor( XPtrImage input, Rcpp::CharacterVect
     for_each ( input->begin(), input->end(), Magick::boxColorImage(Color(color[0])));
   Rcpp::CharacterVector out;
   for (Iter it = input->begin(); it != input->end(); ++it)
-    out.push_back(it->boxColor());
+    out.push_back(col_to_str(it->boxColor()));
   return out;
 }
 
@@ -74,7 +92,7 @@ Rcpp::CharacterVector magick_attr_fillcolor( XPtrImage input, Rcpp::CharacterVec
     for_each ( input->begin(), input->end(), Magick::fillColorImage(Color(color[0])));
   Rcpp::CharacterVector out;
   for (Iter it = input->begin(); it != input->end(); ++it)
-    out.push_back(it->fillColor());
+    out.push_back(col_to_str(it->fillColor()));
   return out;
 }
 

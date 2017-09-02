@@ -41,7 +41,7 @@ image_page(image, pagesize = NULL, density = NULL)
 \item{image}{magick image object returned by \code{\link[=image_read]{image_read()}} or \code{\link[=image_graph]{image_graph()}}}
 
 \item{geometry}{a string with \href{https://www.imagemagick.org/Magick++/Geometry.html}{geometry syntax}
-specifying width+height and/or position offset.}
+specifying width+height and/or position offset. See details and examples below.}
 
 \item{degrees}{value between 0 and 360 for how many degrees to rotate}
 
@@ -72,10 +72,19 @@ documentation. Short descriptions:
 }
 
 The most powerful resize function is \link{image_resize} which allows for setting
-a custom resize filter. Outut of \link{image_scale} is similar to \code{image_resize(img, filter = "point")}.
+a custom resize filter. Output of \link{image_scale} is similar to \code{image_resize(img, filter = "point")}.
 
 For resize operations it holds that if no \code{geometry} is specified, all frames
 are rescaled to match the top frame.
+Examples of \code{geometry} strings:
+\itemize{
+\item \strong{\code{"500x300"}}       -- \emph{Resize image keeping aspect ratio, such that width does not exceed 500 and the height does not exceed 300.}
+\item \strong{\code{"500x300!"}}      -- \emph{Resize image to 500 by 300, ignoring aspect ratio}
+\item \strong{\code{"500x"}}          -- \emph{Resize width to 500 keep aspect ratio}
+\item \strong{\code{"x300"}}          -- \emph{Resize height to 300 keep aspect ratio}
+\item \strong{\code{"50\%x20\%"}} -- \emph{Resize width to 50 percent and height to 20 percent of original}
+\item \strong{\code{"500x300+10+20"}} -- \emph{Crop image to 500 by 300 at position 10,20}
+}
 }
 \examples{
 logo <- image_read("logo:")
@@ -107,10 +116,10 @@ image_flip(logo)
 image_flop(logo)
 }
 \seealso{
-Other image: \code{\link{analysis}},
+Other image: \code{\link{_index_}}, \code{\link{analysis}},
   \code{\link{animation}}, \code{\link{attributes}},
   \code{\link{color}}, \code{\link{composite}},
   \code{\link{device}}, \code{\link{editing}},
-  \code{\link{effects}}, \code{\link{index}},
-  \code{\link{ocr}}, \code{\link{painting}}
+  \code{\link{effects}}, \code{\link{ocr}},
+  \code{\link{painting}}
 }

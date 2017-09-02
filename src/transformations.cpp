@@ -268,14 +268,15 @@ XPtrImage magick_image_annotate( XPtrImage input, const std::string text, const 
 }
 
 // [[Rcpp::export]]
-double magick_image_compare( XPtrImage input, XPtrImage reference_image, const char  * metric){
-  if(strlen(metric)){
-#if MagickLibVersion >= 0x687
-    return input->front().compare(reference_image->front(), Metric(metric));
+XPtrImage magick_image_compare( XPtrImage input, XPtrImage reference_image, const char  * metric){
+#if MagickLibVersion < 0x687
+  throw std::runtime_error("imagemagick too old does not support compare metrics");
 #else
-    throw std::runtime_error("imagemagick too old, does not custom support metrics");
+  XPtrImage out = create();
+  double distortion;
+  Magick::MetricType compare_metric = strlen(metric) ? Metric(metric) : Magick::myUndefinedMetric;
+  out->push_back(input->front().compare(reference_image->front(), compare_metric, &distortion));
+  out.attr("distortion") = distortion;
+  return out;
 #endif
-  } else {
-    return input->front().compare(reference_image->front());
-  }
 }
