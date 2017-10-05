@@ -420,6 +420,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// magick_image_channel
+XPtrImage magick_image_channel(XPtrImage input, const char * channel);
+RcppExport SEXP _magick_magick_image_channel(SEXP inputSEXP, SEXP channelSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtrImage >::type input(inputSEXP);
+    Rcpp::traits::input_parameter< const char * >::type channel(channelSEXP);
+    rcpp_result_gen = Rcpp::wrap(magick_image_channel(input, channel));
+    return rcpp_result_gen;
+END_RCPP
+}
 // magick_image_colorize
 XPtrImage magick_image_colorize(XPtrImage input, const size_t opacity, const char * color);
 RcppExport SEXP _magick_magick_image_colorize(SEXP inputSEXP, SEXP opacitySEXP, SEXP colorSEXP) {
@@ -567,6 +579,36 @@ BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     rcpp_result_gen = Rcpp::wrap(magick_config_internal());
+    return rcpp_result_gen;
+END_RCPP
+}
+// magick_image_convolve_kernel
+XPtrImage magick_image_convolve_kernel(XPtrImage input, std::string kernel, size_t iter, Rcpp::CharacterVector scaling, Rcpp::CharacterVector bias);
+RcppExport SEXP _magick_magick_image_convolve_kernel(SEXP inputSEXP, SEXP kernelSEXP, SEXP iterSEXP, SEXP scalingSEXP, SEXP biasSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtrImage >::type input(inputSEXP);
+    Rcpp::traits::input_parameter< std::string >::type kernel(kernelSEXP);
+    Rcpp::traits::input_parameter< size_t >::type iter(iterSEXP);
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type scaling(scalingSEXP);
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type bias(biasSEXP);
+    rcpp_result_gen = Rcpp::wrap(magick_image_convolve_kernel(input, kernel, iter, scaling, bias));
+    return rcpp_result_gen;
+END_RCPP
+}
+// magick_image_convolve_matrix
+XPtrImage magick_image_convolve_matrix(XPtrImage input, Rcpp::NumericMatrix matrix, size_t iter, Rcpp::CharacterVector scaling, Rcpp::CharacterVector bias);
+RcppExport SEXP _magick_magick_image_convolve_matrix(SEXP inputSEXP, SEXP matrixSEXP, SEXP iterSEXP, SEXP scalingSEXP, SEXP biasSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtrImage >::type input(inputSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type matrix(matrixSEXP);
+    Rcpp::traits::input_parameter< size_t >::type iter(iterSEXP);
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type scaling(scalingSEXP);
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type bias(biasSEXP);
+    rcpp_result_gen = Rcpp::wrap(magick_image_convolve_matrix(input, matrix, iter, scaling, bias));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1116,6 +1158,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_magick_magick_image_normalize", (DL_FUNC) &_magick_magick_image_normalize, 1},
     {"_magick_magick_image_modulate", (DL_FUNC) &_magick_magick_image_modulate, 4},
     {"_magick_magick_image_map", (DL_FUNC) &_magick_magick_image_map, 3},
+    {"_magick_magick_image_channel", (DL_FUNC) &_magick_magick_image_channel, 2},
     {"_magick_magick_image_colorize", (DL_FUNC) &_magick_magick_image_colorize, 3},
     {"_magick_magick_image_enhance", (DL_FUNC) &_magick_magick_image_enhance, 1},
     {"_magick_magick_image_equalize", (DL_FUNC) &_magick_magick_image_equalize, 1},
@@ -1128,6 +1171,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_magick_magick_image_frame", (DL_FUNC) &_magick_magick_image_frame, 3},
     {"_magick_magick_coder_info", (DL_FUNC) &_magick_magick_coder_info, 1},
     {"_magick_magick_config_internal", (DL_FUNC) &_magick_magick_config_internal, 0},
+    {"_magick_magick_image_convolve_kernel", (DL_FUNC) &_magick_magick_image_convolve_kernel, 5},
+    {"_magick_magick_image_convolve_matrix", (DL_FUNC) &_magick_magick_image_convolve_matrix, 5},
     {"_magick_magick_device_internal", (DL_FUNC) &_magick_magick_device_internal, 8},
     {"_magick_magick_device_get", (DL_FUNC) &_magick_magick_device_get, 1},
     {"_magick_magick_device_pop", (DL_FUNC) &_magick_magick_device_pop, 0},

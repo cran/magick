@@ -56,6 +56,14 @@ Magick::NoiseType Noise(const char * str){
   return (Magick::NoiseType) val;
 }
 
+Magick::ChannelType Channel(const char * str){
+  ssize_t val = MagickCore::ParseCommandOption(
+    MagickCore::MagickChannelOptions, Magick::MagickFalse, str);
+  if(val < 0)
+    throw std::runtime_error(std::string("Invalid ChannelType value: ") + str);
+  return (Magick::ChannelType) val;
+}
+
 Magick::myFilterType Filter(const char * str){
   ssize_t val = MagickCore::ParseCommandOption(
     MagickCore::MagickFilterOptions, Magick::MagickFalse, str);
@@ -169,7 +177,12 @@ XPtrImage magick_image_fill( XPtrImage input, const char * color, const char * p
 // [[Rcpp::export]]
 XPtrImage magick_image_negate( XPtrImage input){
   XPtrImage output = copy(input);
+#if MagickLibVersion >= 0x700
+  for(size_t i = 0; i < output->size(); i++)
+    output->at(i).negateChannel(Magick::ChannelType(Magick::CompositeChannels ^ Magick::AlphaChannel));
+#else
   for_each ( output->begin(), output->end(), Magick::negateImage());
+#endif
   return output;
 }
 

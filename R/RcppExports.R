@@ -141,6 +141,10 @@ magick_image_map <- function(input, map_image, dither) {
     .Call('_magick_magick_image_map', PACKAGE = 'magick', input, map_image, dither)
 }
 
+magick_image_channel <- function(input, channel) {
+    .Call('_magick_magick_image_channel', PACKAGE = 'magick', input, channel)
+}
+
 magick_image_colorize <- function(input, opacity, color) {
     .Call('_magick_magick_image_colorize', PACKAGE = 'magick', input, opacity, color)
 }
@@ -187,6 +191,14 @@ magick_coder_info <- function(format) {
 
 magick_config_internal <- function() {
     .Call('_magick_magick_config_internal', PACKAGE = 'magick')
+}
+
+magick_image_convolve_kernel <- function(input, kernel, iter, scaling, bias) {
+    .Call('_magick_magick_image_convolve_kernel', PACKAGE = 'magick', input, kernel, iter, scaling, bias)
+}
+
+magick_image_convolve_matrix <- function(input, matrix, iter, scaling, bias) {
+    .Call('_magick_magick_image_convolve_matrix', PACKAGE = 'magick', input, matrix, iter, scaling, bias)
 }
 
 magick_device_internal <- function(bg, width, height, pointsize, res, clip, antialias, drawing) {
