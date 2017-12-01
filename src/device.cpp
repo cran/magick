@@ -133,16 +133,14 @@ static inline int weight(int face){
   return is_bold(face) ? 700 : 400;
 }
 
+//Normalize common font aliases
+//See also: https://github.com/r-lib/svglite/blob/master/R/fonts.R
 static inline std::string fontname(const pGEcontext gc){
+  // Symbols from text(font = 5) are a special case.
+  // Windows: "Standard Symbols L" does NOT work with IM. Just use "Symbol".
   if(is_symbol(gc->fontface))
-    return std::string("symbol");
-  if(!strlen(gc->fontfamily))
-    return std::string("sans-serif");
-  if(!strncmp(gc->fontfamily, "sans", 4) || !strncmp(gc->fontfamily, "Sans", 4))
-    return std::string("sans-serif");
-  if(!strncmp(gc->fontfamily, "mono", 4) || !strncmp(gc->fontfamily, "Mono", 4))
-    return std::string("monospace");
-  return std::string(gc->fontfamily);
+    return std::string("Symbol");
+  return normalize_font(gc->fontfamily);
 }
 
 static inline coordlist coord(int n, double * x, double * y){
@@ -190,30 +188,25 @@ static void image_draw(Magick::Drawable x, const pGEcontext gc, pDevDesc dd, boo
 
 /* ~~~ CALLBACK FUNCTIONS START HERE ~~~ */
 
-static void image_new_page(const pGEcontext gc, pDevDesc dd) {
-  BEGIN_RCPP
-  Image *image = getimage(dd);
-  if(image->size() > 0 && getdev(dd)->drawing)
-    throw std::runtime_error("Cannot open a new page on a drawing device");
-  Frame x(Geom(dd->right, dd->bottom), Color(col2name(gc->fill)));
-  x.magick("PNG");
-  x.depth(8L);
-  x.strokeAntiAlias(getdev(dd)->antialias);
-  x.myAntiAlias(getdev(dd)->antialias);
-  image->push_back(x);
-  VOID_END_RCPP
-}
-
 /* TODO: test if we got the coordinates right  */
 /* TODO: how to unset the clipmask ? */
 static void image_clip(double left, double right, double bottom, double top, pDevDesc dd) {
   if(!dd->canClip)
     return;
 
+  //This seems to correspond to other devices
+  left = ceil(left);
+  right = floor(right);
+  top = ceil(top);
+  bottom = floor(bottom);
+
   //avoid duplications
   MagickDevice * dev = getdev(dd);
   if(same(dev->clipleft, left) && same(dev->clipright, right) && same(dev->clipbottom, bottom) && same(dev->cliptop, top))
     return;
+
+  //Rprintf("Clipping at %f-%f x %fx%f\n", left, right, top, bottom);
+
   dev->clipleft = left;
   dev->clipright = right;
   dev->clipbottom = bottom;
@@ -221,11 +214,11 @@ static void image_clip(double left, double right, double bottom, double top, pDe
 
   BEGIN_RCPP
   pathlist path;
-  path.push_back(Magick::PathMovetoAbs(Magick::Coordinate(left + 1, top + 1)));
-  path.push_back(Magick::PathLinetoAbs(Magick::Coordinate(right - 1, top + 1)));
-  path.push_back(Magick::PathLinetoAbs(Magick::Coordinate(right - 1, bottom - 1)));
-  path.push_back(Magick::PathLinetoAbs(Magick::Coordinate(left + 1, bottom - 1)));
-  path.push_back(Magick::PathLinetoAbs(Magick::Coordinate(left + 1, top + 1)));
+  path.push_back(Magick::PathMovetoAbs(Magick::Coordinate(left, top)));
+  path.push_back(Magick::PathLinetoAbs(Magick::Coordinate(right, top)));
+  path.push_back(Magick::PathLinetoAbs(Magick::Coordinate(right, bottom)));
+  path.push_back(Magick::PathLinetoAbs(Magick::Coordinate(left, bottom)));
+  path.push_back(Magick::PathLinetoAbs(Magick::Coordinate(left, top)));
 
   drawlist draw;
   std::string id("mypath");
@@ -240,6 +233,25 @@ static void image_clip(double left, double right, double bottom, double top, pDe
     Frame * graph = getgraph(dd);
     graph->draw(draw);
   }
+  VOID_END_RCPP
+}
+
+static void image_new_page(const pGEcontext gc, pDevDesc dd) {
+  BEGIN_RCPP
+  Image *image = getimage(dd);
+  if(image->size() > 0 && getdev(dd)->drawing)
+    throw std::runtime_error("Cannot open a new page on a drawing device");
+  if(image->size() && dd->canClip){
+    //reset clipping before advancing
+    Magick::Geometry oldsize(getgraph(dd)->size());
+    image_clip(0, oldsize.width(), oldsize.height(), 0, dd);
+  }
+  Frame x(Geom(dd->right, dd->bottom), Color(col2name(gc->fill)));
+  x.magick("PNG");
+  x.depth(8L);
+  x.strokeAntiAlias(getdev(dd)->antialias);
+  x.myAntiAlias(getdev(dd)->antialias);
+  image->push_back(x);
   VOID_END_RCPP
 }
 
@@ -334,19 +346,14 @@ static void image_raster(unsigned int *raster, int w, int h,
   frame.resize(size);
 
   //rotate minimum 1 degree. Adjust positioning to rotate around (x,y)
-  if(rot > 1){
-    frame.rotate(rot);
-    double rad = (rot * pi) / 180;
-    x += round(width * fmin(0.0, cos(rad)) + height * fmin(0.0, sin(rad)));
-    y -= round(height * fmin(0.0, cos(rad)) + width * fmin(0.0, -sin(rad)));
-
-    //calculate new values
-    Magick::Geometry outsize(frame.size());
-    width = outsize.width();
-    height = outsize.height();
+  drawlist draw;
+  if(rot){
+    //temorary move center for rotation and then back
+    draw.push_back(Magick::DrawableTranslation(x, y));
+    draw.push_back(Magick::DrawableRotation(rot));
+    draw.push_back(Magick::DrawableTranslation(-x, -y));
   }
-
-  Magick::DrawableCompositeImage draw(x, y - height, width, height, frame, Magick::OverCompositeOp);
+  draw.push_back(Magick::DrawableCompositeImage(x, y - height, width, height, frame, Magick::OverCompositeOp));
   image_draw(draw, gc, dd);
   VOID_END_RCPP
 }
@@ -355,7 +362,8 @@ static void image_raster(unsigned int *raster, int w, int h,
 static void image_close(pDevDesc dd) {
   BEGIN_RCPP
   dirty = NULL;
-  XPtrImage ptr = getptr(dd);
+  if(dd->canClip) //Reset clipping area, R doesn't do that
+    image_clip(dd->left, dd->right, dd->bottom, dd->top, dd);
   MagickDevice * device = (MagickDevice *) dd->deviceSpecific;
   delete device;
   VOID_END_RCPP
@@ -377,17 +385,6 @@ void image_mode(int mode, pDevDesc dd){
   if(!mode){
     dirty = getdev(dd);
   }
-}
-
-static inline Magick::DrawableAffine RotateDrawing(double deg, double x, double y){
-  double rad = (deg * pi) / 180;
-  double sx = cos(rad);
-  double sy = cos(rad);
-  double rx = sin(rad);
-  double ry = -sin(rad);
-  double tx = x + x * sx + y * rx;
-  double ty = y + y * sy + x * ry;
-  return Magick::DrawableAffine(sx, sy, rx, ry, tx, ty);
 }
 
 static void image_text(double x, double y, const char *str, double rot,
@@ -418,9 +415,15 @@ static void image_text(double x, double y, const char *str, double rot,
   draw.push_back(Magick::DrawableFont(fontname(gc), style(gc->fontface), weight(gc->fontface), Magick::NormalStretch));
   draw.push_back(Magick::DrawablePointSize(ps));
   draw.push_back(Magick::DrawableTextAntialias(getdev(dd)->antialias));
+
+  if(deg){
+    //temorary move center for rotation and then back
+    draw.push_back(Magick::DrawableTranslation(x, y));
+    draw.push_back(Magick::DrawableRotation(deg));
+    draw.push_back(Magick::DrawableTranslation(-x, -y));
+  }
+
   draw.push_back(Magick::DrawableText(x, y, std::string(str), "UTF-8"));
-  if(deg > 1)
-    draw.push_back(RotateDrawing(deg, x, y));
   image_draw(draw, gc, dd);
   VOID_END_RCPP
 }
@@ -457,6 +460,8 @@ static void image_metric_info(int c, const pGEcontext gc, double* ascent,
   *ascent = tm.ascent();
   *descent = std::abs(tm.descent()); //I think this should be positive?
   *width = tm.textWidth();
+  //See base-r function PangoCairo_MetricInfo
+  //Rprintf("c = %d, '%s', face %d %f %f %f\n",  c, str, gc->fontface, *width, *ascent, *descent);
   VOID_END_RCPP
 }
 
@@ -513,7 +518,7 @@ static pDevDesc magick_driver_new(MagickDevice * device, int bg, int width, int 
   dd->cap = image_capture;
   dd->raster = image_raster;
 
-  // See also BMDeviceDriver
+  // Converts text() with fontface = 5 (adobe symbols) to UTF-8, see also BMDeviceDriver
 #ifdef __APPLE__
   dd->wantSymbolUTF8 = TRUE;
 #else

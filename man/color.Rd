@@ -18,7 +18,7 @@
 \usage{
 image_modulate(image, brightness = 100, saturation = 100, hue = 100)
 
-image_quantize(image, max = 256, colorspace = NULL, dither = NULL,
+image_quantize(image, max = 256, colorspace = "rgb", dither = NULL,
   treedepth = NULL)
 
 image_map(image, map, dither = FALSE)
@@ -54,10 +54,10 @@ current position corresponding to an argument range of 0 to 200 (100 for no chan
 \item{max}{preferred number of colors in the image. The actual number of colors in the image may
 be less than your request, but never more.}
 
-\item{colorspace}{string with a magick \href{https://www.imagemagick.org/Magick++/Enumerations.html#ColorspaceType}{ColorspaceType}
-for example \code{"gray"}, \code{"rgb"} or \code{"cmyk"}}
+\item{colorspace}{string with a \href{https://www.imagemagick.org/Magick++/Enumerations.html#ColorspaceType}{colorspace}
+from \link{colorspace_types} for example \code{"gray"}, \code{"rgb"} or \code{"cmyk"}}
 
-\item{dither}{apply Floyd/Steinberg error diffusion to the image: averages intensities of sseveral
+\item{dither}{apply Floyd/Steinberg error diffusion to the image: averages intensities of several
 neighboring pixels}
 
 \item{treedepth}{depth of the quantization color classification tree. Values of 0 or 1 allow
@@ -66,16 +66,15 @@ may be used to manually adjust the tree depth.}
 
 \item{map}{reference image to map colors from}
 
-\item{channel}{a string with a magick
-\href{https://www.imagemagick.org/Magick++/Enumerations.html#ChannelType}{channel} for example
-\code{"alpha"} or \code{"hue"} or \code{"cyan"}}
+\item{channel}{a string with a
+\href{https://www.imagemagick.org/Magick++/Enumerations.html#ChannelType}{channel} from
+\link{channel_types} for example \code{"alpha"} or \code{"hue"} or \code{"cyan"}}
 
 \item{color}{a valid \href{https://www.imagemagick.org/Magick++/Color.html}{color string} such as
 \code{"navyblue"} or \code{"#000080"}}
 
-\item{fuzz}{Colors within this distance are considered equal.
-Use this option to match colors that are close to the target color in RGB space.
-I think max distance (from #000000 to #FFFFFF) is 256^2.}
+\item{fuzz}{Fuzz percentage: value between 0 and 100. Relative distance between
+colors to be considered similar in the filling algorithm.}
 
 \item{flatten}{should image be flattened before writing? This also replaces
 transparency with background color.}
@@ -93,7 +92,7 @@ Functions to adjust contrast, brightness, colors of the image. Details below.
 For details see \href{https://www.imagemagick.org/Magick++/STL.html}{Magick++ STL}
 documentation. Short descriptions:
 \itemize{
-\item \link{image_modulate} adjusts brighness, saturation and hue of image relative to current.
+\item \link{image_modulate} adjusts brightness, saturation and hue of image relative to current.
 \item \link{image_quantize} reduces number of unique colors in the image.
 \item \link{image_map} replaces colors of image with the closest color from a reference image.
 \item \link{image_channel} extracts a single channel from an image and returns as grayscale.
@@ -111,7 +110,7 @@ Note that
 colors are also determined by image properties
 \href{https://www.imagemagick.org/Magick++/Enumerations.html#ImageType}{imagetype} and
 \href{https://www.imagemagick.org/Magick++/Enumerations.html#ColorspaceType}{colorspace}
-which can be modifie via \code{\link[=image_convert]{image_convert()}}.
+which can be modified via \code{\link[=image_convert]{image_convert()}}.
 }
 \examples{
 # manually adjust colors
@@ -130,7 +129,7 @@ translogo <- image_transparent(logo, 'white')
 image_background(translogo, "pink", flatten = TRUE)
 
 # Compare to flood-fill method:
-image_fill(logo, "pink", fuzz = 10000)
+image_fill(logo, "pink", fuzz = 20)
 
 # Other color tweaks
 image_colorize(logo, 50, "red")
@@ -148,6 +147,8 @@ Other image: \code{\link{_index_}}, \code{\link{analysis}},
   \code{\link{animation}}, \code{\link{attributes}},
   \code{\link{composite}}, \code{\link{device}},
   \code{\link{editing}}, \code{\link{effects}},
-  \code{\link{ocr}}, \code{\link{painting}},
+  \code{\link{geometry}}, \code{\link{ocr}},
+  \code{\link{options}}, \code{\link{painting}},
   \code{\link{transform}}
 }
+\concept{image}

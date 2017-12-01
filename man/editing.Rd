@@ -5,12 +5,15 @@
 \alias{image_read}
 \alias{image_write}
 \alias{image_convert}
+\alias{image_data}
 \alias{image_display}
 \alias{image_browse}
+\alias{image_strip}
+\alias{image_blank}
 \alias{image_join}
 \title{Image Editing}
 \usage{
-image_read(path, density = NULL, depth = NULL)
+image_read(path, density = NULL, depth = NULL, strip = FALSE)
 
 image_write(image, path = NULL, format = NULL, quality = NULL,
   depth = NULL, density = NULL, comment = NULL, flatten = FALSE)
@@ -18,9 +21,15 @@ image_write(image, path = NULL, format = NULL, quality = NULL,
 image_convert(image, format = NULL, type = NULL, colorspace = NULL,
   depth = NULL, antialias = NULL)
 
+image_data(image, channels = NULL, frame = 1)
+
 image_display(image, animate = TRUE)
 
 image_browse(image, browser = getOption("browser"))
+
+image_strip(image)
+
+image_blank(width, height, color = "transparent")
 
 image_join(...)
 }
@@ -30,6 +39,8 @@ image_join(...)
 \item{density}{resolution to render pdf or svg}
 
 \item{depth}{color depth (either 8 or 16)}
+
+\item{strip}{drop image comments and metadata}
 
 \item{image}{magick image object returned by \code{\link[=image_read]{image_read()}} or \code{\link[=image_graph]{image_graph()}}}
 
@@ -42,17 +53,30 @@ image_join(...)
 \item{flatten}{should image be flattened before writing? This also replaces
 transparency with background color.}
 
-\item{type}{a magick \href{https://www.imagemagick.org/Magick++/Enumerations.html#ImageType}{ImageType}
-classification for example \code{grayscale} to convert image to black/white}
+\item{type}{string with \href{https://www.imagemagick.org/Magick++/Enumerations.html#ImageType}{imagetype}
+value from \link{image_types} for example \code{grayscale} to convert into black/white}
 
-\item{colorspace}{string with a magick \href{https://www.imagemagick.org/Magick++/Enumerations.html#ColorspaceType}{ColorspaceType}
-for example \code{"gray"}, \code{"rgb"} or \code{"cmyk"}}
+\item{colorspace}{string with a \href{https://www.imagemagick.org/Magick++/Enumerations.html#ColorspaceType}{colorspace}
+from \link{colorspace_types} for example \code{"gray"}, \code{"rgb"} or \code{"cmyk"}}
 
 \item{antialias}{enable anti-aliasing for text and strokes}
+
+\item{channels}{string with image channel(s) for example \code{"rgb"}, \code{"rgba"},
+\code{"cmyk"},\code{"gray"}, or \code{"ycbcr"}. Default is either \code{"gray"}, \code{"rgb"} or \code{"rgba"}
+depending on the image}
+
+\item{frame}{integer setting which frame to extract from the image}
 
 \item{animate}{support animations in the X11 display}
 
 \item{browser}{argument passed to \link[utils:browseURL]{browseURL}}
+
+\item{width}{in pixels}
+
+\item{height}{in pixels}
+
+\item{color}{a valid \href{https://www.imagemagick.org/Magick++/Color.html}{color string} such as
+\code{"navyblue"} or \code{"#000080"}}
 
 \item{...}{several images or lists of images to be combined}
 }
@@ -79,7 +103,7 @@ an embedded viewer that does this automatically which is quite nice.
 \examples{
 # Download image from the web
 frink <- image_read("https://jeroen.github.io/images/frink.png")
-worldcup_frink <- image_fill(frink, "orange", "+100+200", 30000)
+worldcup_frink <- image_fill(frink, "orange", "+100+200", 20)
 image_write(worldcup_frink, "output.png")
 
 # extract raw bitmap array
@@ -103,12 +127,16 @@ image_read(webp::read_webp("example.webp"))
 
 curl::curl_download("http://jeroen.github.io/images/tiger.svg", "tiger.svg")
 image_read(rsvg::rsvg("tiger.svg"))
+# create a solid canvas
+image_blank(600, 400, "green")
 }
 \seealso{
 Other image: \code{\link{_index_}}, \code{\link{analysis}},
   \code{\link{animation}}, \code{\link{attributes}},
   \code{\link{color}}, \code{\link{composite}},
   \code{\link{device}}, \code{\link{effects}},
-  \code{\link{ocr}}, \code{\link{painting}},
+  \code{\link{geometry}}, \code{\link{ocr}},
+  \code{\link{options}}, \code{\link{painting}},
   \code{\link{transform}}
 }
+\concept{image}

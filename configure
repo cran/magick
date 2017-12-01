@@ -25,9 +25,7 @@ fi
 
 # Pick up on GraphicsMagick but warn against it
 if [ -z "$PKGCONFIG_LIBS" ] && [ $(command -v GraphicsMagick++-config) ]; then
-  echo "Warning: found GraphicsMagick++ instead of ImageMagick++. Not recommended."
-  PKGCONFIG_CFLAGS=$(GraphicsMagick++-config --cppflags)
-  PKGCONFIG_LIBS=$(GraphicsMagick++-config --libs)
+  echo "Warning: found GraphicsMagick++ instead of ImageMagick++. GraphicsMagick is not supported."
 fi
 
 # Hack for CRAN server
@@ -76,9 +74,14 @@ if [ $? -ne 0 ]; then
   echo " - deb: '$PKG_DEB_NAME' (Debian, Ubuntu)"
   echo " - rpm: '$PKG_RPM_NAME' (Fedora, CentOS, RHEL)"
   echo " - csw: '$PKG_CSW_NAME' (Solaris)"
+#  echo "For Ubuntu Trusty (14.04) or Xenial (16.04) use our PPA:"
+#  echo "   sudo add-apt-repository -y ppa:opencpu/imagemagick"
+#  echo "   sudo apt-get update"
+#  echo "   sudo apt-get install -y libmagick++-dev"
   echo "On MacOS it is recommended to use homebrew and install ImageMagick-6:"
   echo "   brew remove imagemagick"
   echo "   brew reinstall imagemagick@6 --with-fontconfig --with-librsvg"
+  echo "   brew link --force imagemagick@6"
   echo "These features are required for high quality font/svg rendering."
   echo "If $PKG_CONFIG_NAME is already installed, check that 'pkg-config' is in your"
   echo "PATH and PKG_CONFIG_PATH contains a $PKG_CONFIG_NAME.pc file. If pkg-config"

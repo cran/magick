@@ -17,7 +17,7 @@ image_info(image)
 }
 \description{
 Attributes are properties of the image that might be present on some images
-and might affect image manipualation methods.
+and might affect image manipulation methods.
 }
 \details{
 Each attribute can be get and set with the same function. The \code{\link[=image_info]{image_info()}}
@@ -28,6 +28,8 @@ Other image: \code{\link{_index_}}, \code{\link{analysis}},
   \code{\link{animation}}, \code{\link{color}},
   \code{\link{composite}}, \code{\link{device}},
   \code{\link{editing}}, \code{\link{effects}},
-  \code{\link{ocr}}, \code{\link{painting}},
+  \code{\link{geometry}}, \code{\link{ocr}},
+  \code{\link{options}}, \code{\link{painting}},
   \code{\link{transform}}
 }
+\concept{image}

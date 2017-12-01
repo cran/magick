@@ -19,18 +19,7 @@
 #' @export
 "[[.magick-image" <- function(x, i){
   assert_image(x)
-  image <- x[i]
-  info <- image_info(image)
-  if(tolower(info$colorspace) == "gray"){
-    bitmap <- image_write_frame(image, format = "gray")
-    dim(bitmap) <- c(1, info$width, info$height)
-    class(bitmap) <- c("bitmap", "grey")
-  } else {
-    bitmap <- image_write_frame(image, format = "rgba")
-    dim(bitmap) <- c(4, info$width, info$height)
-    class(bitmap) <- c("bitmap", "rgba")
-  }
-  return(bitmap)
+  image_data(x[i])
 }
 
 #' @export
@@ -91,13 +80,14 @@
 "print.magick-image" <- function(x, info = TRUE, ...){
   img <- x
   viewer <- getOption("viewer")
+  viewer_supported <- c("bmp", "png", "jpeg", "jpg", "svg", "gif", "webp")
   is_knit_image <- isTRUE(getOption('knitr.in.progress'))
   if(!is_knit_image && is.function(viewer) && !magick_image_dead(x) && length(img)){
     format <- tolower(image_info(img[1])$format)
     if(length(img) > 1 && format != "gif"){
       img <- image_animate(img, fps = 1)
       format <- "gif"
-    } else if(format == "xc"){
+    } else if(is.na(match(format, viewer_supported))){
       img <- image_convert(img, "PNG")
       format <- 'png'
     }
@@ -129,9 +119,9 @@
 #' @importFrom grDevices as.raster
 "as.raster.magick-image" <- function(image, ...){
   assert_image(image)
-  magick_image_as_raster(image[[1]])
+  bitmap <- image_write_frame(image, format = "rgba")
+  magick_image_as_raster(bitmap)
 }
-
 
 #' @export
 #' @importFrom graphics plot

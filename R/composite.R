@@ -3,8 +3,11 @@
 #' Similar to the ImageMagick `composite` utility: compose an image on top of another one using a
 #' [CompositeOperator](https://www.imagemagick.org/Magick++/Enumerations.html#CompositeOperator).
 #'
-#' Basically [image_border] creates a slighly larger solid color frame and then composes the
-#' image frame on top. The [image_frame] function is similar but has an additional feature to
+#' The `image_compose` function is vectorized over both image arguments: if the first image has
+#' `n` frames and the second `m` frames, the output image will contain `n` * `m` frames.
+#'
+#' The [image_border] function creates a slightly larger solid color frame and then composes the
+#' original frame on top. The [image_frame] function is similar but has an additional feature to
 #' create a shadow effect on the border (which is really ugly).
 #'
 #' @export
@@ -13,9 +16,10 @@
 #' @family image
 #' @inheritParams editing
 #' @inheritParams painting
-#' @param offset geometry string with offset
+#' @param offset a [geometry_point][geometry_point] string to set x/y offset of top image
 #' @param operator string with a
 #' [composite operator](https://www.imagemagick.org/Magick++/Enumerations.html#CompositeOperator)
+#' from [compose_types()][compose_types]
 #' @param composite_image composition image
 #' @param compose_args additional arguments needed for some composite operations
 #' @examples # Compose images using one of many operators
@@ -27,11 +31,20 @@
 #'
 #' # Same as 'blend 50' in the command line
 #' image_composite(imlogo, rlogo, operator = "blend", compose_args="50")
-image_composite <- function(image, composite_image = image[1], operator = "atop", offset = "0x0", compose_args = ""){
+image_composite <- function(image, composite_image, operator = "atop", offset = "+0+0", compose_args = ""){
   assert_image(image)
-  stopifnot(inherits(composite_image, "magick-image"))
+  assert_image(composite_image)
   compose_args <- as.character(compose_args)
-  magick_image_composite(image, composite_image, offset, operator, compose_args)
+
+  # avoid some overhead
+  if(length(composite_image) == 1){
+    magick_image_composite(image, composite_image, offset, operator, compose_args)
+  } else {
+    # vectorize over both 1st and 2nd argument
+    image_apply(composite_image, function(x){
+      magick_image_composite(image, x, offset, operator, compose_args)
+    })
+  }
 }
 
 

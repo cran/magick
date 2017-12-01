@@ -1,4 +1,4 @@
-/* Jeroen Ooms (2016)
+/* Jeroen Ooms (2017)
  * Bindings to vectorized image manipulations.
  * See API: https://www.imagemagick.org/Magick++/STL.html
  */
@@ -87,7 +87,8 @@ XPtrImage magick_image_quantize( XPtrImage input, size_t max, Rcpp::CharacterVec
 }
 
 // [[Rcpp::export]]
-XPtrImage magick_image_transparent( XPtrImage input, const char * color, double fuzz){
+XPtrImage magick_image_transparent( XPtrImage input, const char * color, double fuzz_percent){
+  double fuzz = fuzz_pct_to_abs(fuzz_percent);
   XPtrImage output = copy(input);
   if(fuzz != 0)
     for_each ( output->begin(), output->end(), Magick::colorFuzzImage(fuzz));

@@ -13,9 +13,10 @@
 \alias{image_flop}
 \alias{image_deskew}
 \alias{image_page}
+\alias{image_repage}
 \title{Image Transform}
 \usage{
-image_trim(image)
+image_trim(image, fuzz = 0)
 
 image_chop(image, geometry)
 
@@ -27,7 +28,7 @@ image_scale(image, geometry = NULL)
 
 image_sample(image, geometry = NULL)
 
-image_crop(image, geometry = NULL)
+image_crop(image, geometry = NULL, repage = TRUE)
 
 image_flip(image)
 
@@ -36,16 +37,23 @@ image_flop(image)
 image_deskew(image, threshold = 40)
 
 image_page(image, pagesize = NULL, density = NULL)
+
+image_repage(image)
 }
 \arguments{
 \item{image}{magick image object returned by \code{\link[=image_read]{image_read()}} or \code{\link[=image_graph]{image_graph()}}}
 
-\item{geometry}{a string with \href{https://www.imagemagick.org/Magick++/Geometry.html}{geometry syntax}
-specifying width+height and/or position offset. See details and examples below.}
+\item{fuzz}{Fuzz percentage: value between 0 and 100. Relative distance between
+colors to be considered similar in the filling algorithm.}
+
+\item{geometry}{a \link{geometry} string specifying area (for cropping) or size (for resizing).}
 
 \item{degrees}{value between 0 and 360 for how many degrees to rotate}
 
-\item{filter}{string with a \href{https://www.imagemagick.org/Magick++/Enumerations.html#FilterTypes}{filtertype}.}
+\item{filter}{string with \href{https://www.imagemagick.org/Magick++/Enumerations.html#FilterTypes}{filter}
+type from: \link{filter_types}}
+
+\item{repage}{resize the canvas to the cropped area}
 
 \item{threshold}{straightens an image. A threshold of 40 works for most images.}
 
@@ -55,7 +63,8 @@ specifying width+height and/or position offset. See details and examples below.}
 the image. Specifies an image density when decoding a Postscript or PDF.}
 }
 \description{
-Basic transformations like rotate, resize, crop and flip. Details below.
+Basic transformations like rotate, resize, crop and flip. The \link{geometry} syntax
+is used to specify sizes and areas.
 }
 \details{
 For details see \href{https://www.imagemagick.org/Magick++/STL.html}{Magick++ STL}
@@ -76,15 +85,6 @@ a custom resize filter. Output of \link{image_scale} is similar to \code{image_r
 
 For resize operations it holds that if no \code{geometry} is specified, all frames
 are rescaled to match the top frame.
-Examples of \code{geometry} strings:
-\itemize{
-\item \strong{\code{"500x300"}}       -- \emph{Resize image keeping aspect ratio, such that width does not exceed 500 and the height does not exceed 300.}
-\item \strong{\code{"500x300!"}}      -- \emph{Resize image to 500 by 300, ignoring aspect ratio}
-\item \strong{\code{"500x"}}          -- \emph{Resize width to 500 keep aspect ratio}
-\item \strong{\code{"x300"}}          -- \emph{Resize height to 300 keep aspect ratio}
-\item \strong{\code{"50\%x20\%"}} -- \emph{Resize width to 50 percent and height to 20 percent of original}
-\item \strong{\code{"500x300+10+20"}} -- \emph{Crop image to 500 by 300 at position 10,20}
-}
 }
 \examples{
 logo <- image_read("logo:")
@@ -120,6 +120,8 @@ Other image: \code{\link{_index_}}, \code{\link{analysis}},
   \code{\link{animation}}, \code{\link{attributes}},
   \code{\link{color}}, \code{\link{composite}},
   \code{\link{device}}, \code{\link{editing}},
-  \code{\link{effects}}, \code{\link{ocr}},
+  \code{\link{effects}}, \code{\link{geometry}},
+  \code{\link{ocr}}, \code{\link{options}},
   \code{\link{painting}}
 }
+\concept{image}

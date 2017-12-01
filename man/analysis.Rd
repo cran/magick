@@ -15,7 +15,8 @@ image_fft(image)
 
 \item{reference_image}{another image to compare to}
 
-\item{metric}{string with \href{http://www.imagemagick.org/script/command-line-options.php#metric}{metric type}}
+\item{metric}{string with a \href{http://www.imagemagick.org/script/command-line-options.php#metric}{metric}
+from \link[=metric_types]{metric_types()}.}
 }
 \description{
 Functions for image calculations and analysis. This part of the package needs more work.
@@ -45,6 +46,8 @@ Other image: \code{\link{_index_}},
   \code{\link{animation}}, \code{\link{attributes}},
   \code{\link{color}}, \code{\link{composite}},
   \code{\link{device}}, \code{\link{editing}},
-  \code{\link{effects}}, \code{\link{ocr}},
+  \code{\link{effects}}, \code{\link{geometry}},
+  \code{\link{ocr}}, \code{\link{options}},
   \code{\link{painting}}, \code{\link{transform}}
 }
+\concept{image}

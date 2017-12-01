@@ -14,10 +14,12 @@
 #'  `background`, `colorize`, `contrast`, `normalize`, `enhance`, `equalize`, `median`
 #' - [composite] - advanced joining: `composite`, `border`, `frame`
 #' - [device] - creating graphics and drawing on images
-#' - [editing] - basice image IO: `read`, `write`, `convert`, `join`, `display`, `brose`
+#' - [editing] - basic image IO: `read`, `write`, `convert`, `join`, `display`, `brose`
 #' - [effects] - fun effects: `despecle`, `reducenoise`, `noise`, `blur`, `charcoal`,
 #'   `edge`, `oilpaint`, `emboss`, `implode`, `negate`
+#' - [geometry] - specify points, areas and sizes using geometry syntax
 #' - [ocr] - extract text from image using [tesseract][tesseract::tesseract] package
+#' - [options] - list option types and values supported in your version of ImageMagick
 #' - [painting] - flood fill and annotating text
 #' - [transform] - shape operations: `trim`, `chop`, `rotate`, `resize`, `scale`, `sample`
 #'   `crop`, `flip`, `flop`, `deskew`, `page`

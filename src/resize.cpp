@@ -50,9 +50,15 @@ XPtrImage magick_image_chop( XPtrImage input, const char * geometry){
 }
 
 // [[Rcpp::export]]
-XPtrImage magick_image_trim( XPtrImage input){
+XPtrImage magick_image_trim( XPtrImage input, double fuzz_percent){
   XPtrImage output = copy(input);
+  double fuzz = fuzz_pct_to_abs(fuzz_percent);
+  if(fuzz != 0)
+    for_each ( output->begin(), output->end(), Magick::colorFuzzImage( fuzz ));
   for_each ( output->begin(), output->end(), Magick::trimImage());
+  for_each ( output->begin(), output->end(), Magick::pageImage(Magick::Geometry()));
+  if(fuzz != 0)
+    for_each ( output->begin(), output->end(), Magick::colorFuzzImage(input->front().colorFuzz()));
   return output;
 }
 
@@ -71,12 +77,14 @@ XPtrImage magick_image_flop( XPtrImage input){
 }
 
 // [[Rcpp::export]]
-XPtrImage magick_image_crop( XPtrImage input, Rcpp::CharacterVector geometry){
+XPtrImage magick_image_crop( XPtrImage input, Rcpp::CharacterVector geometry, bool repage){
   XPtrImage output = copy(input);
   if(geometry.size()){
     for_each (output->begin(), output->end(), Magick::cropImage(Geom(geometry.at(0))));
   } else if(input->size()){
     for_each (output->begin(), output->end(), Magick::cropImage(input->front().size()));
   }
+  if(repage)
+    for_each ( output->begin(), output->end(), Magick::pageImage(Magick::Geometry()));
   return output;
 }

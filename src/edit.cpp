@@ -1,4 +1,4 @@
-/* Jeroen Ooms (2016)
+/* Jeroen Ooms (2017)
  * Bindings to vectorized image manipulations.
  * See API: https://www.imagemagick.org/Magick++/STL.html
  */
@@ -7,14 +7,16 @@
 
 XPtrImage magick_image_bitmap(void * data, Magick::StorageType type, size_t slices, size_t width, size_t height){
   const char * format;
-  switch ( slices ){
-    case 1 : format = "G"; break;
-    case 2 : format = "GA"; break;
+  switch ( slices ){ //TODO: K is blackchannel, there should be a 'graychannel' instead? (G = Green!)
+    case 1 : format = "K"; break;
+    case 2 : format = "KA"; break;
     case 3 : format = "RGB"; break;
     case 4 : format = "RGBA"; break;
     default: throw std::runtime_error("Invalid number of channels (must be 4 or less)");
   }
   Frame frame(width, height, format, type , data);
+  if(slices == 1) //Workaround for using 'K' above
+    frame.channel(Magick::BlackChannel);
   frame.magick("PNG");
   XPtrImage image = create();
   image->push_back(frame);
@@ -58,7 +60,7 @@ XPtrImage magick_image_readbitmap_double(Rcpp::NumericVector x){
 }
 
 // [[Rcpp::export]]
-XPtrImage magick_image_readbin(Rcpp::RawVector x, Rcpp::CharacterVector density, Rcpp::IntegerVector depth){
+XPtrImage magick_image_readbin(Rcpp::RawVector x, Rcpp::CharacterVector density, Rcpp::IntegerVector depth, bool strip = false){
   XPtrImage image = create();
 #if MagickLibVersion >= 0x689
   Magick::ReadOptions opts = Magick::ReadOptions();
@@ -70,11 +72,13 @@ XPtrImage magick_image_readbin(Rcpp::RawVector x, Rcpp::CharacterVector density,
 #else
   Magick::readImages(image.get(), Magick::Blob(x.begin(), x.length()));
 #endif
+  if(strip)
+    for_each (image->begin(), image->end(), Magick::stripImage());
   return image;
 }
 
 // [[Rcpp::export]]
-XPtrImage magick_image_readpath(Rcpp::CharacterVector paths, Rcpp::CharacterVector density, Rcpp::IntegerVector depth){
+XPtrImage magick_image_readpath(Rcpp::CharacterVector paths, Rcpp::CharacterVector density, Rcpp::IntegerVector depth, bool strip = false){
   XPtrImage image = create();
 #if MagickLibVersion >= 0x689
   Magick::ReadOptions opts = Magick::ReadOptions();
@@ -88,6 +92,8 @@ XPtrImage magick_image_readpath(Rcpp::CharacterVector paths, Rcpp::CharacterVect
   for(int i = 0; i < paths.size(); i++)
     Magick::readImages(image.get(), std::string(paths[i]));
 #endif
+  if(strip)
+    for_each (image->begin(), image->end(), Magick::stripImage());
   return image;
 }
 
@@ -129,13 +135,24 @@ Rcpp::RawVector magick_image_write( XPtrImage input, Rcpp::CharacterVector forma
 }
 
 // [[Rcpp::export]]
-Rcpp::RawVector magick_image_write_frame(XPtrImage input, const char * format){
+Rcpp::RawVector magick_image_write_frame(XPtrImage input, const char * format, size_t i = 1){
   if(input->size() < 1)
     throw std::runtime_error("Image must have at least 1 frame to write a bitmap");
+  Frame frame = input->at(i-1); //zero indexing!
+  Magick::Geometry size(frame.size());
+  size_t width = size.width();
+  size_t height = size.height();
   Magick::Blob output;
-  input->front().write(&output, format, 8L);
+  frame.write(&output, format, 8L);
+  if(output.length() == 0)
+    throw std::runtime_error("Unsupported raw format: " + std::string(format));
+  if(output.length() % (width * height))
+    throw std::runtime_error("Dimensions do not add up, '" + std::string(format) + "' may not be a raw format");
+  size_t slices = output.length() / (width * height);
   Rcpp::RawVector res(output.length());
   memcpy(res.begin(), output.data(), output.length());
+  res.attr("class") = Rcpp::CharacterVector::create("bitmap", format);
+  res.attr("dim") = Rcpp::NumericVector::create(slices, width, height);
   return res;
 }
 
@@ -169,4 +186,11 @@ XPtrImage magick_image_montage( XPtrImage image){
   Magick::Montage montageOpts = Magick::Montage();
   montageImages(out.get(), image->begin(), image->end(), montageOpts);
   return out;
+}
+
+// [[Rcpp::export]]
+XPtrImage magick_image_strip( XPtrImage input){
+  XPtrImage output = copy(input);
+  for_each (output->begin(), output->end(), Magick::stripImage());
+  return output;
 }

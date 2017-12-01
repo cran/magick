@@ -26,7 +26,7 @@ image_capture()
 
 \item{res}{resolution in pixels}
 
-\item{clip}{enable clipping in the device. Because clippig can slow things down
+\item{clip}{enable clipping in the device. Because clipping can slow things down
 a lot, you can disable it if you don't need it.}
 
 \item{antialias}{TRUE/FALSE: enables anti-aliasing for text and strokes}
@@ -55,7 +55,7 @@ of typical graphics coordinates.  You can override all this by passing custom
 \code{xlim}, \code{ylim} or \code{mar} values to \code{image_draw}.
 
 The \code{image_capture} function returns the current device as an image. This only
-works if the current device is a magick device or suppots \link{dev.capture}.
+works if the current device is a magick device or supports \link{dev.capture}.
 }
 \examples{
 # Regular image
@@ -74,7 +74,7 @@ print(out)
 img <- image_draw(frink)
 rect(20, 20, 200, 100, border = "red", lty = "dashed", lwd = 5)
 abline(h = 300, col = 'blue', lwd = '10', lty = "dotted")
-text(10, 250, "Hoiven-Glaven", family = "courier", cex = 4, srt = 90)
+text(10, 250, "Hoiven-Glaven", family = "monospace", cex = 4, srt = 90)
 palette(rainbow(11, end = 0.9))
 symbols(rep(200, 11), seq(0, 400, 40), circles = runif(11, 5, 35),
   bg = 1:11, inches = FALSE, add = TRUE)
@@ -94,6 +94,8 @@ Other image: \code{\link{_index_}}, \code{\link{analysis}},
   \code{\link{animation}}, \code{\link{attributes}},
   \code{\link{color}}, \code{\link{composite}},
   \code{\link{editing}}, \code{\link{effects}},
-  \code{\link{ocr}}, \code{\link{painting}},
+  \code{\link{geometry}}, \code{\link{ocr}},
+  \code{\link{options}}, \code{\link{painting}},
   \code{\link{transform}}
 }
+\concept{image}

@@ -17,7 +17,7 @@
 #' \code{xlim}, \code{ylim} or \code{mar} values to \code{image_draw}.
 #'
 #' The \code{image_capture} function returns the current device as an image. This only
-#' works if the current device is a magick device or suppots \link{dev.capture}.
+#' works if the current device is a magick device or supports \link{dev.capture}.
 #'
 #' @export
 #' @aliases image_device
@@ -29,7 +29,7 @@
 #' @param bg background color
 #' @param pointsize size of fonts
 #' @param res resolution in pixels
-#' @param clip enable clipping in the device. Because clippig can slow things down
+#' @param clip enable clipping in the device. Because clipping can slow things down
 #' a lot, you can disable it if you don't need it.
 #' @param antialias TRUE/FALSE: enables anti-aliasing for text and strokes
 #' @param ... additional device parameters passed to \link{plot.window} such as
@@ -50,7 +50,7 @@
 #' img <- image_draw(frink)
 #' rect(20, 20, 200, 100, border = "red", lty = "dashed", lwd = 5)
 #' abline(h = 300, col = 'blue', lwd = '10', lty = "dotted")
-#' text(10, 250, "Hoiven-Glaven", family = "courier", cex = 4, srt = 90)
+#' text(10, 250, "Hoiven-Glaven", family = "monospace", cex = 4, srt = 90)
 #' palette(rainbow(11, end = 0.9))
 #' symbols(rep(200, 11), seq(0, 400, 40), circles = runif(11, 5, 35),
 #'   bg = 1:11, inches = FALSE, add = TRUE)

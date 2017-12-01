@@ -9,8 +9,8 @@
 image_fill(image, color, point = "1x1", fuzz = 0)
 
 image_annotate(image, text, gravity = "northwest", location = "+0+0",
-  degrees = 0, size = 10, font = NULL, color = NULL,
-  strokecolor = NULL, boxcolor = NULL)
+  degrees = 0, size = 10, font = "", color = NULL, strokecolor = NULL,
+  boxcolor = NULL)
 }
 \arguments{
 \item{image}{magick image object returned by \code{\link[=image_read]{image_read()}} or \code{\link[=image_graph]{image_graph()}}}
@@ -18,16 +18,16 @@ image_annotate(image, text, gravity = "northwest", location = "+0+0",
 \item{color}{a valid \href{https://www.imagemagick.org/Magick++/Color.html}{color string} such as
 \code{"navyblue"} or \code{"#000080"}}
 
-\item{point}{string indicating the flood-fill starting point}
+\item{point}{a \link{geometry_point} string indicating the starting point of the flood-fill}
 
-\item{fuzz}{Colors within this distance are considered equal.
-Use this option to match colors that are close to the target color in RGB space.
-I think max distance (from #000000 to #FFFFFF) is 256^2.}
+\item{fuzz}{Fuzz percentage: value between 0 and 100. Relative distance between
+colors to be considered similar in the filling algorithm.}
 
 \item{text}{annotation text}
 
 \item{gravity}{string with
-\href{https://www.imagemagick.org/Magick++/Enumerations.html#GravityType}{gravity type}}
+\href{https://www.imagemagick.org/Magick++/Enumerations.html#GravityType}{gravity}
+value from \link{gravity_types}.}
 
 \item{location}{geometry string with location relative to \code{gravity}}
 
@@ -35,11 +35,14 @@ I think max distance (from #000000 to #FFFFFF) is 256^2.}
 
 \item{size}{font-size in pixels}
 
-\item{font}{rendering font. To use a TrueType font, precede the TrueType filename with an @.}
+\item{font}{string with font family such as \code{"sans"}, \code{"mono"}, \code{"serif"},
+\code{"Times"}, \code{"Helvetica"}, \code{"Trebuchet"}, \code{"Georgia"}, \code{"Palatino"} or \code{"Comic Sans"}.}
 
-\item{strokecolor}{adds a stroke (border around the text)}
+\item{strokecolor}{a \href{https://www.imagemagick.org/Magick++/Color.html}{color string}
+adds a stroke (border around the text)}
 
-\item{boxcolor}{background color that annotation text is rendered on.}
+\item{boxcolor}{a \href{https://www.imagemagick.org/Magick++/Color.html}{color string}
+for background color that annotation text is rendered on.}
 }
 \description{
 The \code{\link[=image_fill]{image_fill()}} function performs flood-fill by painting starting point and all
@@ -52,23 +55,24 @@ device using \link{image_draw}.
 }
 \examples{
 logo <- image_read("logo:")
-logo <- image_transparent(logo, 'white')
-image_fill(image_flatten(logo), "red")
-image_fill(image_flatten(logo), "red", fuzz = 25600)
+logo <- image_background(logo, 'white')
+image_fill(logo, "pink", point = "+450+400")
+image_fill(logo, "pink", point = "+450+400", fuzz = 25)
 # Add some text to an image
 image_annotate(logo, "This is a test")
 image_annotate(logo, "CONFIDENTIAL", size = 50, color = "red", boxcolor = "pink",
  degrees = 30, location = "+100+100")
 
 # Setting fonts requires fontconfig support (and that you have the font)
-myfont <- ifelse(identical("windows", .Platform$OS.type), "courier-new", "courier")
-try(image_annotate(logo, "The quick brown fox", font = myfont, size = 50))
+image_annotate(logo, "The quick brown fox", font = "monospace", size = 50)
 }
 \seealso{
 Other image: \code{\link{_index_}}, \code{\link{analysis}},
   \code{\link{animation}}, \code{\link{attributes}},
   \code{\link{color}}, \code{\link{composite}},
   \code{\link{device}}, \code{\link{editing}},
-  \code{\link{effects}}, \code{\link{ocr}},
+  \code{\link{effects}}, \code{\link{geometry}},
+  \code{\link{ocr}}, \code{\link{options}},
   \code{\link{transform}}
 }
+\concept{image}

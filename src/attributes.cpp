@@ -1,4 +1,4 @@
-/* Jeroen Ooms (2016)
+/* Jeroen Ooms (2017)
  * Bindings to vectorized image manipulations.
  * See API: https://www.imagemagick.org/Magick++/STL.html
  */
@@ -166,6 +166,7 @@ Rcpp::DataFrame magick_image_info( XPtrImage input){
   Rcpp::CharacterVector colorspace(len);
   Rcpp::IntegerVector width(len);
   Rcpp::IntegerVector height(len);
+  Rcpp::LogicalVector matte(len);
   Rcpp::IntegerVector filesize(len);
   for(int i = 0; i < len; i++){
     Frame frame = input->at(i);
@@ -174,6 +175,7 @@ Rcpp::DataFrame magick_image_info( XPtrImage input){
     format[i] = std::string(frame.magick());
     width[i] = geom.width();
     height[i] = geom.height();
+    matte[i] = frame.hasMatte();
     filesize[i] = frame.fileSize();
   }
   return Rcpp::DataFrame::create(
@@ -181,6 +183,7 @@ Rcpp::DataFrame magick_image_info( XPtrImage input){
     Rcpp::_["width"] = width,
     Rcpp::_["height"] = height,
     Rcpp::_["colorspace"] = colorspace,
+    Rcpp::_["matte"] = matte,
     Rcpp::_["filesize"] = filesize,
     Rcpp::_["stringsAsFactors"] = false
   );
@@ -195,14 +198,14 @@ Rcpp::CharacterVector magick_image_as_raster( Rcpp::RawVector data ){
 
   Rcpp::CharacterMatrix out(h,w) ;
   Rbyte* p = data.begin() ;
-  std::string buf( "#000000" ) ;
+  std::string buf( "#00000000" ) ;
 
   for(int i=0; i<h; i++){
     int k = i*w ;
     for(int j=0; j<w; j++, p+= 4, k++){
 
       if( p[3] ){
-        Rbyte red = p[0], green = p[1], blue = p[2] ;
+        Rbyte red = p[0], green = p[1], blue = p[2], alpha = p[3];
 
         buf[1] = sixteen[ red >> 4 ] ;
         buf[2] = sixteen[ red & 0x0F ] ;
@@ -210,13 +213,14 @@ Rcpp::CharacterVector magick_image_as_raster( Rcpp::RawVector data ){
         buf[4] = sixteen[ green & 0x0F ] ;
         buf[5] = sixteen[ blue >> 4 ] ;
         buf[6] = sixteen[ blue & 0x0F ] ;
+        buf[7] = sixteen[ alpha >> 4 ] ;
+        buf[8] = sixteen[ alpha & 0x0F ] ;
 
-        out[k] = Rf_mkCharLen( buf.c_str(), 7) ;
+        out[k] = Rf_mkCharLen( buf.c_str(), 9) ;
 
       } else {
         out[k] = transparent ;
       }
-
     }
   }
 

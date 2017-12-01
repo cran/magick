@@ -28,10 +28,11 @@
 #' @param path a file, url, or raster object or bitmap array
 #' @param image magick image object returned by [image_read()] or [image_graph()]
 #' @param density resolution to render pdf or svg
+#' @param strip drop image comments and metadata
 #' @examples
 #' # Download image from the web
 #' frink <- image_read("https://jeroen.github.io/images/frink.png")
-#' worldcup_frink <- image_fill(frink, "orange", "+100+200", 30000)
+#' worldcup_frink <- image_fill(frink, "orange", "+100+200", 20)
 #' image_write(worldcup_frink, "output.png")
 #'
 #' # extract raw bitmap array
@@ -55,10 +56,12 @@
 #'
 #' curl::curl_download("http://jeroen.github.io/images/tiger.svg", "tiger.svg")
 #' image_read(rsvg::rsvg("tiger.svg"))
-image_read <- function(path, density = NULL, depth = NULL){
+image_read <- function(path, density = NULL, depth = NULL, strip = FALSE){
   density <- as.character(density)
   depth <- as.integer(depth)
-  image <- if(inherits(path, "nativeRaster") || (is.matrix(path) && is.integer(path))){
+  image <- if(isS4(path) && methods::is(path, "Image")){
+    convert_EBImage(path)
+  } else if(inherits(path, "nativeRaster") || (is.matrix(path) && is.integer(path))){
     image_read_nativeraster(path)
   } else if (grDevices::is.raster(path)) {
     image_read_raster2(path)
@@ -67,10 +70,10 @@ image_read <- function(path, density = NULL, depth = NULL){
   } else if(is.array(path)){
     image_readbitmap(path)
   } else if(is.raw(path)) {
-    magick_image_readbin(path, density, depth)
+    magick_image_readbin(path, density, depth, strip)
   } else if(is.character(path) && all(nchar(path))){
     path <- vapply(path, replace_url, character(1))
-    magick_image_readpath(path, density, depth)
+    magick_image_readpath(path, density, depth, strip)
   } else {
     stop("path must be URL, filename or raw vector")
   }
@@ -119,6 +122,22 @@ image_rsvg <- function(path, width = NULL, height = NULL){
   magick_image_readbitmap_raw(bitmap)
 }
 
+#EBImage BioConductor class
+convert_EBImage <- function(x){
+  if(length(dim(x@.Data)) == 2)
+    dim(x@.Data) <- c(dim(x@.Data), 1L)
+  img <- if(x@colormode == 2L){
+    image_read(x@.Data)
+  } else if(x@colormode == 0L){
+    image_join(lapply(seq_len(dim(x@.Data)[3]), function(i){
+      image_read(x@.Data[,,i,drop = FALSE])
+    }))
+  } else {
+    stop("Unknown colormode in EBImage class")
+  }
+  image_flop(image_rotate(img, 90))
+}
+
 #' @export
 #' @inheritParams effects
 #' @rdname editing
@@ -151,10 +170,10 @@ image_write <- function(image, path = NULL, format = NULL, quality = NULL,
 #' @param format output format such as `"png"`, `"jpeg"`, `"gif"`, `"rgb"` or `"rgba"`.
 #' @param depth color depth (either 8 or 16)
 #' @param antialias enable anti-aliasing for text and strokes
-#' @param type a magick [ImageType](https://www.imagemagick.org/Magick++/Enumerations.html#ImageType)
-#' classification for example `grayscale` to convert image to black/white
-#' @param colorspace string with a magick [ColorspaceType](https://www.imagemagick.org/Magick++/Enumerations.html#ColorspaceType)
-#' for example `"gray"`, `"rgb"` or `"cmyk"`
+#' @param type string with [imagetype](https://www.imagemagick.org/Magick++/Enumerations.html#ImageType)
+#' value from [image_types][image_types] for example `grayscale` to convert into black/white
+#' @param colorspace string with a [`colorspace`](https://www.imagemagick.org/Magick++/Enumerations.html#ColorspaceType)
+#' from [colorspace_types][colorspace_types] for example `"gray"`, `"rgb"` or `"cmyk"`
 image_convert <- function(image, format = NULL, type = NULL, colorspace = NULL, depth = NULL, antialias = NULL){
   assert_image(image)
   depth <- as.integer(depth)
@@ -166,9 +185,32 @@ image_convert <- function(image, format = NULL, type = NULL, colorspace = NULL, 
   magick_image_format(image, toupper(format), type, colorspace, depth, antialias)
 }
 
-image_write_frame <- function(image, format = "rgba"){
-  assert_image(image)
-  magick_image_write_frame(image, format)
+image_write_frame <- function(image, format = "rgba", i = 1){
+  magick_image_write_frame(image, format = format, i = i)
+}
+
+#' @export
+#' @rdname editing
+#' @param channels string with image channel(s) for example `"rgb"`, `"rgba"`,
+#' `"cmyk"`,`"gray"`, or `"ycbcr"`. Default is either `"gray"`, `"rgb"` or `"rgba"`
+#' depending on the image
+#' @param frame integer setting which frame to extract from the image
+image_data <- function(image, channels = NULL, frame = 1){
+  if(length(image) > 1 || frame > 1)
+    image <- image[frame]
+  if(!length(channels) || !nchar(channels)){
+    info <- image_info(image)
+    channels <- if(tolower(info$colorspace) == "gray"){
+      "gray"
+    } else if(isTRUE(info$matte)){
+      "rgba"
+    } else {
+      "rgb"
+    }
+  }
+  if(!grepl("a$", channels)) #output has no transparency channel
+    image <- image_flatten(image)
+  image_write_frame(image, format = channels)
 }
 
 #' @export
@@ -186,6 +228,27 @@ image_browse <- function(image, browser = getOption("browser")){
   tmp <- tempfile(fileext = paste0(".", ext))
   image_write(image, path = tmp)
   utils::browseURL(tmp)
+}
+
+#' @export
+#' @rdname editing
+image_strip <- function(image){
+  assert_image(image)
+  magick_image_strip(image)
+}
+
+
+#' @export
+#' @rdname editing
+#' @inheritParams device
+#' @inheritParams painting
+#' @examples # create a solid canvas
+#' image_blank(600, 400, "green")
+image_blank <- function(width, height, color = "transparent"){
+  width <- as.numeric(width)
+  height <- as.numeric(height)
+  color <- as.character(color)
+  magick_image_blank(width, height, color)
 }
 
 #' @export

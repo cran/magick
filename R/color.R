@@ -5,7 +5,7 @@
 #' For details see [Magick++ STL](https://www.imagemagick.org/Magick++/STL.html)
 #' documentation. Short descriptions:
 #'
-#'  - [image_modulate] adjusts brighness, saturation and hue of image relative to current.
+#'  - [image_modulate] adjusts brightness, saturation and hue of image relative to current.
 #'  - [image_quantize] reduces number of unique colors in the image.
 #'  - [image_map] replaces colors of image with the closest color from a reference image.
 #'  - [image_channel] extracts a single channel from an image and returns as grayscale.
@@ -22,7 +22,7 @@
 #' colors are also determined by image properties
 #' [imagetype](https://www.imagemagick.org/Magick++/Enumerations.html#ImageType) and
 #' [colorspace](https://www.imagemagick.org/Magick++/Enumerations.html#ColorspaceType)
-#' which can be modifie via [image_convert()].
+#' which can be modified via [image_convert()].
 #'
 #' @export
 #' @name color
@@ -52,7 +52,7 @@ image_modulate <- function(image, brightness = 100, saturation = 100, hue = 100)
 #' @rdname color
 #' @param max preferred number of colors in the image. The actual number of colors in the image may
 #' be less than your request, but never more.
-#' @param dither apply Floyd/Steinberg error diffusion to the image: averages intensities of sseveral
+#' @param dither apply Floyd/Steinberg error diffusion to the image: averages intensities of several
 #' neighboring pixels
 #' @param treedepth depth of the quantization color classification tree. Values of 0 or 1 allow
 #' selection of the optimal tree depth for the color reduction algorithm. Values between 2 and 8
@@ -63,7 +63,7 @@ image_modulate <- function(image, brightness = 100, saturation = 100, hue = 100)
 #' image_quantize(logo, max = 10, colorspace = 'rgb')
 #' image_quantize(logo, max = 10, colorspace = 'cmyk')
 #'
-image_quantize <- function(image, max = 256, colorspace = NULL, dither = NULL, treedepth = NULL){
+image_quantize <- function(image, max = 256, colorspace = 'rgb', dither = NULL, treedepth = NULL){
   assert_image(image)
   max <- as.integer(max)
   colorspace <- as.character(colorspace)
@@ -84,9 +84,9 @@ image_map <- function(image, map, dither = FALSE){
 
 #' @export
 #' @rdname color
-#' @param channel a string with a magick
-#' [channel](https://www.imagemagick.org/Magick++/Enumerations.html#ChannelType) for example
-#' `"alpha"` or `"hue"` or `"cyan"`
+#' @param channel a string with a
+#' [channel](https://www.imagemagick.org/Magick++/Enumerations.html#ChannelType) from
+#' [channel_types][channel_types] for example `"alpha"` or `"hue"` or `"cyan"`
 image_channel <- function(image, channel = 'lightness'){
   magick_image_channel(image, channel)
 }
@@ -95,6 +95,8 @@ image_channel <- function(image, channel = 'lightness'){
 #' @rdname color
 image_transparent <- function(image, color, fuzz = 0){
   assert_image(image)
+  if(fuzz > 100)
+    stop("Parameter 'fuzz' must be percentage value (0-100)")
   magick_image_transparent(image, color, fuzz)
 }
 
@@ -107,7 +109,7 @@ image_transparent <- function(image, color, fuzz = 0){
 #' image_background(translogo, "pink", flatten = TRUE)
 #'
 #' # Compare to flood-fill method:
-#' image_fill(logo, "pink", fuzz = 10000)
+#' image_fill(logo, "pink", fuzz = 20)
 #'
 image_background <- function(image, color, flatten = TRUE){
   assert_image(image)

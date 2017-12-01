@@ -1,6 +1,7 @@
 #' Image Transform
 #'
-#' Basic transformations like rotate, resize, crop and flip. Details below.
+#' Basic transformations like rotate, resize, crop and flip. The [geometry] syntax
+#' is used to specify sizes and areas.
 #'
 #' For details see [Magick++ STL](https://www.imagemagick.org/Magick++/STL.html)
 #' documentation. Short descriptions:
@@ -19,33 +20,25 @@
 #'
 #' For resize operations it holds that if no `geometry` is specified, all frames
 #' are rescaled to match the top frame.
-#' Examples of `geometry` strings:
-#'  - __`"500x300"`__       -- *Resize image keeping aspect ratio, such that width does not exceed 500 and the height does not exceed 300.*
-#'  - __`"500x300!"`__      -- *Resize image to 500 by 300, ignoring aspect ratio*
-#'  - __`"500x"`__          -- *Resize width to 500 keep aspect ratio*
-#'  - __`"x300"`__          -- *Resize height to 300 keep aspect ratio*
-#'  - __\code{"50\%x20\%"}__ -- *Resize width to 50 percent and height to 20 percent of original*
-#'  - __`"500x300+10+20"`__ -- *Crop image to 500 by 300 at position 10,20*
-#'
-#'
 #' @name transform
 #' @rdname transform
 #' @inheritParams effects
+#' @inheritParams painting
 #' @family image
 #' @export
 #' @examples
 #' logo <- image_read("logo:")
 #' logo <- image_scale(logo, "400")
 #' image_trim(logo)
-image_trim <- function(image){
+image_trim <- function(image, fuzz = 0){
   assert_image(image)
-  magick_image_trim(image)
+  fuzz <- as.numeric(fuzz)
+  magick_image_trim(image, fuzz)
 }
 
 #' @export
 #' @rdname transform
-#' @param geometry a string with [geometry syntax](https://www.imagemagick.org/Magick++/Geometry.html)
-#' specifying width+height and/or position offset. See details and examples below.
+#' @param geometry a [geometry][geometry] string specifying area (for cropping) or size (for resizing).
 #' @examples
 #' image_chop(logo, "100x20")
 image_chop <- function(image, geometry){
@@ -66,7 +59,8 @@ image_rotate <- function(image, degrees){
 
 #' @export
 #' @rdname transform
-#' @param filter string with a [filtertype](https://www.imagemagick.org/Magick++/Enumerations.html#FilterTypes).
+#' @param filter string with [filter](https://www.imagemagick.org/Magick++/Enumerations.html#FilterTypes)
+#' type from: [filter_types][filter_types]
 #' @examples # Small image
 #' rose <- image_convert(image_read("rose:"), "png")
 #'
@@ -110,11 +104,12 @@ image_sample <- function(image, geometry = NULL){
 
 #' @export
 #' @rdname transform
+#' @param repage resize the canvas to the cropped area
 #' @examples image_crop(logo, "400x400+200+200")
-image_crop <- function(image, geometry = NULL){
+image_crop <- function(image, geometry = NULL, repage = TRUE){
   assert_image(image)
   geometry <- as.character(geometry)
-  magick_image_crop(image, geometry)
+  magick_image_crop(image, geometry, repage)
 }
 
 #' @export
@@ -153,4 +148,10 @@ image_page <- function(image, pagesize = NULL, density = NULL){
   pagesize <- as.character(pagesize)
   density <- as.character(density)
   magick_image_page(image, pagesize, density)
+}
+
+#' @export
+#' @rdname transform
+image_repage <- function(image){
+  magick_image_repage(image)
 }

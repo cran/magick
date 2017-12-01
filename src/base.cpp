@@ -1,4 +1,4 @@
-/* Jeroen Ooms (2016)
+/* Jeroen Ooms (2017)
  * Bindings to vectorized image manipulations.
  * See API: https://www.imagemagick.org/Magick++/STL.html
  */
@@ -8,6 +8,7 @@
 //External R pointer finalizer
 void finalize_image( Image *image ){
   delete image;
+  image = NULL;
 }
 
 // [[Rcpp::export]]
@@ -33,6 +34,15 @@ XPtrImage create (int len){
 
 XPtrImage create (){
   return create (0);
+}
+
+// [[Rcpp::export]]
+XPtrImage magick_image_blank(size_t width, size_t height, const char * color){
+  Frame x(Geom(width, height), Color(color));
+  x.magick("png");
+  XPtrImage image = create(1);
+  image->push_back(x);
+  return image;
 }
 
 // [[Rcpp::export]]
