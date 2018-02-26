@@ -155,3 +155,17 @@ image_page <- function(image, pagesize = NULL, density = NULL){
 image_repage <- function(image){
   magick_image_repage(image)
 }
+
+#' @export
+#' @rdname transform
+#' @param orientation string to set image orientation one of the [orientation_types].
+#' If `NULL` it applies auto-orientation which tries to infer the correct orientation
+#' from the Exif data.
+#' @examples
+#' if(magick_config()$version > "6.8.6")
+#'   image_orient(logo)
+image_orient <- function(image, orientation = NULL){
+  assert_image(image)
+  orientation <- as.character(orientation)
+  magick_image_orient(image, orientation)
+}

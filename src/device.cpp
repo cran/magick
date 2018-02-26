@@ -10,6 +10,12 @@
 #include <R_ext/GraphicsEngine.h>
 #define pi 3.14159265359
 
+Magick::Color col2magick(rcolor col){
+  char str[10];
+  snprintf(str, 10, "#%02x%02x%02x%02x", R_RED(col), R_GREEN(col), R_BLUE(col), R_ALPHA(col));
+  return Magick::Color(str);
+}
+
 // Magick Device Parameters
 class MagickDevice {
 public:
@@ -157,9 +163,9 @@ static void image_draw(drawlist x, const pGEcontext gc, pDevDesc dd, bool join =
   double lty[10] = {0};
   drawlist draw;
   if(gc->col != NA_INTEGER)
-    draw.push_back(Magick::DrawableStrokeColor(Color(col2name(gc->col))));
+    draw.push_back(Magick::DrawableStrokeColor(col2magick(gc->col)));
   if(fill == true && gc->fill != NA_INTEGER)
-    draw.push_back(Magick::DrawableFillColor(Color(col2name(gc->fill))));
+    draw.push_back(Magick::DrawableFillColor(col2magick(gc->fill)));
   draw.push_back(Magick::DrawableStrokeWidth(lwd));
   draw.push_back(Magick::DrawableStrokeLineCap(linecap(gc->lend)));
   draw.push_back(Magick::DrawableStrokeAntialias(getdev(dd)->antialias));
@@ -246,7 +252,7 @@ static void image_new_page(const pGEcontext gc, pDevDesc dd) {
     Magick::Geometry oldsize(getgraph(dd)->size());
     image_clip(0, oldsize.width(), oldsize.height(), 0, dd);
   }
-  Frame x(Geom(dd->right, dd->bottom), Color(col2name(gc->fill)));
+  Frame x(Geom(dd->right, dd->bottom), col2magick(gc->fill));
   x.magick("PNG");
   x.depth(8L);
   x.strokeAntiAlias(getdev(dd)->antialias);
@@ -265,7 +271,7 @@ static void image_polyline(int n, double *x, double *y, const pGEcontext gc, pDe
   BEGIN_RCPP
   drawlist draw;
   //Note 'fill' must be unset to prevent magick from creating a polygon
-  draw.push_back(Magick::DrawableFillColor(Magick::Color()));
+  draw.push_back(Magick::DrawableFillColor(Magick::Color("none")));
   //workaround for issue #60
 #if MagickLibVersion < 0x697
   bool join = false;
@@ -395,8 +401,8 @@ static void image_text(double x, double y, const char *str, double rot,
   double ps = gc->ps * gc->cex * multiplier;
 
   /* text color */
-  Magick::Color fill(col2name(gc->col));
-  Magick::Color stroke;
+  Magick::Color fill(col2magick(gc->col));
+  Magick::Color stroke("none");
 
   /* there is a bug in IM that prefers these properties over the draw list ones */
   Frame * graph = getgraph(dd);

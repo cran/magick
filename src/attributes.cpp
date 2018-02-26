@@ -7,7 +7,9 @@
 
 #define Option(type, val) MagickCore::CommandOptionToMnemonic(type, val);
 
-//Workaround for GCC-7: https://github.com/ImageMagick/ImageMagick/issues/707
+//Workaround for GCC-7:
+// - https://github.com/ImageMagick/ImageMagick/issues/707
+// - https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=871300
 std::string col_to_str(Magick::Color col){
   char output[10] = "#";
   Magick::Quantum red(col.myRedQ());
@@ -168,6 +170,7 @@ Rcpp::DataFrame magick_image_info( XPtrImage input){
   Rcpp::IntegerVector height(len);
   Rcpp::LogicalVector matte(len);
   Rcpp::IntegerVector filesize(len);
+  Rcpp::CharacterVector density(len);
   for(int i = 0; i < len; i++){
     Frame frame = input->at(i);
     colorspace[i] = Option(MagickCore::MagickColorspaceOptions, frame.colorSpace());
@@ -177,6 +180,7 @@ Rcpp::DataFrame magick_image_info( XPtrImage input){
     height[i] = geom.height();
     matte[i] = frame.hasMatte();
     filesize[i] = frame.fileSize();
+    density[i] = std::string(frame.density());
   }
   return Rcpp::DataFrame::create(
     Rcpp::_["format"] = format,
@@ -185,6 +189,7 @@ Rcpp::DataFrame magick_image_info( XPtrImage input){
     Rcpp::_["colorspace"] = colorspace,
     Rcpp::_["matte"] = matte,
     Rcpp::_["filesize"] = filesize,
+    Rcpp::_["density"] = density,
     Rcpp::_["stringsAsFactors"] = false
   );
 }

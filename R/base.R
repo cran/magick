@@ -94,6 +94,8 @@
     tmp <- file.path(tempdir(), paste0("preview.", format))
     image_write(img, path = tmp, format = format)
     viewer(tmp)
+  } else if(isTRUE(getOption('jupyter.in_kernel'))){
+    jupyter_print_image(img)
   }
   if(isTRUE(info))
     print(image_info(x))
@@ -109,9 +111,16 @@
 "knit_print.magick-image" <- function(x, ...){
   if(!length(x))
     return(invisible())
+  plot_counter <- utils::getFromNamespace('plot_counter', 'knitr')
+  in_base_dir <- utils::getFromNamespace('in_base_dir', 'knitr')
   ext <- ifelse(all(tolower(image_info(x)$format) == "gif"), "gif", "png")
-  tmp <- tempfile(fileext = paste0(".", ext))
-  image_write(x, path = tmp, format = ext)
+  tmp <- knitr::fig_path(ext, number = plot_counter())
+
+  # save relative to 'base' directory, see discussion in #110
+  in_base_dir({
+    dir.create(dirname(tmp), showWarnings = FALSE, recursive = TRUE)
+    image_write(x, path = tmp, format = ext)
+  })
   knitr::include_graphics(tmp)
 }
 
@@ -127,4 +136,26 @@
 #' @importFrom graphics plot
 "plot.magick-image" <- function(x, ...){
   plot(as.raster(x), ...)
+}
+
+jupyter_print_image <- function(img){
+  if(!length(img))
+    return()
+  format <- tolower(image_info(img[1])$format)
+  if(!(format %in% c("png", "jpg", "jpeg", "svg", "gif")))
+    format <- "png"
+  tmp <- image_write(img, format = format)
+  switch (format,
+    png = IRdisplay::display_png(tmp),
+    jpg = IRdisplay::display_jpeg(tmp),
+    jpeg = IRdisplay::display_jpeg(tmp),
+    gif = display_gif(tmp),
+    svg = IRdisplay::display_svg(rawToChar(tmp))
+  )
+}
+
+## Placeholder until IRdisplay::display_gif() is available
+display_gif <- function(buf){
+  contents <- jsonlite::base64_enc(buf)
+  IRdisplay::display_html(sprintf('<img src="data:image/gif;base64,%s">', contents))
 }
