@@ -291,15 +291,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // magick_image_blank
-XPtrImage magick_image_blank(size_t width, size_t height, const char * color);
-RcppExport SEXP _magick_magick_image_blank(SEXP widthSEXP, SEXP heightSEXP, SEXP colorSEXP) {
+XPtrImage magick_image_blank(size_t width, size_t height, const char * color, const char * pseudo_image);
+RcppExport SEXP _magick_magick_image_blank(SEXP widthSEXP, SEXP heightSEXP, SEXP colorSEXP, SEXP pseudo_imageSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< size_t >::type width(widthSEXP);
     Rcpp::traits::input_parameter< size_t >::type height(heightSEXP);
     Rcpp::traits::input_parameter< const char * >::type color(colorSEXP);
-    rcpp_result_gen = Rcpp::wrap(magick_image_blank(width, height, color));
+    Rcpp::traits::input_parameter< const char * >::type pseudo_image(pseudo_imageSEXP);
+    rcpp_result_gen = Rcpp::wrap(magick_image_blank(width, height, color, pseudo_image));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1172,15 +1173,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // magick_image_compare
-XPtrImage magick_image_compare(XPtrImage input, XPtrImage reference_image, const char  * metric);
-RcppExport SEXP _magick_magick_image_compare(SEXP inputSEXP, SEXP reference_imageSEXP, SEXP metricSEXP) {
+XPtrImage magick_image_compare(XPtrImage input, XPtrImage reference_image, const char  * metric, double fuzz_percent);
+RcppExport SEXP _magick_magick_image_compare(SEXP inputSEXP, SEXP reference_imageSEXP, SEXP metricSEXP, SEXP fuzz_percentSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< XPtrImage >::type input(inputSEXP);
     Rcpp::traits::input_parameter< XPtrImage >::type reference_image(reference_imageSEXP);
     Rcpp::traits::input_parameter< const char  * >::type metric(metricSEXP);
-    rcpp_result_gen = Rcpp::wrap(magick_image_compare(input, reference_image, metric));
+    Rcpp::traits::input_parameter< double >::type fuzz_percent(fuzz_percentSEXP);
+    rcpp_result_gen = Rcpp::wrap(magick_image_compare(input, reference_image, metric, fuzz_percent));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1210,7 +1212,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_magick_magick_image_dead", (DL_FUNC) &_magick_magick_image_dead, 1},
     {"_magick_magick_image_length", (DL_FUNC) &_magick_magick_image_length, 1},
     {"_magick_create", (DL_FUNC) &_magick_create, 1},
-    {"_magick_magick_image_blank", (DL_FUNC) &_magick_magick_image_blank, 3},
+    {"_magick_magick_image_blank", (DL_FUNC) &_magick_magick_image_blank, 4},
     {"_magick_copy", (DL_FUNC) &_magick_copy, 1},
     {"_magick_magick_image_rev", (DL_FUNC) &_magick_magick_image_rev, 1},
     {"_magick_magick_image_join", (DL_FUNC) &_magick_magick_image_join, 1},
@@ -1281,7 +1283,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_magick_magick_image_despeckle", (DL_FUNC) &_magick_magick_image_despeckle, 2},
     {"_magick_magick_image_reducenoise", (DL_FUNC) &_magick_magick_image_reducenoise, 2},
     {"_magick_magick_image_annotate", (DL_FUNC) &_magick_magick_image_annotate, 10},
-    {"_magick_magick_image_compare", (DL_FUNC) &_magick_magick_image_compare, 3},
+    {"_magick_magick_image_compare", (DL_FUNC) &_magick_magick_image_compare, 4},
     {NULL, NULL, 0}
 };
 

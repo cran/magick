@@ -97,8 +97,8 @@ create <- function(len) {
     .Call('_magick_create', PACKAGE = 'magick', len)
 }
 
-magick_image_blank <- function(width, height, color) {
-    .Call('_magick_magick_image_blank', PACKAGE = 'magick', width, height, color)
+magick_image_blank <- function(width, height, color, pseudo_image) {
+    .Call('_magick_magick_image_blank', PACKAGE = 'magick', width, height, color, pseudo_image)
 }
 
 copy <- function(image) {
@@ -381,7 +381,7 @@ magick_image_annotate <- function(input, text, gravity, location, rot, size, fon
     .Call('_magick_magick_image_annotate', PACKAGE = 'magick', input, text, gravity, location, rot, size, font, color, strokecolor, boxcolor)
 }
 
-magick_image_compare <- function(input, reference_image, metric) {
-    .Call('_magick_magick_image_compare', PACKAGE = 'magick', input, reference_image, metric)
+magick_image_compare <- function(input, reference_image, metric, fuzz_percent) {
+    .Call('_magick_magick_image_compare', PACKAGE = 'magick', input, reference_image, metric, fuzz_percent)
 }
 
