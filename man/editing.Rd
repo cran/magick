@@ -14,6 +14,7 @@
 \alias{image_strip}
 \alias{image_blank}
 \alias{image_join}
+\alias{image_attributes}
 \title{Image Editing}
 \usage{
 image_read(path, density = NULL, depth = NULL, strip = FALSE)
@@ -41,6 +42,8 @@ image_strip(image)
 image_blank(width, height, color = "none", pseudo_image = "")
 
 image_join(...)
+
+image_attributes(image)
 }
 \arguments{
 \item{path}{a file, url, or raster object or bitmap array}
@@ -145,7 +148,7 @@ if(require(webp)) image_read(webp::read_webp("example.webp"))
 if(require(rsvg))
 tiger <- image_read_svg("http://jeroen.github.io/images/tiger.svg")
 if(require(pdftools))
-image_read_pdf(R.home('doc/NEWS.pdf'), pages = 1, density = 100)
+image_read_pdf(file.path(R.home('doc'), 'NEWS.pdf'), pages = 1, density = 100)
 # create a solid canvas
 image_blank(600, 400, "green")
 image_blank(600, 400, pseudo_image = "radial-gradient:purple-yellow")
