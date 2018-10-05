@@ -177,6 +177,18 @@ magick_image_background <- function(input, color) {
     .Call('_magick_magick_image_background', PACKAGE = 'magick', input, color)
 }
 
+magick_image_lat <- function(input, geomstr) {
+    .Call('_magick_magick_image_lat', PACKAGE = 'magick', input, geomstr)
+}
+
+magick_image_threshold_black <- function(input, threshold, channel) {
+    .Call('_magick_magick_image_threshold_black', PACKAGE = 'magick', input, threshold, channel)
+}
+
+magick_image_threshold_white <- function(input, threshold, channel) {
+    .Call('_magick_magick_image_threshold_white', PACKAGE = 'magick', input, threshold, channel)
+}
+
 magick_image_composite <- function(input, composite_image, offset, composite, args) {
     .Call('_magick_magick_image_composite', PACKAGE = 'magick', input, composite_image, offset, composite, args)
 }
@@ -197,6 +209,14 @@ magick_config_internal <- function() {
     .Call('_magick_magick_config_internal', PACKAGE = 'magick')
 }
 
+magick_image_fx <- function(input, expression, channel) {
+    .Call('_magick_magick_image_fx', PACKAGE = 'magick', input, expression, channel)
+}
+
+magick_image_morphology <- function(input, method, kernel, iter, opt_names, opt_values) {
+    .Call('_magick_magick_image_morphology', PACKAGE = 'magick', input, method, kernel, iter, opt_names, opt_values)
+}
+
 magick_image_convolve_kernel <- function(input, kernel, iter, scaling, bias) {
     .Call('_magick_magick_image_convolve_kernel', PACKAGE = 'magick', input, kernel, iter, scaling, bias)
 }
@@ -215,6 +235,18 @@ magick_device_get <- function(n) {
 
 magick_device_pop <- function() {
     .Call('_magick_magick_device_pop', PACKAGE = 'magick')
+}
+
+magick_image_edge <- function(input, radius) {
+    .Call('_magick_magick_image_edge', PACKAGE = 'magick', input, radius)
+}
+
+magick_image_canny <- function(input, geomstr) {
+    .Call('_magick_magick_image_canny', PACKAGE = 'magick', input, geomstr)
+}
+
+magick_image_houghline <- function(input, geomstr, col, bg, lwd) {
+    .Call('_magick_magick_image_houghline', PACKAGE = 'magick', input, geomstr, col, bg, lwd)
 }
 
 magick_image_readbitmap_native <- function(x) {
@@ -257,6 +289,10 @@ magick_image_write_frame <- function(input, format, i = 1L) {
     .Call('_magick_magick_image_write_frame', PACKAGE = 'magick', input, format, i)
 }
 
+magick_image_write_integer <- function(input) {
+    .Call('_magick_magick_image_write_integer', PACKAGE = 'magick', input)
+}
+
 magick_image_display <- function(image, animate) {
     .Call('_magick_magick_image_display', PACKAGE = 'magick', image, animate)
 }
@@ -275,6 +311,10 @@ magick_image_strip <- function(input) {
 
 list_options <- function(str) {
     .Call('_magick_list_options', PACKAGE = 'magick', str)
+}
+
+set_magick_tempdir <- function(tmpdir) {
+    .Call('_magick_set_magick_tempdir', PACKAGE = 'magick', tmpdir)
 }
 
 magick_image_properties <- function(input) {
@@ -317,6 +357,14 @@ magick_image_crop <- function(input, geometry, repage) {
     .Call('_magick_magick_image_crop', PACKAGE = 'magick', input, geometry, repage)
 }
 
+magick_image_fuzzycmeans <- function(input, min_pixels = 1.0, smoothing = 1.5) {
+    .Call('_magick_magick_image_fuzzycmeans', PACKAGE = 'magick', input, min_pixels, smoothing)
+}
+
+magick_image_connect <- function(input, connectivity = 4L) {
+    .Call('_magick_magick_image_connect', PACKAGE = 'magick', input, connectivity)
+}
+
 magick_image_noise <- function(input, noisetype) {
     .Call('_magick_magick_image_noise', PACKAGE = 'magick', input, noisetype)
 }
@@ -327,10 +375,6 @@ magick_image_blur <- function(input, radius = 1, sigma = 0.5) {
 
 magick_image_charcoal <- function(input, radius = 1, sigma = 0.5) {
     .Call('_magick_magick_image_charcoal', PACKAGE = 'magick', input, radius, sigma)
-}
-
-magick_image_edge <- function(input, radius) {
-    .Call('_magick_magick_image_edge', PACKAGE = 'magick', input, radius)
 }
 
 magick_image_deskew <- function(input, treshold) {

@@ -1,4 +1,4 @@
-/* Jeroen Ooms (2017)
+/* Jeroen Ooms (2018)
  * Bindings to vectorized image manipulations.
  * See API: https://www.imagemagick.org/Magick++/STL.html
  */
@@ -102,5 +102,57 @@ XPtrImage magick_image_transparent( XPtrImage input, const char * color, double 
 XPtrImage magick_image_background( XPtrImage input, const char * color){
   XPtrImage output = copy(input);
   for_each (output->begin(), output->end(), Magick::backgroundColorImage(Color(color)));
+  return output;
+}
+
+// [[Rcpp::export]]
+XPtrImage magick_image_lat( XPtrImage input, const char * geomstr){
+  Magick::Geometry geom = Geom(geomstr);
+  size_t width = geom.width();
+  size_t height = geom.height();
+  double offset =  geom.xOff();
+  if(geom.percent())
+    offset = fuzz_pct_to_abs(offset);
+  XPtrImage output = copy(input);
+  for_each (output->begin(), output->end(), Magick::adaptiveThresholdImage(width, height, offset));
+  return output;
+}
+
+/* black/white threshold introduced Aug 1, 2013:
+ * https://github.com/ImageMagick/ImageMagick6/commit/b6e7716bc753d9b4ee05823eb532a1df73f719d0
+ */
+// [[Rcpp::export]]
+XPtrImage magick_image_threshold_black( XPtrImage input,  const std::string threshold, Rcpp::CharacterVector channel){
+  XPtrImage output = copy(input);
+#if MagickLibVersion >= 0x687
+  if(channel.length()){
+    Magick::ChannelType chan = Channel(std::string(channel.at(0)).c_str());
+    for(size_t i = 0; i < output->size(); i++)
+      output->at(i).blackThresholdChannel(chan, threshold);
+  } else {
+    for(size_t i = 0; i < output->size(); i++)
+      output->at(i).blackThreshold(threshold);
+  }
+#else
+  Rcpp::warning("ImageMagick too old to support whiteThreshold (requires >= 6.8.7)");
+#endif
+  return output;
+}
+
+// [[Rcpp::export]]
+XPtrImage magick_image_threshold_white( XPtrImage input,  const std::string threshold, Rcpp::CharacterVector channel){
+  XPtrImage output = copy(input);
+#if MagickLibVersion >= 0x687
+  if(channel.length()){
+    Magick::ChannelType chan = Channel(std::string(channel.at(0)).c_str());
+    for(size_t i = 0; i < output->size(); i++)
+      output->at(i).whiteThresholdChannel(chan, threshold);
+  } else {
+    for(size_t i = 0; i < output->size(); i++)
+      output->at(i).whiteThreshold(threshold);
+  }
+#else
+  Rcpp::warning("ImageMagick too old to support whiteThreshold (requires >= 6.8.7)");
+#endif
   return output;
 }

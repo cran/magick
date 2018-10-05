@@ -1,4 +1,4 @@
-/* Jeroen Ooms (2017)
+/* Jeroen Ooms (2018)
  * Bindings to vectorized image manipulations.
  * See API: https://www.imagemagick.org/Magick++/STL.html
  */
@@ -23,7 +23,7 @@ int magick_image_length(XPtrImage image){
 
 // [[Rcpp::export]]
 XPtrImage create (int len){
-  Image *image = new Image;
+  Image *image = new Image();
   if(len > 0){
     image->reserve(len);
   }

@@ -51,6 +51,11 @@
 }
 
 #' @export
+"as.integer.magick-image" <- function(x, ...){
+  magick_image_write_integer(x)
+}
+
+#' @export
 "c.magick-image" <- function(...){
   image_join(...)
 }
@@ -74,6 +79,18 @@
   assert_image(x)
   len <- length(x)
   lapply(seq_len(len), magick_image_subset, image = x)
+}
+
+#' @export
+"rep.magick-image" <- function(x, ...){
+  assert_image(x)
+  rep_magick_image(x, ...)
+}
+
+rep_magick_image <- function(x, times){
+  image_join(lapply(seq_len(times), function(...){
+    x
+  }))
 }
 
 #' @export
@@ -105,9 +122,7 @@
     invisible()
 }
 
-#' @export
-#' @method knit_print magick-image
-#' @importFrom knitr knit_print
+# This is registered as an S3 method in .onLoad()
 "knit_print.magick-image" <- function(x, ...){
   if(!length(x))
     return(invisible())

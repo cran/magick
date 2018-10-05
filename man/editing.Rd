@@ -15,6 +15,7 @@
 \alias{image_blank}
 \alias{image_join}
 \alias{image_attributes}
+\alias{demo_image}
 \title{Image Editing}
 \usage{
 image_read(path, density = NULL, depth = NULL, strip = FALSE)
@@ -44,6 +45,8 @@ image_blank(width, height, color = "none", pseudo_image = "")
 image_join(...)
 
 image_attributes(image)
+
+demo_image(path)
 }
 \arguments{
 \item{path}{a file, url, or raster object or bitmap array}
@@ -157,9 +160,11 @@ image_blank(600, 400, pseudo_image = "radial-gradient:purple-yellow")
 Other image: \code{\link{_index_}}, \code{\link{analysis}},
   \code{\link{animation}}, \code{\link{attributes}},
   \code{\link{color}}, \code{\link{composite}},
-  \code{\link{device}}, \code{\link{effects}},
-  \code{\link{geometry}}, \code{\link{ocr}},
-  \code{\link{options}}, \code{\link{painting}},
-  \code{\link{transform}}
+  \code{\link{device}}, \code{\link{edges}},
+  \code{\link{effects}}, \code{\link{fx}},
+  \code{\link{geometry}}, \code{\link{morphology}},
+  \code{\link{ocr}}, \code{\link{options}},
+  \code{\link{painting}}, \code{\link{segmentation}},
+  \code{\link{transform}}, \code{\link{video}}
 }
 \concept{image}
