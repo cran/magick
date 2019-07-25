@@ -6,24 +6,30 @@
 \alias{image_annotate}
 \title{Image Painting}
 \usage{
-image_fill(image, color, point = "1x1", fuzz = 0)
+image_fill(image, color, point = "+1+1", fuzz = 0, refcolor = NULL)
 
 image_annotate(image, text, gravity = "northwest", location = "+0+0",
-  degrees = 0, size = 10, font = "", color = NULL,
-  strokecolor = NULL, boxcolor = NULL)
+  degrees = 0, size = 10, font = "", style = "normal",
+  weight = 400, color = NULL, strokecolor = NULL, boxcolor = NULL)
 }
 \arguments{
 \item{image}{magick image object returned by \code{\link[=image_read]{image_read()}} or \code{\link[=image_graph]{image_graph()}}}
 
 \item{color}{a valid \href{https://www.imagemagick.org/Magick++/Color.html}{color string} such as
-\code{"navyblue"} or \code{"#000080"}}
+\code{"navyblue"} or \code{"#000080"}. Use \code{"none"} for transparency.}
 
-\item{point}{a \link{geometry_point} string indicating the starting point of the flood-fill}
+\item{point}{a geometry_point string indicating the starting point of the flood-fill}
 
-\item{fuzz}{Fuzz percentage: value between 0 and 100. Relative distance between
-colors to be considered similar in the filling algorithm.}
+\item{fuzz}{relative color distance (value between 0 and 100) to be considered similar
+in the filling algorithm}
 
-\item{text}{annotation text}
+\item{refcolor}{if set, \code{fuzz} color distance will be measured against this color,
+not the color of the starting \code{point}. Any color (within \code{fuzz} color distance of
+the given \code{refcolor}), connected to starting point will be replaced with the \code{color}.
+If the pixel at the starting point does not itself match the given \code{refcolor}
+(according to \code{fuzz}) then no action will be taken.}
+
+\item{text}{character vector of length equal to 'image' or length 1}
 
 \item{gravity}{string with
 \href{https://www.imagemagick.org/Magick++/Enumerations.html#GravityType}{gravity}
@@ -38,6 +44,10 @@ value from \link{gravity_types}.}
 \item{font}{string with font family such as \code{"sans"}, \code{"mono"}, \code{"serif"},
 \code{"Times"}, \code{"Helvetica"}, \code{"Trebuchet"}, \code{"Georgia"}, \code{"Palatino"} or \code{"Comic Sans"}.}
 
+\item{style}{value of \link{style_types} for example \code{"italic"}}
+
+\item{weight}{thickness of the font, 400 is normal and 700 is bold.}
+
 \item{strokecolor}{a \href{https://www.imagemagick.org/Magick++/Color.html}{color string}
 adds a stroke (border around the text)}
 
@@ -46,12 +56,15 @@ for background color that annotation text is rendered on.}
 }
 \description{
 The \code{\link[=image_fill]{image_fill()}} function performs flood-fill by painting starting point and all
-neighboring pixels of approximately the same color. Annotate simply prints some
-text on the image.
+neighboring pixels of approximately the same color. Annotate prints some text on
+the image.
 }
 \details{
 Note that more sophisticated drawing mechanisms are available via the graphics
 device using \link{image_draw}.
+
+Setting a font, weight, style only works if your imagemagick is compiled
+with fontconfig support.
 }
 \examples{
 logo <- image_read("logo:")

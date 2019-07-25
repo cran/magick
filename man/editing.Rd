@@ -13,6 +13,7 @@
 \alias{image_browse}
 \alias{image_strip}
 \alias{image_blank}
+\alias{image_destroy}
 \alias{image_join}
 \alias{image_attributes}
 \alias{demo_image}
@@ -28,7 +29,7 @@ image_write(image, path = NULL, format = NULL, quality = NULL,
   depth = NULL, density = NULL, comment = NULL, flatten = FALSE)
 
 image_convert(image, format = NULL, type = NULL, colorspace = NULL,
-  depth = NULL, antialias = NULL)
+  depth = NULL, antialias = NULL, matte = NULL)
 
 image_data(image, channels = NULL, frame = 1)
 
@@ -41,6 +42,8 @@ image_browse(image, browser = getOption("browser"))
 image_strip(image)
 
 image_blank(width, height, color = "none", pseudo_image = "")
+
+image_destroy(image)
 
 image_join(...)
 
@@ -84,6 +87,8 @@ from \link{colorspace_types} for example \code{"gray"}, \code{"rgb"} or \code{"c
 
 \item{antialias}{enable anti-aliasing for text and strokes}
 
+\item{matte}{set to \code{TRUE} or \code{FALSE} to enable or disable transparency}
+
 \item{channels}{string with image channel(s) for example \code{"rgb"}, \code{"rgba"},
 \code{"cmyk"},\code{"gray"}, or \code{"ycbcr"}. Default is either \code{"gray"}, \code{"rgb"} or \code{"rgba"}
 depending on the image}
@@ -98,7 +103,7 @@ If \code{FALSE} output is the same as \code{as.raster()}.}
 \item{browser}{argument passed to \link[utils:browseURL]{browseURL}}
 
 \item{color}{a valid \href{https://www.imagemagick.org/Magick++/Color.html}{color string} such as
-\code{"navyblue"} or \code{"#000080"}}
+\code{"navyblue"} or \code{"#000080"}. Use \code{"none"} for transparency.}
 
 \item{pseudo_image}{string with \href{http://www.imagemagick.org/script/formats.php#pseudo}{pseudo image}
 specification for example \code{"radial-gradient:purple-yellow"}}
@@ -126,6 +131,11 @@ rendering delegates from imagemagick itself.
 X11 is required for \code{image_display()} which is only works on some platforms. A more
 portable method is \code{image_browse()} which opens the image in a browser. RStudio has
 an embedded viewer that does this automatically which is quite nice.
+
+Image objects are automatically released by the garbage collector when they are no longer
+reachable. Because the GC only runs once in a while, you can also call \code{image_destroy()}
+explicitly to release the memory immediately. This is usually only needed if you create
+a lot of images in a short period of time, and you might run out of memory.
 }
 \examples{
 # Download image from the web
@@ -148,6 +158,7 @@ plot(raster)
 # Read bitmap arrays from from other image packages
 curl::curl_download("https://jeroen.github.io/images/example.webp", "example.webp")
 if(require(webp)) image_read(webp::read_webp("example.webp"))
+unlink(c("example.webp", "output.png"))
 if(require(rsvg))
 tiger <- image_read_svg("http://jeroen.github.io/images/tiger.svg")
 if(require(pdftools))

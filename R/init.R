@@ -19,13 +19,19 @@
   # Needed by older versions of IM:
   Sys.setenv(MAGICK_TMPDIR = tempdir())
 
+  # NB: it is needed that autobrew fontconfig is newer than xQuarts
+  # or at least new enough to read the fontconfig data from the xQuarts fontconfig
   if(autobrewed()){
-    fontdir <- normalizePath(file.path(lib, pkg, "etc/fonts"), mustWork = FALSE)
-    if(file.exists(fontdir)){
-      Sys.setenv(FONTCONFIG_PATH = fontdir)
-    } else if(file.exists("/opt/X11/lib/X11/fontconfig")){
+    fontdir <- normalizePath(file.path(lib, pkg, "etc/fontconfig"), mustWork = FALSE)
+    if(file.exists("/opt/X11/lib/X11/fontconfig")){
       Sys.setenv(FONTCONFIG_PATH = "/opt/X11/lib/X11/fontconfig")
+    } else if(file.exists(fontdir)){
+      Sys.setenv(FONTCONFIG_PATH = fontdir)
     }
+  } else if(is_mac()){
+    # Workaround for R's built-in OpenMP conflicts
+    # https://github.com/ropensci/magick/issues/170
+    Sys.setenv(KMP_DUPLICATE_LIB_OK = 'TRUE')
   }
   register_s3_method("knitr", "knit_print", "magick-image")
 }
@@ -54,4 +60,7 @@ register_s3_method <- function(pkg, generic, class, fun = NULL) {
   )
 }
 
+is_mac <- function(){
+  grepl("darwin", R.Version()$platform)
+}
 

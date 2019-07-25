@@ -3,7 +3,7 @@
 #' Similar to the ImageMagick `composite` utility: compose an image on top of another one using a
 #' [CompositeOperator](https://www.imagemagick.org/Magick++/Enumerations.html#CompositeOperator).
 #'
-#' The `image_compose` function is vectorized over both image arguments: if the first image has
+#' The `image_composite` function is vectorized over both image arguments: if the first image has
 #' `n` frames and the second `m` frames, the output image will contain `n` * `m` frames.
 #'
 #' The [image_border] function creates a slightly larger solid color frame and then composes the
@@ -16,7 +16,8 @@
 #' @family image
 #' @inheritParams editing
 #' @inheritParams painting
-#' @param offset a [geometry_point][geometry_point] string to set x/y offset of top image
+#' @param offset string with either a [gravity_type][gravity_types] or a [geometry_point][geometry_point]
+#' to set position of top image.
 #' @param operator string with a
 #' [composite operator](https://www.imagemagick.org/Magick++/Enumerations.html#CompositeOperator)
 #' from [compose_types()][compose_types]
@@ -31,6 +32,10 @@
 #'
 #' # Same as 'blend 50' in the command line
 #' image_composite(imlogo, rlogo, operator = "blend", compose_args="50")
+#'
+#' # Offset can be geometry or gravity
+#' image_composite(logo, rose, offset = "+100+100")
+#' image_composite(logo, rose, offset = "East")
 image_composite <- function(image, composite_image, operator = "atop", offset = "+0+0", compose_args = ""){
   assert_image(image)
   assert_image(composite_image)
@@ -74,4 +79,25 @@ image_frame <- function(image, color = "lightgray", geometry = "25x25+6+6"){
   color <- as.character(color)
   geometry <- as.character(geometry)
   magick_image_frame(image, color, geometry)
+}
+
+#' @export
+#' @rdname composite
+image_shadow_mask <- function(image, geometry = '50x10+30+30'){
+  assert_image(image)
+  geometry <- as.character(geometry)
+  magick_image_shadow_mask(image, geometry)
+}
+
+#' @export
+#' @rdname composite
+#' @inheritParams edges
+#' @examples image_shadow(imlogo)
+image_shadow <- function(image, color = 'black', bg = 'white', geometry = '50x10+30+30',
+                         operator = 'atop', offset = '+20+20'){
+  assert_image(image)
+  geometry <- as.character(geometry)
+  input <- image_background(image, color, flatten = TRUE)
+  shadow <- image_background(magick_image_shadow_mask(input, geometry), bg)
+  image_composite(shadow, image, operator = operator, offset = offset)
 }

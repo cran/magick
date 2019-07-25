@@ -77,14 +77,10 @@ XPtrImage magick_image_flop( XPtrImage input){
 }
 
 // [[Rcpp::export]]
-XPtrImage magick_image_crop( XPtrImage input, Rcpp::CharacterVector geometry, bool repage){
+XPtrImage magick_image_shear( XPtrImage input, const char * geometry, const char * color){
   XPtrImage output = copy(input);
-  if(geometry.size()){
-    for_each (output->begin(), output->end(), Magick::cropImage(Geom(geometry.at(0))));
-  } else if(input->size()){
-    for_each (output->begin(), output->end(), Magick::cropImage(input->front().size()));
-  }
-  if(repage)
-    for_each ( output->begin(), output->end(), Magick::pageImage(Magick::Geometry()));
+  Magick::Geometry geom(Geom(geometry));
+  for_each ( output->begin(), output->end(), Magick::backgroundColorImage(color));
+  for_each ( output->begin(), output->end(), Magick::shearImage(geom.width(), geom.height()));
   return output;
 }

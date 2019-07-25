@@ -104,12 +104,24 @@ image_sample <- function(image, geometry = NULL){
 
 #' @export
 #' @rdname transform
+#' @inheritParams painting
 #' @param repage resize the canvas to the cropped area
 #' @examples image_crop(logo, "400x400+200+200")
-image_crop <- function(image, geometry = NULL, repage = TRUE){
+image_crop <- function(image, geometry = NULL, gravity = NULL, repage = TRUE){
   assert_image(image)
   geometry <- as.character(geometry)
-  magick_image_crop(image, geometry, repage)
+  gravity <- as.character(gravity)
+  magick_image_crop(image, geometry, gravity, repage)
+}
+
+#' @export
+#' @rdname transform
+#' @examples image_extent(rose, '200x200', color = 'pink')
+image_extent <- function(image, geometry, gravity = "center", color = "none"){
+  assert_image(image)
+  geometry <- as.character(geometry)
+  gravity <- as.character(gravity)
+  magick_image_extent(image, geometry, gravity, color)
 }
 
 #' @export
@@ -168,4 +180,15 @@ image_orient <- function(image, orientation = NULL){
   assert_image(image)
   orientation <- as.character(orientation)
   magick_image_orient(image, orientation)
+}
+
+#' @export
+#' @rdname transform
+#' @examples
+#' image_shear(logo, "10x10")
+image_shear <- function(image, geometry = "10x10", color = "none"){
+  assert_image(image)
+  stopifnot(is.character(geometry))
+  stopifnot(is.character(color))
+  magick_image_shear(image, geometry, color)
 }

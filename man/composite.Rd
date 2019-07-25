@@ -5,6 +5,8 @@
 \alias{image_composite}
 \alias{image_border}
 \alias{image_frame}
+\alias{image_shadow_mask}
+\alias{image_shadow}
 \title{Image Composite}
 \usage{
 image_composite(image, composite_image, operator = "atop",
@@ -14,6 +16,11 @@ image_border(image, color = "lightgray", geometry = "10x10",
   operator = "copy")
 
 image_frame(image, color = "lightgray", geometry = "25x25+6+6")
+
+image_shadow_mask(image, geometry = "50x10+30+30")
+
+image_shadow(image, color = "black", bg = "white",
+  geometry = "50x10+30+30", operator = "atop", offset = "+20+20")
 }
 \arguments{
 \item{image}{magick image object returned by \code{\link[=image_read]{image_read()}} or \code{\link[=image_graph]{image_graph()}}}
@@ -24,23 +31,26 @@ image_frame(image, color = "lightgray", geometry = "25x25+6+6")
 \href{https://www.imagemagick.org/Magick++/Enumerations.html#CompositeOperator}{composite operator}
 from \link[=compose_types]{compose_types()}}
 
-\item{offset}{a \link{geometry_point} string to set x/y offset of top image}
+\item{offset}{string with either a \link[=gravity_types]{gravity_type} or a \link{geometry_point}
+to set position of top image.}
 
 \item{compose_args}{additional arguments needed for some composite operations}
 
 \item{color}{a valid \href{https://www.imagemagick.org/Magick++/Color.html}{color string} such as
-\code{"navyblue"} or \code{"#000080"}}
+\code{"navyblue"} or \code{"#000080"}. Use \code{"none"} for transparency.}
 
 \item{geometry}{a \href{https://www.imagemagick.org/Magick++/Geometry.html}{geometry string}
 to set height and width of the border, e.g. \code{"10x8"}. In addition \link{image_frame} allows
 for adding shadow by setting an offset e.g. \code{"20x10+7+2"}.}
+
+\item{bg}{background color}
 }
 \description{
 Similar to the ImageMagick \code{composite} utility: compose an image on top of another one using a
 \href{https://www.imagemagick.org/Magick++/Enumerations.html#CompositeOperator}{CompositeOperator}.
 }
 \details{
-The \code{image_compose} function is vectorized over both image arguments: if the first image has
+The \code{image_composite} function is vectorized over both image arguments: if the first image has
 \code{n} frames and the second \code{m} frames, the output image will contain \code{n} * \code{m} frames.
 
 The \link{image_border} function creates a slightly larger solid color frame and then composes the
@@ -58,9 +68,14 @@ image_composite(imlogo, rlogo)
 # Same as 'blend 50' in the command line
 image_composite(imlogo, rlogo, operator = "blend", compose_args="50")
 
+# Offset can be geometry or gravity
+image_composite(logo, rose, offset = "+100+100")
+image_composite(logo, rose, offset = "East")
+
 # Add a border frame around the image
 image_border(imlogo, "red", "10x10")
 image_frame(imlogo)
+image_shadow(imlogo)
 }
 \seealso{
 Other image: \code{\link{_index_}}, \code{\link{analysis}},

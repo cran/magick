@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Anticonf script by Jeroen Ooms (2017)
 # The script will try 'Magick++-config' and 'pkg-config' to find required
 # cflags and ldflags. Make sure this executable is in PATH when installing
@@ -75,10 +75,9 @@ if [ $? -ne 0 ]; then
   echo " - rpm: '$PKG_RPM_NAME' (Fedora, CentOS, RHEL)"
   echo " - csw: '$PKG_CSW_NAME' (Solaris)"
   echo "On MacOS it is recommended to use install ImageMagick-6 from homebrew"
-  echo "with extra support for fontconfig and rsvg rendering:"
-  echo "   brew reinstall imagemagick@6 --with-fontconfig --with-librsvg"
+  echo "   brew install imagemagick@6"
   echo "For older Ubuntu versions Trusty (14.04) and Xenial (16.04) use our PPA:"
-  echo "   sudo add-apt-repository -y ppa:opencpu/imagemagick"
+  echo "   sudo add-apt-repository -y ppa:cran/imagemagick"
   echo "   sudo apt-get update"
   echo "   sudo apt-get install -y libmagick++-dev"
   echo "If $PKG_CONFIG_NAME is already installed, check that 'pkg-config' is in your"
@@ -93,5 +92,4 @@ fi
 sed -e "s|@cflags@|$PKG_CFLAGS|" -e "s|@libs@|$PKG_LIBS|" src/Makevars.in > src/Makevars
 
 # Success
-touch inst/doc/intro.html || true
 exit 0

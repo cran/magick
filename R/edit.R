@@ -20,6 +20,11 @@
 #' portable method is `image_browse()` which opens the image in a browser. RStudio has
 #' an embedded viewer that does this automatically which is quite nice.
 #'
+#' Image objects are automatically released by the garbage collector when they are no longer
+#' reachable. Because the GC only runs once in a while, you can also call `image_destroy()`
+#' explicitly to release the memory immediately. This is usually only needed if you create
+#' a lot of images in a short period of time, and you might run out of memory.
+#'
 #' @importFrom Rcpp sourceCpp
 #' @useDynLib magick
 #' @export
@@ -51,6 +56,7 @@
 #' # Read bitmap arrays from from other image packages
 #' curl::curl_download("https://jeroen.github.io/images/example.webp", "example.webp")
 #' if(require(webp)) image_read(webp::read_webp("example.webp"))
+#' unlink(c("example.webp", "output.png"))
 image_read <- function(path, density = NULL, depth = NULL, strip = FALSE){
   if(is.numeric(density))
     density <- paste0(density, "x", density)
@@ -70,7 +76,7 @@ image_read <- function(path, density = NULL, depth = NULL, strip = FALSE){
     magick_image_readbin(path, density, depth, strip)
   } else if(is.character(path) && all(nchar(path))){
     path <- vapply(path, replace_url, character(1))
-    magick_image_readpath(path, density, depth, strip)
+    magick_image_readpath(enc2native(path), density, depth, strip)
   } else {
     stop("path must be URL, filename or raw vector")
   }
@@ -195,15 +201,18 @@ image_write <- function(image, path = NULL, format = NULL, quality = NULL,
 #' value from [image_types][image_types] for example `grayscale` to convert into black/white
 #' @param colorspace string with a [`colorspace`](https://www.imagemagick.org/Magick++/Enumerations.html#ColorspaceType)
 #' from [colorspace_types][colorspace_types] for example `"gray"`, `"rgb"` or `"cmyk"`
-image_convert <- function(image, format = NULL, type = NULL, colorspace = NULL, depth = NULL, antialias = NULL){
+#' @param matte set to `TRUE` or `FALSE` to enable or disable transparency
+image_convert <- function(image, format = NULL, type = NULL, colorspace = NULL,
+                          depth = NULL, antialias = NULL, matte = NULL){
   assert_image(image)
   depth <- as.integer(depth)
   antialias <- as.logical(antialias)
   type <- as.character(type)
   colorspace <- as.character(colorspace)
+  matte <- as.logical(matte)
   if(length(depth) && is.na(match(depth, c(8, 16))))
     stop('depth must be 8 or 16 bit')
-  magick_image_format(image, toupper(format), type, colorspace, depth, antialias)
+  magick_image_format(image, toupper(format), type, colorspace, depth, antialias, matte)
 }
 
 image_write_frame <- function(image, format = "rgba", i = 1){
@@ -288,6 +297,13 @@ image_blank <- function(width, height, color = "none", pseudo_image = ""){
   height <- as.numeric(height)
   color <- as.character(color)
   magick_image_blank(width, height, color, pseudo_image)
+}
+
+#' @export
+#' @rdname editing
+image_destroy <- function(image){
+  assert_image(image)
+  magick_image_destroy(image)
 }
 
 #' @export

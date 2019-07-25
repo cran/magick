@@ -9,12 +9,14 @@
 \alias{image_scale}
 \alias{image_sample}
 \alias{image_crop}
+\alias{image_extent}
 \alias{image_flip}
 \alias{image_flop}
 \alias{image_deskew}
 \alias{image_page}
 \alias{image_repage}
 \alias{image_orient}
+\alias{image_shear}
 \title{Image Transform}
 \usage{
 image_trim(image, fuzz = 0)
@@ -29,7 +31,9 @@ image_scale(image, geometry = NULL)
 
 image_sample(image, geometry = NULL)
 
-image_crop(image, geometry = NULL, repage = TRUE)
+image_crop(image, geometry = NULL, gravity = NULL, repage = TRUE)
+
+image_extent(image, geometry, gravity = "center", color = "none")
 
 image_flip(image)
 
@@ -42,12 +46,14 @@ image_page(image, pagesize = NULL, density = NULL)
 image_repage(image)
 
 image_orient(image, orientation = NULL)
+
+image_shear(image, geometry = "10x10", color = "none")
 }
 \arguments{
 \item{image}{magick image object returned by \code{\link[=image_read]{image_read()}} or \code{\link[=image_graph]{image_graph()}}}
 
-\item{fuzz}{Fuzz percentage: value between 0 and 100. Relative distance between
-colors to be considered similar in the filling algorithm.}
+\item{fuzz}{relative color distance (value between 0 and 100) to be considered similar
+in the filling algorithm}
 
 \item{geometry}{a \link{geometry} string specifying area (for cropping) or size (for resizing).}
 
@@ -56,7 +62,14 @@ colors to be considered similar in the filling algorithm.}
 \item{filter}{string with \href{https://www.imagemagick.org/Magick++/Enumerations.html#FilterTypes}{filter}
 type from: \link{filter_types}}
 
+\item{gravity}{string with
+\href{https://www.imagemagick.org/Magick++/Enumerations.html#GravityType}{gravity}
+value from \link{gravity_types}.}
+
 \item{repage}{resize the canvas to the cropped area}
+
+\item{color}{a valid \href{https://www.imagemagick.org/Magick++/Color.html}{color string} such as
+\code{"navyblue"} or \code{"#000080"}. Use \code{"none"} for transparency.}
 
 \item{threshold}{straightens an image. A threshold of 40 works for most images.}
 
@@ -119,10 +132,12 @@ image_resize(rose, "400x", filter = "Point")
 image_scale(rose, "400x")
 image_sample(rose, "400x")
 image_crop(logo, "400x400+200+200")
+image_extent(rose, '200x200', color = 'pink')
 image_flip(logo)
 image_flop(logo)
 if(magick_config()$version > "6.8.6")
   image_orient(logo)
+image_shear(logo, "10x10")
 }
 \seealso{
 Other image: \code{\link{_index_}}, \code{\link{analysis}},

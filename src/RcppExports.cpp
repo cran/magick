@@ -374,6 +374,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// magick_image_destroy
+void magick_image_destroy(XPtrImage image);
+RcppExport SEXP _magick_magick_image_destroy(SEXP imageSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtrImage >::type image(imageSEXP);
+    magick_image_destroy(image);
+    return R_NilValue;
+END_RCPP
+}
 // autobrewed
 bool autobrewed();
 RcppExport SEXP _magick_autobrewed() {
@@ -610,6 +620,46 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type color(colorSEXP);
     Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type geometry(geometrySEXP);
     rcpp_result_gen = Rcpp::wrap(magick_image_frame(input, color, geometry));
+    return rcpp_result_gen;
+END_RCPP
+}
+// magick_image_shadow_mask
+XPtrImage magick_image_shadow_mask(XPtrImage input, const char * geomstr);
+RcppExport SEXP _magick_magick_image_shadow_mask(SEXP inputSEXP, SEXP geomstrSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtrImage >::type input(inputSEXP);
+    Rcpp::traits::input_parameter< const char * >::type geomstr(geomstrSEXP);
+    rcpp_result_gen = Rcpp::wrap(magick_image_shadow_mask(input, geomstr));
+    return rcpp_result_gen;
+END_RCPP
+}
+// magick_image_crop
+XPtrImage magick_image_crop(XPtrImage input, Rcpp::CharacterVector geometry, Rcpp::CharacterVector gravity, bool repage);
+RcppExport SEXP _magick_magick_image_crop(SEXP inputSEXP, SEXP geometrySEXP, SEXP gravitySEXP, SEXP repageSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtrImage >::type input(inputSEXP);
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type geometry(geometrySEXP);
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type gravity(gravitySEXP);
+    Rcpp::traits::input_parameter< bool >::type repage(repageSEXP);
+    rcpp_result_gen = Rcpp::wrap(magick_image_crop(input, geometry, gravity, repage));
+    return rcpp_result_gen;
+END_RCPP
+}
+// magick_image_extent
+XPtrImage magick_image_extent(XPtrImage input, Rcpp::CharacterVector geometry, Rcpp::CharacterVector gravity, Rcpp::CharacterVector color);
+RcppExport SEXP _magick_magick_image_extent(SEXP inputSEXP, SEXP geometrySEXP, SEXP gravitySEXP, SEXP colorSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtrImage >::type input(inputSEXP);
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type geometry(geometrySEXP);
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type gravity(gravitySEXP);
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type color(colorSEXP);
+    rcpp_result_gen = Rcpp::wrap(magick_image_extent(input, geometry, gravity, color));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -962,13 +1012,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // set_magick_tempdir
-Rcpp::String set_magick_tempdir(const char * tmpdir);
-RcppExport SEXP _magick_set_magick_tempdir(SEXP tmpdirSEXP) {
+Rcpp::String set_magick_tempdir(const char * new_tmpdir);
+RcppExport SEXP _magick_set_magick_tempdir(SEXP new_tmpdirSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const char * >::type tmpdir(tmpdirSEXP);
-    rcpp_result_gen = Rcpp::wrap(set_magick_tempdir(tmpdir));
+    Rcpp::traits::input_parameter< const char * >::type new_tmpdir(new_tmpdirSEXP);
+    rcpp_result_gen = Rcpp::wrap(set_magick_tempdir(new_tmpdir));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1078,16 +1128,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// magick_image_crop
-XPtrImage magick_image_crop(XPtrImage input, Rcpp::CharacterVector geometry, bool repage);
-RcppExport SEXP _magick_magick_image_crop(SEXP inputSEXP, SEXP geometrySEXP, SEXP repageSEXP) {
+// magick_image_shear
+XPtrImage magick_image_shear(XPtrImage input, const char * geometry, const char * color);
+RcppExport SEXP _magick_magick_image_shear(SEXP inputSEXP, SEXP geometrySEXP, SEXP colorSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< XPtrImage >::type input(inputSEXP);
-    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type geometry(geometrySEXP);
-    Rcpp::traits::input_parameter< bool >::type repage(repageSEXP);
-    rcpp_result_gen = Rcpp::wrap(magick_image_crop(input, geometry, repage));
+    Rcpp::traits::input_parameter< const char * >::type geometry(geometrySEXP);
+    Rcpp::traits::input_parameter< const char * >::type color(colorSEXP);
+    rcpp_result_gen = Rcpp::wrap(magick_image_shear(input, geometry, color));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1180,8 +1230,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // magick_image_fill
-XPtrImage magick_image_fill(XPtrImage input, const char * color, const char * point, double fuzz_percent);
-RcppExport SEXP _magick_magick_image_fill(SEXP inputSEXP, SEXP colorSEXP, SEXP pointSEXP, SEXP fuzz_percentSEXP) {
+XPtrImage magick_image_fill(XPtrImage input, const char * color, const char * point, double fuzz_percent, Rcpp::CharacterVector border_color);
+RcppExport SEXP _magick_magick_image_fill(SEXP inputSEXP, SEXP colorSEXP, SEXP pointSEXP, SEXP fuzz_percentSEXP, SEXP border_colorSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1189,7 +1239,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const char * >::type color(colorSEXP);
     Rcpp::traits::input_parameter< const char * >::type point(pointSEXP);
     Rcpp::traits::input_parameter< double >::type fuzz_percent(fuzz_percentSEXP);
-    rcpp_result_gen = Rcpp::wrap(magick_image_fill(input, color, point, fuzz_percent));
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type border_color(border_colorSEXP);
+    rcpp_result_gen = Rcpp::wrap(magick_image_fill(input, color, point, fuzz_percent, border_color));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1229,8 +1280,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // magick_image_format
-XPtrImage magick_image_format(XPtrImage input, Rcpp::CharacterVector format, Rcpp::CharacterVector type, Rcpp::CharacterVector space, Rcpp::IntegerVector depth, Rcpp::LogicalVector antialias);
-RcppExport SEXP _magick_magick_image_format(SEXP inputSEXP, SEXP formatSEXP, SEXP typeSEXP, SEXP spaceSEXP, SEXP depthSEXP, SEXP antialiasSEXP) {
+XPtrImage magick_image_format(XPtrImage input, Rcpp::CharacterVector format, Rcpp::CharacterVector type, Rcpp::CharacterVector space, Rcpp::IntegerVector depth, Rcpp::LogicalVector antialias, Rcpp::LogicalVector matte);
+RcppExport SEXP _magick_magick_image_format(SEXP inputSEXP, SEXP formatSEXP, SEXP typeSEXP, SEXP spaceSEXP, SEXP depthSEXP, SEXP antialiasSEXP, SEXP matteSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1240,7 +1291,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type space(spaceSEXP);
     Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type depth(depthSEXP);
     Rcpp::traits::input_parameter< Rcpp::LogicalVector >::type antialias(antialiasSEXP);
-    rcpp_result_gen = Rcpp::wrap(magick_image_format(input, format, type, space, depth, antialias));
+    Rcpp::traits::input_parameter< Rcpp::LogicalVector >::type matte(matteSEXP);
+    rcpp_result_gen = Rcpp::wrap(magick_image_format(input, format, type, space, depth, antialias, matte));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1305,22 +1357,24 @@ BEGIN_RCPP
 END_RCPP
 }
 // magick_image_annotate
-XPtrImage magick_image_annotate(XPtrImage input, const std::string text, const char * gravity, const char * location, double rot, double size, const char * font, Rcpp::CharacterVector color, Rcpp::CharacterVector strokecolor, Rcpp::CharacterVector boxcolor);
-RcppExport SEXP _magick_magick_image_annotate(SEXP inputSEXP, SEXP textSEXP, SEXP gravitySEXP, SEXP locationSEXP, SEXP rotSEXP, SEXP sizeSEXP, SEXP fontSEXP, SEXP colorSEXP, SEXP strokecolorSEXP, SEXP boxcolorSEXP) {
+XPtrImage magick_image_annotate(XPtrImage input, Rcpp::CharacterVector text, const char * gravity, const char * location, double rot, double size, const char * font, const char * style, double weight, Rcpp::CharacterVector color, Rcpp::CharacterVector strokecolor, Rcpp::CharacterVector boxcolor);
+RcppExport SEXP _magick_magick_image_annotate(SEXP inputSEXP, SEXP textSEXP, SEXP gravitySEXP, SEXP locationSEXP, SEXP rotSEXP, SEXP sizeSEXP, SEXP fontSEXP, SEXP styleSEXP, SEXP weightSEXP, SEXP colorSEXP, SEXP strokecolorSEXP, SEXP boxcolorSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< XPtrImage >::type input(inputSEXP);
-    Rcpp::traits::input_parameter< const std::string >::type text(textSEXP);
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type text(textSEXP);
     Rcpp::traits::input_parameter< const char * >::type gravity(gravitySEXP);
     Rcpp::traits::input_parameter< const char * >::type location(locationSEXP);
     Rcpp::traits::input_parameter< double >::type rot(rotSEXP);
     Rcpp::traits::input_parameter< double >::type size(sizeSEXP);
     Rcpp::traits::input_parameter< const char * >::type font(fontSEXP);
+    Rcpp::traits::input_parameter< const char * >::type style(styleSEXP);
+    Rcpp::traits::input_parameter< double >::type weight(weightSEXP);
     Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type color(colorSEXP);
     Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type strokecolor(strokecolorSEXP);
     Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type boxcolor(boxcolorSEXP);
-    rcpp_result_gen = Rcpp::wrap(magick_image_annotate(input, text, gravity, location, rot, size, font, color, strokecolor, boxcolor));
+    rcpp_result_gen = Rcpp::wrap(magick_image_annotate(input, text, gravity, location, rot, size, font, style, weight, color, strokecolor, boxcolor));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1371,6 +1425,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_magick_magick_image_subset", (DL_FUNC) &_magick_magick_image_subset, 2},
     {"_magick_magick_image_replace", (DL_FUNC) &_magick_magick_image_replace, 3},
     {"_magick_magick_image_copy", (DL_FUNC) &_magick_magick_image_copy, 2},
+    {"_magick_magick_image_destroy", (DL_FUNC) &_magick_magick_image_destroy, 1},
     {"_magick_autobrewed", (DL_FUNC) &_magick_autobrewed, 0},
     {"_magick_magick_image_contrast", (DL_FUNC) &_magick_magick_image_contrast, 2},
     {"_magick_magick_image_normalize", (DL_FUNC) &_magick_magick_image_normalize, 1},
@@ -1390,6 +1445,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_magick_magick_image_composite", (DL_FUNC) &_magick_magick_image_composite, 5},
     {"_magick_magick_image_border", (DL_FUNC) &_magick_magick_image_border, 4},
     {"_magick_magick_image_frame", (DL_FUNC) &_magick_magick_image_frame, 3},
+    {"_magick_magick_image_shadow_mask", (DL_FUNC) &_magick_magick_image_shadow_mask, 2},
+    {"_magick_magick_image_crop", (DL_FUNC) &_magick_magick_image_crop, 4},
+    {"_magick_magick_image_extent", (DL_FUNC) &_magick_magick_image_extent, 4},
     {"_magick_magick_coder_info", (DL_FUNC) &_magick_magick_coder_info, 1},
     {"_magick_magick_config_internal", (DL_FUNC) &_magick_magick_config_internal, 0},
     {"_magick_magick_image_fx", (DL_FUNC) &_magick_magick_image_fx, 3},
@@ -1428,7 +1486,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_magick_magick_image_trim", (DL_FUNC) &_magick_magick_image_trim, 2},
     {"_magick_magick_image_flip", (DL_FUNC) &_magick_magick_image_flip, 1},
     {"_magick_magick_image_flop", (DL_FUNC) &_magick_magick_image_flop, 1},
-    {"_magick_magick_image_crop", (DL_FUNC) &_magick_magick_image_crop, 3},
+    {"_magick_magick_image_shear", (DL_FUNC) &_magick_magick_image_shear, 3},
     {"_magick_magick_image_fuzzycmeans", (DL_FUNC) &_magick_magick_image_fuzzycmeans, 3},
     {"_magick_magick_image_connect", (DL_FUNC) &_magick_magick_image_connect, 2},
     {"_magick_magick_image_noise", (DL_FUNC) &_magick_magick_image_noise, 2},
@@ -1436,17 +1494,17 @@ static const R_CallMethodDef CallEntries[] = {
     {"_magick_magick_image_charcoal", (DL_FUNC) &_magick_magick_image_charcoal, 3},
     {"_magick_magick_image_deskew", (DL_FUNC) &_magick_magick_image_deskew, 2},
     {"_magick_magick_image_emboss", (DL_FUNC) &_magick_magick_image_emboss, 3},
-    {"_magick_magick_image_fill", (DL_FUNC) &_magick_magick_image_fill, 4},
+    {"_magick_magick_image_fill", (DL_FUNC) &_magick_magick_image_fill, 5},
     {"_magick_magick_image_negate", (DL_FUNC) &_magick_magick_image_negate, 1},
     {"_magick_magick_image_oilpaint", (DL_FUNC) &_magick_magick_image_oilpaint, 2},
     {"_magick_magick_image_implode", (DL_FUNC) &_magick_magick_image_implode, 2},
-    {"_magick_magick_image_format", (DL_FUNC) &_magick_magick_image_format, 6},
+    {"_magick_magick_image_format", (DL_FUNC) &_magick_magick_image_format, 7},
     {"_magick_magick_image_page", (DL_FUNC) &_magick_magick_image_page, 3},
     {"_magick_magick_image_repage", (DL_FUNC) &_magick_magick_image_repage, 1},
     {"_magick_magick_image_orient", (DL_FUNC) &_magick_magick_image_orient, 2},
     {"_magick_magick_image_despeckle", (DL_FUNC) &_magick_magick_image_despeckle, 2},
     {"_magick_magick_image_reducenoise", (DL_FUNC) &_magick_magick_image_reducenoise, 2},
-    {"_magick_magick_image_annotate", (DL_FUNC) &_magick_magick_image_annotate, 10},
+    {"_magick_magick_image_annotate", (DL_FUNC) &_magick_magick_image_annotate, 12},
     {"_magick_magick_image_compare", (DL_FUNC) &_magick_magick_image_compare, 4},
     {NULL, NULL, 0}
 };
