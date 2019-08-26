@@ -5,6 +5,7 @@
 \alias{image_read}
 \alias{image_read_svg}
 \alias{image_read_pdf}
+\alias{image_read_video}
 \alias{image_write}
 \alias{image_convert}
 \alias{image_data}
@@ -24,6 +25,8 @@ image_read(path, density = NULL, depth = NULL, strip = FALSE)
 image_read_svg(path, width = NULL, height = NULL)
 
 image_read_pdf(path, pages = NULL, density = 300, password = "")
+
+image_read_video(path, fps = 1, format = "png")
 
 image_write(image, path = NULL, format = NULL, quality = NULL,
   depth = NULL, density = NULL, comment = NULL, flatten = FALSE)
@@ -68,9 +71,12 @@ demo_image(path)
 
 \item{password}{user \link[pdftools:pdf_render_page]{password} to open protected pdf files}
 
-\item{image}{magick image object returned by \code{\link[=image_read]{image_read()}} or \code{\link[=image_graph]{image_graph()}}}
+\item{fps}{how many images to capture per second of video. Set to
+\code{NULL} to get all frames from the input video.}
 
 \item{format}{output format such as \code{"png"}, \code{"jpeg"}, \code{"gif"}, \code{"rgb"} or \code{"rgba"}.}
+
+\item{image}{magick image object returned by \code{\link[=image_read]{image_read()}} or \code{\link[=image_graph]{image_graph()}}}
 
 \item{quality}{number between 0 and 100 for jpeg quality. Defaults to 75.}
 

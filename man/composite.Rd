@@ -10,7 +10,7 @@
 \title{Image Composite}
 \usage{
 image_composite(image, composite_image, operator = "atop",
-  offset = "+0+0", compose_args = "")
+  offset = "+0+0", gravity = "northwest", compose_args = "")
 
 image_border(image, color = "lightgray", geometry = "10x10",
   operator = "copy")
@@ -33,6 +33,10 @@ from \link[=compose_types]{compose_types()}}
 
 \item{offset}{string with either a \link[=gravity_types]{gravity_type} or a \link{geometry_point}
 to set position of top image.}
+
+\item{gravity}{string with
+\href{https://www.imagemagick.org/Magick++/Enumerations.html#GravityType}{gravity}
+value from \link{gravity_types}.}
 
 \item{compose_args}{additional arguments needed for some composite operations}
 
@@ -70,7 +74,7 @@ image_composite(imlogo, rlogo, operator = "blend", compose_args="50")
 
 # Offset can be geometry or gravity
 image_composite(logo, rose, offset = "+100+100")
-image_composite(logo, rose, offset = "East")
+image_composite(logo, rose, gravity = "East")
 
 # Add a border frame around the image
 image_border(imlogo, "red", "10x10")

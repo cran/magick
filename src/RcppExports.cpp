@@ -582,17 +582,18 @@ BEGIN_RCPP
 END_RCPP
 }
 // magick_image_composite
-XPtrImage magick_image_composite(XPtrImage input, XPtrImage composite_image, const char * offset, const char * composite, Rcpp::CharacterVector args);
-RcppExport SEXP _magick_magick_image_composite(SEXP inputSEXP, SEXP composite_imageSEXP, SEXP offsetSEXP, SEXP compositeSEXP, SEXP argsSEXP) {
+XPtrImage magick_image_composite(XPtrImage input, XPtrImage composite_image, const char * offset, const char * gravity, const char * composite, Rcpp::CharacterVector args);
+RcppExport SEXP _magick_magick_image_composite(SEXP inputSEXP, SEXP composite_imageSEXP, SEXP offsetSEXP, SEXP gravitySEXP, SEXP compositeSEXP, SEXP argsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< XPtrImage >::type input(inputSEXP);
     Rcpp::traits::input_parameter< XPtrImage >::type composite_image(composite_imageSEXP);
     Rcpp::traits::input_parameter< const char * >::type offset(offsetSEXP);
+    Rcpp::traits::input_parameter< const char * >::type gravity(gravitySEXP);
     Rcpp::traits::input_parameter< const char * >::type composite(compositeSEXP);
     Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type args(argsSEXP);
-    rcpp_result_gen = Rcpp::wrap(magick_image_composite(input, composite_image, offset, composite, args));
+    rcpp_result_gen = Rcpp::wrap(magick_image_composite(input, composite_image, offset, gravity, composite, args));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1000,6 +1001,31 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// magick_image_separate
+XPtrImage magick_image_separate(XPtrImage input, const char * channel);
+RcppExport SEXP _magick_magick_image_separate(SEXP inputSEXP, SEXP channelSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtrImage >::type input(inputSEXP);
+    Rcpp::traits::input_parameter< const char * >::type channel(channelSEXP);
+    rcpp_result_gen = Rcpp::wrap(magick_image_separate(input, channel));
+    return rcpp_result_gen;
+END_RCPP
+}
+// magick_image_combine
+XPtrImage magick_image_combine(XPtrImage input, const char * colorspace, const char * channel);
+RcppExport SEXP _magick_magick_image_combine(SEXP inputSEXP, SEXP colorspaceSEXP, SEXP channelSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtrImage >::type input(inputSEXP);
+    Rcpp::traits::input_parameter< const char * >::type colorspace(colorspaceSEXP);
+    Rcpp::traits::input_parameter< const char * >::type channel(channelSEXP);
+    rcpp_result_gen = Rcpp::wrap(magick_image_combine(input, colorspace, channel));
+    return rcpp_result_gen;
+END_RCPP
+}
 // list_options
 Rcpp::CharacterVector list_options(const char * str);
 RcppExport SEXP _magick_list_options(SEXP strSEXP) {
@@ -1357,8 +1383,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // magick_image_annotate
-XPtrImage magick_image_annotate(XPtrImage input, Rcpp::CharacterVector text, const char * gravity, const char * location, double rot, double size, const char * font, const char * style, double weight, Rcpp::CharacterVector color, Rcpp::CharacterVector strokecolor, Rcpp::CharacterVector boxcolor);
-RcppExport SEXP _magick_magick_image_annotate(SEXP inputSEXP, SEXP textSEXP, SEXP gravitySEXP, SEXP locationSEXP, SEXP rotSEXP, SEXP sizeSEXP, SEXP fontSEXP, SEXP styleSEXP, SEXP weightSEXP, SEXP colorSEXP, SEXP strokecolorSEXP, SEXP boxcolorSEXP) {
+XPtrImage magick_image_annotate(XPtrImage input, Rcpp::CharacterVector text, const char * gravity, const char * location, double rot, double size, const char * font, const char * style, double weight, double kerning, Rcpp::CharacterVector decoration, Rcpp::CharacterVector color, Rcpp::CharacterVector strokecolor, Rcpp::CharacterVector boxcolor);
+RcppExport SEXP _magick_magick_image_annotate(SEXP inputSEXP, SEXP textSEXP, SEXP gravitySEXP, SEXP locationSEXP, SEXP rotSEXP, SEXP sizeSEXP, SEXP fontSEXP, SEXP styleSEXP, SEXP weightSEXP, SEXP kerningSEXP, SEXP decorationSEXP, SEXP colorSEXP, SEXP strokecolorSEXP, SEXP boxcolorSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1371,10 +1397,12 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const char * >::type font(fontSEXP);
     Rcpp::traits::input_parameter< const char * >::type style(styleSEXP);
     Rcpp::traits::input_parameter< double >::type weight(weightSEXP);
+    Rcpp::traits::input_parameter< double >::type kerning(kerningSEXP);
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type decoration(decorationSEXP);
     Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type color(colorSEXP);
     Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type strokecolor(strokecolorSEXP);
     Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type boxcolor(boxcolorSEXP);
-    rcpp_result_gen = Rcpp::wrap(magick_image_annotate(input, text, gravity, location, rot, size, font, style, weight, color, strokecolor, boxcolor));
+    rcpp_result_gen = Rcpp::wrap(magick_image_annotate(input, text, gravity, location, rot, size, font, style, weight, kerning, decoration, color, strokecolor, boxcolor));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1442,7 +1470,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_magick_magick_image_lat", (DL_FUNC) &_magick_magick_image_lat, 2},
     {"_magick_magick_image_threshold_black", (DL_FUNC) &_magick_magick_image_threshold_black, 3},
     {"_magick_magick_image_threshold_white", (DL_FUNC) &_magick_magick_image_threshold_white, 3},
-    {"_magick_magick_image_composite", (DL_FUNC) &_magick_magick_image_composite, 5},
+    {"_magick_magick_image_composite", (DL_FUNC) &_magick_magick_image_composite, 6},
     {"_magick_magick_image_border", (DL_FUNC) &_magick_magick_image_border, 4},
     {"_magick_magick_image_frame", (DL_FUNC) &_magick_magick_image_frame, 3},
     {"_magick_magick_image_shadow_mask", (DL_FUNC) &_magick_magick_image_shadow_mask, 2},
@@ -1475,6 +1503,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_magick_magick_image_fft", (DL_FUNC) &_magick_magick_image_fft, 1},
     {"_magick_magick_image_montage", (DL_FUNC) &_magick_magick_image_montage, 1},
     {"_magick_magick_image_strip", (DL_FUNC) &_magick_magick_image_strip, 1},
+    {"_magick_magick_image_separate", (DL_FUNC) &_magick_magick_image_separate, 2},
+    {"_magick_magick_image_combine", (DL_FUNC) &_magick_magick_image_combine, 3},
     {"_magick_list_options", (DL_FUNC) &_magick_list_options, 1},
     {"_magick_set_magick_tempdir", (DL_FUNC) &_magick_set_magick_tempdir, 1},
     {"_magick_magick_image_properties", (DL_FUNC) &_magick_magick_image_properties, 1},
@@ -1504,7 +1534,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_magick_magick_image_orient", (DL_FUNC) &_magick_magick_image_orient, 2},
     {"_magick_magick_image_despeckle", (DL_FUNC) &_magick_magick_image_despeckle, 2},
     {"_magick_magick_image_reducenoise", (DL_FUNC) &_magick_magick_image_reducenoise, 2},
-    {"_magick_magick_image_annotate", (DL_FUNC) &_magick_magick_image_annotate, 12},
+    {"_magick_magick_image_annotate", (DL_FUNC) &_magick_magick_image_annotate, 14},
     {"_magick_magick_image_compare", (DL_FUNC) &_magick_magick_image_compare, 4},
     {NULL, NULL, 0}
 };

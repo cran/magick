@@ -193,8 +193,8 @@ magick_image_threshold_white <- function(input, threshold, channel) {
     .Call('_magick_magick_image_threshold_white', PACKAGE = 'magick', input, threshold, channel)
 }
 
-magick_image_composite <- function(input, composite_image, offset, composite, args) {
-    .Call('_magick_magick_image_composite', PACKAGE = 'magick', input, composite_image, offset, composite, args)
+magick_image_composite <- function(input, composite_image, offset, gravity, composite, args) {
+    .Call('_magick_magick_image_composite', PACKAGE = 'magick', input, composite_image, offset, gravity, composite, args)
 }
 
 magick_image_border <- function(input, color, geometry, composite) {
@@ -325,6 +325,14 @@ magick_image_strip <- function(input) {
     .Call('_magick_magick_image_strip', PACKAGE = 'magick', input)
 }
 
+magick_image_separate <- function(input, channel) {
+    .Call('_magick_magick_image_separate', PACKAGE = 'magick', input, channel)
+}
+
+magick_image_combine <- function(input, colorspace, channel) {
+    .Call('_magick_magick_image_combine', PACKAGE = 'magick', input, colorspace, channel)
+}
+
 list_options <- function(str) {
     .Call('_magick_list_options', PACKAGE = 'magick', str)
 }
@@ -441,8 +449,8 @@ magick_image_reducenoise <- function(input, radius) {
     .Call('_magick_magick_image_reducenoise', PACKAGE = 'magick', input, radius)
 }
 
-magick_image_annotate <- function(input, text, gravity, location, rot, size, font, style, weight, color, strokecolor, boxcolor) {
-    .Call('_magick_magick_image_annotate', PACKAGE = 'magick', input, text, gravity, location, rot, size, font, style, weight, color, strokecolor, boxcolor)
+magick_image_annotate <- function(input, text, gravity, location, rot, size, font, style, weight, kerning, decoration, color, strokecolor, boxcolor) {
+    .Call('_magick_magick_image_annotate', PACKAGE = 'magick', input, text, gravity, location, rot, size, font, style, weight, kerning, decoration, color, strokecolor, boxcolor)
 }
 
 magick_image_compare <- function(input, reference_image, metric, fuzz_percent) {

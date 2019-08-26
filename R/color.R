@@ -93,6 +93,20 @@ image_channel <- function(image, channel = 'lightness'){
 
 #' @export
 #' @rdname color
+image_separate <- function(image, channel = 'default'){
+  magick_image_separate(image, channel)
+}
+
+#' @export
+#' @rdname color
+image_combine <- function(image, colorspace = 'sRGB', channel = 'default'){
+  channel <- as.character(channel)
+  colorspace <- as.character(colorspace)
+  magick_image_combine(image, colorspace, channel)
+}
+
+#' @export
+#' @rdname color
 image_transparent <- function(image, color, fuzz = 0){
   assert_image(image)
   if(fuzz > 100)

@@ -11,7 +11,10 @@ Magick::Geometry apply_geom_gravity(Frame image, Magick::Geometry geom, Magick::
 
 // [[Rcpp::export]]
 XPtrImage magick_image_composite( XPtrImage input, XPtrImage composite_image,
-                                  const char * offset, const char * composite, Rcpp::CharacterVector args){
+                                  const char * offset, const char * gravity,
+                                  const char * composite, Rcpp::CharacterVector args){
+  if(composite_image->size() == 0)
+    throw std::runtime_error("Invalid composite_image");
   XPtrImage output = copy(input);
   if(args.size() && std::string(args.at(0)).length()){
 #if MagickLibVersion >= 0x687
@@ -21,18 +24,18 @@ XPtrImage magick_image_composite( XPtrImage input, XPtrImage composite_image,
     Rcpp::warning("ImageMagick too old to support composite_args (requires >= 6.8.7)");
 #endif
   }
-  if(composite_image->size()){
-    //offset can be either geometry or gravity
-    Magick::Geometry geom(offset);
-    if(geom.isValid()){
-      for_each(output->begin(), output->end(),
-               Magick::compositeImage(composite_image->front(), geom, Composite(composite)));
-    } else {
-      for(size_t i = 0; i < output->size(); i++){
-        output->at(i).composite(composite_image->front(), Gravity(offset), Composite(composite));
-      }
-    }
+
+  // offset can be either geometry or gravity
+  for(size_t i = 0; i < output->size(); i++){
+    Magick::Geometry geom = Geom(offset);
+    if(geom.width() == 0)
+      geom.width(composite_image->front().columns());
+    if(geom.height() == 0)
+      geom.height(composite_image->front().rows());
+    geom = apply_geom_gravity(output->at(i), geom, Gravity(gravity));
+    output->at(i).composite(composite_image->front(), geom, Composite(composite));
   }
+
   if(args.size() && std::string(args.at(0)).length()){
 #if MagickLibVersion >= 0x687
     for (Iter it = output->begin(); it != output->end(); ++it)
@@ -80,6 +83,8 @@ XPtrImage magick_image_shadow_mask( XPtrImage input, const char * geomstr){
   return output;
 }
 
+// The C++ crop() API doesn't work well, see https://github.com/ImageMagick/ImageMagick/issues/1642
+
 // [[Rcpp::export]]
 XPtrImage magick_image_crop( XPtrImage input, Rcpp::CharacterVector geometry,
                              Rcpp::CharacterVector gravity, bool repage){
@@ -88,7 +93,14 @@ XPtrImage magick_image_crop( XPtrImage input, Rcpp::CharacterVector geometry,
     Magick::Geometry region(geometry.size() ? Geom(geometry.at(0)) : input->front().size());
     if(gravity.size())
       region = apply_geom_gravity(output->at(i), region, Gravity(gravity.at(0)));
-    output->at(i).crop(region);
+
+    MagickCore::ExceptionInfo *exception = MagickCore::AcquireExceptionInfo();
+    MagickCore::Image *newImage = MagickCore::CropImageToTiles(output->at(i).constImage(), std::string(region).c_str(), exception);
+#if MagickLibVersion >= 0x690
+    Magick::throwException(exception);
+#endif
+    exception=MagickCore::DestroyExceptionInfo(exception);
+    output->at(i).replaceImage(newImage);
   }
   if(repage)
     for_each ( output->begin(), output->end(), Magick::pageImage(Magick::Geometry()));
