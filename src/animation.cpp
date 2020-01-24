@@ -1,12 +1,37 @@
 #include "magick_types.h"
 
 // [[Rcpp::export]]
-XPtrImage magick_image_animate( XPtrImage input, size_t delay, size_t iter, const char * method){
-  for_each ( input->begin(), input->end(), Magick::gifDisposeMethodImage(Dispose(method)));
+XPtrImage magick_image_animate( XPtrImage input, Rcpp::IntegerVector delay,
+                                size_t iter, const char * method,
+                                bool optimize){
   XPtrImage output = create();
-  coalesceImages( output.get(), input->begin(), input->end());
+  /* AFAICT optimizeImageLayers also coalesces the images, and the dispose method
+   * is optimized, so it does not seem to make sense to call both. */
+  if (optimize) {
+#if MagickLibVersion >= 0x689
+    optimizeImageLayers(output.get(), input->begin(), input->end());
+#else
+    throw std::runtime_error("Your imagemagick is too old for optimizeImageLayers");
+#endif
+  } else {
+    for_each ( input->begin(), input->end(), Magick::gifDisposeMethodImage(Dispose(method)));
+    coalesceImages( output.get(), input->begin(), input->end());
+  }
+
   for_each ( output->begin(), output->end(), Magick::magickImage("gif"));
-  for_each ( output->begin(), output->end(), Magick::animationDelayImage(delay));
+
+  if (delay.size() == 1) {
+    for_each ( output->begin(), output->end(), Magick::animationDelayImage(delay[0]));
+  } else {
+    Image::iterator outit = output->begin();
+    Rcpp::IntegerVector::iterator delit = delay.begin();
+    while (outit != output->end()) {
+      outit->animationDelay(*delit);
+      outit++;
+      delit++;
+    }
+  }
+
   for_each ( output->begin(), output->end(), Magick::animationIterationsImage(iter));
   return output;
 }

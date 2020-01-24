@@ -13,6 +13,11 @@
 }
 
 .onLoad <- function(lib, pkg){
+  if(is_check()){
+    # Try to please cran...
+    Sys.setenv(OMP_THREAD_LIMIT = 1, MAGICK_THREAD_LIMIT = 1)
+  }
+
   # Set tempdir to R session
   set_magick_tempdir(tempdir())
 
@@ -36,10 +41,6 @@
     } else if(file.exists(fontdir)){
       Sys.setenv(FONTCONFIG_PATH = fontdir)
     }
-  } else if(is_mac()){
-    # Workaround for R's built-in OpenMP conflicts
-    # https://github.com/ropensci/magick/issues/170
-    Sys.setenv(KMP_DUPLICATE_LIB_OK = 'TRUE')
   }
   register_s3_method("knitr", "knit_print", "magick-image")
 }
@@ -72,3 +73,6 @@ is_mac <- function(){
   grepl("darwin", R.Version()$platform)
 }
 
+is_check <- function(){
+  grepl('magick.Rcheck', getwd(), fixed = TRUE)
+}
