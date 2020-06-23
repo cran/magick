@@ -13,8 +13,8 @@
 #'
 #' For reading svg or pdf it is recommended to use `image_read_svg()` and `image_read_pdf()`
 #' if the [rsvg][rsvg::rsvg] and [pdftools][pdftools::pdf_render_page] R packages are available.
-#' These functions provide more rendering options and better quality than built-in svg/pdf
-#' rendering delegates from imagemagick itself.
+#' These functions provide more rendering options (including rendering of literal svg) and
+#' better quality than built-in svg/pdf rendering delegates from imagemagick itself.
 #'
 #' X11 is required for `image_display()` which is only works on some platforms. A more
 #' portable method is `image_browse()` which opens the image in a browser. RStudio has
@@ -35,6 +35,8 @@
 #' @param image magick image object returned by [image_read()] or [image_graph()]
 #' @param density resolution to render pdf or svg
 #' @param strip drop image comments and metadata
+#' @param defines a named character vector with extra options to control reading.
+#' These are the `-define key{=value}` settings in the [command line tool](http://www.imagemagick.org/script/command-line-options.php#define).
 #' @examples
 #' # Download image from the web
 #' frink <- image_read("https://jeroen.github.io/images/frink.png")
@@ -57,11 +59,12 @@
 #' curl::curl_download("https://jeroen.github.io/images/example.webp", "example.webp")
 #' if(require(webp)) image_read(webp::read_webp("example.webp"))
 #' unlink(c("example.webp", "output.png"))
-image_read <- function(path, density = NULL, depth = NULL, strip = FALSE){
+image_read <- function(path, density = NULL, depth = NULL, strip = FALSE, defines = NULL){
   if(is.numeric(density))
     density <- paste0(density, "x", density)
   density <- as.character(density)
   depth <- as.integer(depth)
+  defines <- validate_defines(defines)
   image <- if(isS4(path) && methods::is(path, "Image")){
     convert_EBImage(path)
   } else if(inherits(path, "nativeRaster") || (is.matrix(path) && is.integer(path))){
@@ -75,10 +78,10 @@ image_read <- function(path, density = NULL, depth = NULL, strip = FALSE){
   } else if(is.array(path)){
     image_readbitmap(path)
   } else if(is.raw(path)) {
-    magick_image_readbin(path, density, depth, strip)
+    magick_image_readbin(path, density, depth, strip, defines)
   } else if(is.character(path) && all(nchar(path))){
     path <- vapply(path, replace_url, character(1))
-    magick_image_readpath(enc2native(path), density, depth, strip)
+    magick_image_readpath(enc2native(path), density, depth, strip, defines)
   } else {
     stop("path must be URL, filename or raw vector")
   }
@@ -95,9 +98,16 @@ For better results use image_read_svg() which uses the rsvg package.", call. = F
 #' @rdname editing
 #' @examples if(require(rsvg))
 #' tiger <- image_read_svg("http://jeroen.github.io/images/tiger.svg")
+#' svgtxt <- '<?xml version="1.0" encoding="UTF-8"?>
+#' <svg width="400" height="400" viewBox="0 0 400 400" fill="none">
+#'  <circle fill="steelblue" cx="200" cy="200" r="100" />
+#'  <circle fill="yellow" cx="200" cy="200" r="90" />
+#' </svg>'
+#' circles <- image_read_svg(svgtxt)
 image_read_svg <- function(path, width = NULL, height = NULL){
   path <- vapply(path, replace_url, character(1))
   images <- lapply(path, function(x){
+    if(is_svg(x)) x <- charToRaw(x)
     bitmap <- rsvg::rsvg_raw(x, width = width, height = height)
     magick_image_readbitmap_raw(bitmap)
   })
@@ -118,7 +128,10 @@ image_read_pdf <- function(path, pages = NULL, density = 300, password = ""){
     bitmap <- pdftools::pdf_render_page(path, page = page, dpi = density, opw = password)
     magick_image_readbitmap_raw(bitmap)
   })
-  image_join(images)
+  out <- image_join(images)
+  if(length(density))
+    try(magick_attr_density(out, paste0(density, 'x', density)))
+  out
 }
 
 #' @export
@@ -316,11 +329,14 @@ image_strip <- function(image){
 #' @examples # create a solid canvas
 #' image_blank(600, 400, "green")
 #' image_blank(600, 400, pseudo_image = "radial-gradient:purple-yellow")
-image_blank <- function(width, height, color = "none", pseudo_image = ""){
+#' image_blank(200, 200, pseudo_image = "gradient:#3498db-#db3a34",
+#'   defines = c('gradient:direction' = 'east'))
+image_blank <- function(width, height, color = "none", pseudo_image = "", defines = NULL){
   width <- as.numeric(width)
   height <- as.numeric(height)
   color <- as.character(color)
-  magick_image_blank(width, height, color, pseudo_image)
+  defines <- validate_defines(defines)
+  magick_image_blank(width, height, color, pseudo_image, defines)
 }
 
 #' @export
@@ -348,6 +364,28 @@ image_attributes <- function(image){
 
 #' @export
 #' @rdname editing
+#' @param artifact string with name of the artifact to extract, see the
+#' [image_deskew] for an example.
+image_get_artifact <- function(image, artifact = ""){
+  assert_image(image)
+  artifact <- as.character(artifact)
+  magick_image_artifact(image, artifact)
+}
+
+#' @export
+#' @rdname editing
 demo_image <- function(path){
   image_read(system.file('images', path, package = 'magick'))
+}
+
+validate_defines <- function(defines){
+  if(length(defines)){
+    if(!is.character(defines))
+      stop("Argumet 'defines' must be named character vector")
+    if(length(unique(names(defines))) != length(defines))
+      stop("Argument 'defines' does not have proper names")
+    return(defines)
+  } else {
+    return(character())
+  }
 }

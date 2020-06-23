@@ -18,10 +18,17 @@ read_path <- function(path){
 }
 
 is_url <- function(path){
-  grepl("https?://", path)
+  grepl("^https?://", path)
+}
+
+is_svg <- function(path){
+  # svg files ending in "</svg>" with or without whitespace following it
+  grepl("<\\/svg>\\s?$", path)
 }
 
 replace_url <- function(path){
+  if(is_svg(path))
+    return(path)
   if(is_url(path)){
     pattern <- "\\[[-,0-9]+\\]$"
     suffix <- regmatches(path, regexpr(pattern, path))
@@ -37,7 +44,7 @@ replace_url <- function(path){
 
 download_url <- function(url){
   req <- curl::curl_fetch_memory(url)
-  if(req$status >= 400)
+  if(req$status_code >= 400)
     stop(sprintf("Failed to download %s (HTTP %d)", url, req$status))
   headers <- curl::parse_headers_list(req$headers)
   ctype <- headers[['content-type']]
@@ -54,7 +61,7 @@ download_url <- function(url){
 
 read_url <- function(path){
   req <- curl::curl_fetch_memory(path)
-  if(req$status >= 400)
+  if(req$status_code >= 400)
     stop(sprintf("Failed to download %s (HTTP %d)", path, req$status))
   return(req$content)
 }

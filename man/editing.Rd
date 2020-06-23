@@ -17,10 +17,11 @@
 \alias{image_destroy}
 \alias{image_join}
 \alias{image_attributes}
+\alias{image_get_artifact}
 \alias{demo_image}
 \title{Image Editing}
 \usage{
-image_read(path, density = NULL, depth = NULL, strip = FALSE)
+image_read(path, density = NULL, depth = NULL, strip = FALSE, defines = NULL)
 
 image_read_svg(path, width = NULL, height = NULL)
 
@@ -59,13 +60,15 @@ image_browse(image, browser = getOption("browser"))
 
 image_strip(image)
 
-image_blank(width, height, color = "none", pseudo_image = "")
+image_blank(width, height, color = "none", pseudo_image = "", defines = NULL)
 
 image_destroy(image)
 
 image_join(...)
 
 image_attributes(image)
+
+image_get_artifact(image, artifact = "")
 
 demo_image(path)
 }
@@ -77,6 +80,9 @@ demo_image(path)
 \item{depth}{color depth (either 8 or 16)}
 
 \item{strip}{drop image comments and metadata}
+
+\item{defines}{a named character vector with extra options to control reading.
+These are the \verb{-define key\{=value\}} settings in the \href{http://www.imagemagick.org/script/command-line-options.php#define}{command line tool}.}
 
 \item{width}{in pixels}
 
@@ -116,7 +122,7 @@ depending on the image}
 
 \item{frame}{integer setting which frame to extract from the image}
 
-\item{tidy}{converts raster data to long form for use with \link[ggplot2:geom_raster]{geom_raster}.
+\item{tidy}{converts raster data to long form for use with \link[ggplot2:geom_tile]{geom_raster}.
 If \code{FALSE} output is the same as \code{as.raster()}.}
 
 \item{animate}{support animations in the X11 display}
@@ -130,6 +136,9 @@ If \code{FALSE} output is the same as \code{as.raster()}.}
 specification for example \code{"radial-gradient:purple-yellow"}}
 
 \item{...}{several images or lists of images to be combined}
+
+\item{artifact}{string with name of the artifact to extract, see the
+\link{image_deskew} for an example.}
 }
 \description{
 Read, write and join or combine images. All image functions are vectorized, meaning
@@ -146,8 +155,8 @@ a single frame as a raw bitmap matrix with pixel values.
 
 For reading svg or pdf it is recommended to use \code{image_read_svg()} and \code{image_read_pdf()}
 if the \link[rsvg:rsvg]{rsvg} and \link[pdftools:pdf_render_page]{pdftools} R packages are available.
-These functions provide more rendering options and better quality than built-in svg/pdf
-rendering delegates from imagemagick itself.
+These functions provide more rendering options (including rendering of literal svg) and
+better quality than built-in svg/pdf rendering delegates from imagemagick itself.
 
 X11 is required for \code{image_display()} which is only works on some platforms. A more
 portable method is \code{image_browse()} which opens the image in a browser. RStudio has
@@ -182,11 +191,19 @@ if(require(webp)) image_read(webp::read_webp("example.webp"))
 unlink(c("example.webp", "output.png"))
 if(require(rsvg))
 tiger <- image_read_svg("http://jeroen.github.io/images/tiger.svg")
+svgtxt <- '<?xml version="1.0" encoding="UTF-8"?>
+<svg width="400" height="400" viewBox="0 0 400 400" fill="none">
+ <circle fill="steelblue" cx="200" cy="200" r="100" />
+ <circle fill="yellow" cx="200" cy="200" r="90" />
+</svg>'
+circles <- image_read_svg(svgtxt)
 if(require(pdftools))
 image_read_pdf(file.path(R.home('doc'), 'NEWS.pdf'), pages = 1, density = 100)
 # create a solid canvas
 image_blank(600, 400, "green")
 image_blank(600, 400, pseudo_image = "radial-gradient:purple-yellow")
+image_blank(200, 200, pseudo_image = "gradient:#3498db-#db3a34",
+  defines = c('gradient:direction' = 'east'))
 }
 \seealso{
 Other image: 

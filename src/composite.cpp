@@ -93,14 +93,17 @@ XPtrImage magick_image_crop( XPtrImage input, Rcpp::CharacterVector geometry,
     Magick::Geometry region(geometry.size() ? Geom(geometry.at(0)) : input->front().size());
     if(gravity.size())
       region = apply_geom_gravity(output->at(i), region, Gravity(gravity.at(0)));
-
-    MagickCore::ExceptionInfo *exception = MagickCore::AcquireExceptionInfo();
-    MagickCore::Image *newImage = MagickCore::CropImageToTiles(output->at(i).constImage(), std::string(region).c_str(), exception);
-#if MagickLibVersion >= 0x690
-    Magick::throwException(exception);
-#endif
-    exception=MagickCore::DestroyExceptionInfo(exception);
-    output->at(i).replaceImage(newImage);
+    if(region.percent()){
+      MagickCore::ExceptionInfo *exception = MagickCore::AcquireExceptionInfo();
+      MagickCore::Image *newImage = MagickCore::CropImageToTiles(output->at(i).constImage(), std::string(region).c_str(), exception);
+  #if MagickLibVersion >= 0x690
+      Magick::throwException(exception);
+  #endif
+      exception=MagickCore::DestroyExceptionInfo(exception);
+      output->at(i).replaceImage(newImage);
+    } else {
+      output->at(i).crop(region);
+    }
   }
   if(repage)
     for_each ( output->begin(), output->end(), Magick::pageImage(Magick::Geometry()));
@@ -115,4 +118,17 @@ XPtrImage magick_image_extent( XPtrImage input, Rcpp::CharacterVector geometry,
     output->at(i).extent(Geom(geometry.at(0)), Color(color.at(0)), Gravity(gravity.at(0)));
   }
   return output;
+}
+
+// [[Rcpp::export]]
+Rcpp::CharacterVector magick_image_artifact(XPtrImage input, std::string name){
+#if MagickLibVersion >= 0x687
+  Rcpp::CharacterVector artifacts(input->size());
+  for(size_t i = 0; i < input->size(); i++){
+    artifacts.at(i) = input->at(i).artifact(name);
+  }
+  return artifacts;
+#else
+  Rcpp::warning("ImageMagick too old to support artifacts (requires >= 6.8.7)");
+#endif
 }

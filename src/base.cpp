@@ -14,6 +14,17 @@ void my_magick_init(DllInfo *dll) {
   Magick::InitializeMagick("");
 }
 
+// [[Rcpp::export]]
+int magick_threads(size_t i = 0){
+#if MagickLibVersion >= 0x689
+  if(i > 0)
+    Magick::ResourceLimits::thread(i);
+  return Magick::ResourceLimits::thread();
+#else
+  return NA_INTEGER;
+#endif
+}
+
 //External R pointer finalizer
 void finalize_image( Image *image ){
   delete image;
@@ -46,9 +57,18 @@ XPtrImage create (){
 }
 
 // [[Rcpp::export]]
-XPtrImage magick_image_blank(size_t width, size_t height, const char * color, const char * pseudo_image){
+XPtrImage magick_image_blank(size_t width, size_t height, const char * color,
+                             const char * pseudo_image, SEXP options){
   Frame x(Geom(width, height), Color(color));
   x.magick("png");
+  if(Rf_length(options)){
+    SEXP names = Rf_getAttrib(options, R_NamesSymbol);
+    for(int i = 0; i < Rf_length(options); i++){
+      const char *name = CHAR(STRING_ELT(names, i));
+      const char *value = CHAR(STRING_ELT(options, i));
+      MagickCore::SetImageOption(x.imageInfo(), name, value);
+    }
+  }
   if(strlen(pseudo_image))
     x.read(pseudo_image);
   XPtrImage image = create(1);

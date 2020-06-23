@@ -3,9 +3,12 @@
 \name{fx}
 \alias{fx}
 \alias{image_fx}
+\alias{image_fx_sequence}
 \title{Image FX}
 \usage{
 image_fx(image, expression = "p", channel = NULL)
+
+image_fx_sequence(image, expression = "p")
 }
 \arguments{
 \item{image}{magick image object returned by \code{\link[=image_read]{image_read()}} or \code{\link[=image_graph]{image_graph()}}}
@@ -17,13 +20,15 @@ image_fx(image, expression = "p", channel = NULL)
 \description{
 Apply a custom an \href{https://www.imagemagick.org/script/fx.php}{fx expression} to the image.
 }
+\details{
+There are two different interfaces. The \link{image_fx} function simply applies
+the same fx to each frame in the input image. The \link{image_fx_sequence} function
+on the other hand treats the entire input vector as a sequence, allowing you
+to apply an expression with multiple input images. See examples.
+}
 \examples{
 # Show image_fx() expression
-if(magick_config()$version > "6.8.8"){
 img <- image_convert(logo, colorspace = "Gray")
-image_fx(img, expression = "pow(p, 0.5)")
-image_fx(img, expression = "rand()")
-
 gradient_x <- image_convolve(img, kernel = "Prewitt")
 gradient_y <- image_convolve(img, kernel = "Prewitt:90")
 gradient <- c(image_fx(gradient_x, expression = "p^2"),
@@ -31,7 +36,14 @@ gradient <- c(image_fx(gradient_x, expression = "p^2"),
 gradient <- image_flatten(gradient, operator = "Plus")
 #gradient <- image_fx(gradient, expression = "sqrt(p)")
 gradient
+
+\donttest{
+image_fx(img, expression = "pow(p, 0.5)")
+image_fx(img, expression = "rand()")
 }
+# Use multiple source images
+input <- c(logo, image_flop(logo))
+image_fx_sequence(input, "(u+v)/2")
 }
 \seealso{
 Other image: 

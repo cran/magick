@@ -236,6 +236,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// magick_attr_density
+Rcpp::CharacterVector magick_attr_density(XPtrImage input, Rcpp::CharacterVector density);
+RcppExport SEXP _magick_magick_attr_density(SEXP inputSEXP, SEXP densitySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtrImage >::type input(inputSEXP);
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type density(densitySEXP);
+    rcpp_result_gen = Rcpp::wrap(magick_attr_density(input, density));
+    return rcpp_result_gen;
+END_RCPP
+}
 // magick_image_info
 Rcpp::DataFrame magick_image_info(XPtrImage input);
 RcppExport SEXP _magick_magick_image_info(SEXP inputSEXP) {
@@ -255,6 +267,17 @@ BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::RawVector >::type data(dataSEXP);
     rcpp_result_gen = Rcpp::wrap(magick_image_as_raster(data));
+    return rcpp_result_gen;
+END_RCPP
+}
+// magick_threads
+int magick_threads(size_t i);
+RcppExport SEXP _magick_magick_threads(SEXP iSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< size_t >::type i(iSEXP);
+    rcpp_result_gen = Rcpp::wrap(magick_threads(i));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -292,8 +315,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // magick_image_blank
-XPtrImage magick_image_blank(size_t width, size_t height, const char * color, const char * pseudo_image);
-RcppExport SEXP _magick_magick_image_blank(SEXP widthSEXP, SEXP heightSEXP, SEXP colorSEXP, SEXP pseudo_imageSEXP) {
+XPtrImage magick_image_blank(size_t width, size_t height, const char * color, const char * pseudo_image, SEXP options);
+RcppExport SEXP _magick_magick_image_blank(SEXP widthSEXP, SEXP heightSEXP, SEXP colorSEXP, SEXP pseudo_imageSEXP, SEXP optionsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -301,7 +324,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< size_t >::type height(heightSEXP);
     Rcpp::traits::input_parameter< const char * >::type color(colorSEXP);
     Rcpp::traits::input_parameter< const char * >::type pseudo_image(pseudo_imageSEXP);
-    rcpp_result_gen = Rcpp::wrap(magick_image_blank(width, height, color, pseudo_image));
+    Rcpp::traits::input_parameter< SEXP >::type options(optionsSEXP);
+    rcpp_result_gen = Rcpp::wrap(magick_image_blank(width, height, color, pseudo_image, options));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -665,6 +689,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// magick_image_artifact
+Rcpp::CharacterVector magick_image_artifact(XPtrImage input, std::string name);
+RcppExport SEXP _magick_magick_image_artifact(SEXP inputSEXP, SEXP nameSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtrImage >::type input(inputSEXP);
+    Rcpp::traits::input_parameter< std::string >::type name(nameSEXP);
+    rcpp_result_gen = Rcpp::wrap(magick_image_artifact(input, name));
+    return rcpp_result_gen;
+END_RCPP
+}
 // magick_coder_info
 Rcpp::List magick_coder_info(Rcpp::String format);
 RcppExport SEXP _magick_magick_coder_info(SEXP formatSEXP) {
@@ -696,6 +732,18 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< std::string >::type expression(expressionSEXP);
     Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type channel(channelSEXP);
     rcpp_result_gen = Rcpp::wrap(magick_image_fx(input, expression, channel));
+    return rcpp_result_gen;
+END_RCPP
+}
+// magick_image_fx_sequence
+XPtrImage magick_image_fx_sequence(XPtrImage input, const std::string expr);
+RcppExport SEXP _magick_magick_image_fx_sequence(SEXP inputSEXP, SEXP exprSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtrImage >::type input(inputSEXP);
+    Rcpp::traits::input_parameter< const std::string >::type expr(exprSEXP);
+    rcpp_result_gen = Rcpp::wrap(magick_image_fx_sequence(input, expr));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -879,8 +927,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // magick_image_readbin
-XPtrImage magick_image_readbin(Rcpp::RawVector x, Rcpp::CharacterVector density, Rcpp::IntegerVector depth, bool strip);
-RcppExport SEXP _magick_magick_image_readbin(SEXP xSEXP, SEXP densitySEXP, SEXP depthSEXP, SEXP stripSEXP) {
+XPtrImage magick_image_readbin(Rcpp::RawVector x, Rcpp::CharacterVector density, Rcpp::IntegerVector depth, bool strip, Rcpp::CharacterVector defines);
+RcppExport SEXP _magick_magick_image_readbin(SEXP xSEXP, SEXP densitySEXP, SEXP depthSEXP, SEXP stripSEXP, SEXP definesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -888,13 +936,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type density(densitySEXP);
     Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type depth(depthSEXP);
     Rcpp::traits::input_parameter< bool >::type strip(stripSEXP);
-    rcpp_result_gen = Rcpp::wrap(magick_image_readbin(x, density, depth, strip));
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type defines(definesSEXP);
+    rcpp_result_gen = Rcpp::wrap(magick_image_readbin(x, density, depth, strip, defines));
     return rcpp_result_gen;
 END_RCPP
 }
 // magick_image_readpath
-XPtrImage magick_image_readpath(Rcpp::CharacterVector paths, Rcpp::CharacterVector density, Rcpp::IntegerVector depth, bool strip);
-RcppExport SEXP _magick_magick_image_readpath(SEXP pathsSEXP, SEXP densitySEXP, SEXP depthSEXP, SEXP stripSEXP) {
+XPtrImage magick_image_readpath(Rcpp::CharacterVector paths, Rcpp::CharacterVector density, Rcpp::IntegerVector depth, bool strip, Rcpp::CharacterVector defines);
+RcppExport SEXP _magick_magick_image_readpath(SEXP pathsSEXP, SEXP densitySEXP, SEXP depthSEXP, SEXP stripSEXP, SEXP definesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -902,7 +951,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type density(densitySEXP);
     Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type depth(depthSEXP);
     Rcpp::traits::input_parameter< bool >::type strip(stripSEXP);
-    rcpp_result_gen = Rcpp::wrap(magick_image_readpath(paths, density, depth, strip));
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type defines(definesSEXP);
+    rcpp_result_gen = Rcpp::wrap(magick_image_readpath(paths, density, depth, strip, defines));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1442,12 +1492,14 @@ static const R_CallMethodDef CallEntries[] = {
     {"_magick_magick_attr_format", (DL_FUNC) &_magick_magick_attr_format, 2},
     {"_magick_magick_attr_quality", (DL_FUNC) &_magick_magick_attr_quality, 2},
     {"_magick_magick_attr_quantize", (DL_FUNC) &_magick_magick_attr_quantize, 2},
+    {"_magick_magick_attr_density", (DL_FUNC) &_magick_magick_attr_density, 2},
     {"_magick_magick_image_info", (DL_FUNC) &_magick_magick_image_info, 1},
     {"_magick_magick_image_as_raster", (DL_FUNC) &_magick_magick_image_as_raster, 1},
+    {"_magick_magick_threads", (DL_FUNC) &_magick_magick_threads, 1},
     {"_magick_magick_image_dead", (DL_FUNC) &_magick_magick_image_dead, 1},
     {"_magick_magick_image_length", (DL_FUNC) &_magick_magick_image_length, 1},
     {"_magick_create", (DL_FUNC) &_magick_create, 1},
-    {"_magick_magick_image_blank", (DL_FUNC) &_magick_magick_image_blank, 4},
+    {"_magick_magick_image_blank", (DL_FUNC) &_magick_magick_image_blank, 5},
     {"_magick_copy", (DL_FUNC) &_magick_copy, 1},
     {"_magick_magick_image_rev", (DL_FUNC) &_magick_magick_image_rev, 1},
     {"_magick_magick_image_join", (DL_FUNC) &_magick_magick_image_join, 1},
@@ -1477,9 +1529,11 @@ static const R_CallMethodDef CallEntries[] = {
     {"_magick_magick_image_shadow_mask", (DL_FUNC) &_magick_magick_image_shadow_mask, 2},
     {"_magick_magick_image_crop", (DL_FUNC) &_magick_magick_image_crop, 4},
     {"_magick_magick_image_extent", (DL_FUNC) &_magick_magick_image_extent, 4},
+    {"_magick_magick_image_artifact", (DL_FUNC) &_magick_magick_image_artifact, 2},
     {"_magick_magick_coder_info", (DL_FUNC) &_magick_magick_coder_info, 1},
     {"_magick_magick_config_internal", (DL_FUNC) &_magick_magick_config_internal, 0},
     {"_magick_magick_image_fx", (DL_FUNC) &_magick_magick_image_fx, 3},
+    {"_magick_magick_image_fx_sequence", (DL_FUNC) &_magick_magick_image_fx_sequence, 2},
     {"_magick_magick_image_morphology", (DL_FUNC) &_magick_magick_image_morphology, 6},
     {"_magick_magick_image_convolve_kernel", (DL_FUNC) &_magick_magick_image_convolve_kernel, 5},
     {"_magick_magick_image_convolve_matrix", (DL_FUNC) &_magick_magick_image_convolve_matrix, 5},
@@ -1494,8 +1548,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_magick_magick_image_readbitmap_raster2", (DL_FUNC) &_magick_magick_image_readbitmap_raster2, 1},
     {"_magick_magick_image_readbitmap_raw", (DL_FUNC) &_magick_magick_image_readbitmap_raw, 1},
     {"_magick_magick_image_readbitmap_double", (DL_FUNC) &_magick_magick_image_readbitmap_double, 1},
-    {"_magick_magick_image_readbin", (DL_FUNC) &_magick_magick_image_readbin, 4},
-    {"_magick_magick_image_readpath", (DL_FUNC) &_magick_magick_image_readpath, 4},
+    {"_magick_magick_image_readbin", (DL_FUNC) &_magick_magick_image_readbin, 5},
+    {"_magick_magick_image_readpath", (DL_FUNC) &_magick_magick_image_readpath, 5},
     {"_magick_magick_image_read_list", (DL_FUNC) &_magick_magick_image_read_list, 1},
     {"_magick_magick_image_write", (DL_FUNC) &_magick_magick_image_write, 6},
     {"_magick_magick_image_write_frame", (DL_FUNC) &_magick_magick_image_write_frame, 3},
