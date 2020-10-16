@@ -220,10 +220,19 @@ XPtrImage magick_image_fft( XPtrImage image){
 }
 
 // [[Rcpp::export]]
-XPtrImage magick_image_montage( XPtrImage image){
+XPtrImage magick_image_montage( XPtrImage image, Rcpp::CharacterVector geometry, Rcpp::CharacterVector tile,
+                                Rcpp::CharacterVector gravity, std::string bg = "white", bool shadow = false){
   XPtrImage out = create();
-  Magick::Montage montageOpts = Magick::Montage();
-  montageImages(out.get(), image->begin(), image->end(), montageOpts);
+  Magick::Montage opts = Magick::Montage();
+  if(geometry.length())
+    opts.geometry(Geom(geometry.at(0)));
+  if(tile.length())
+    opts.tile(Geom(tile.at(0)));
+  if(gravity.length())
+    opts.gravity(Gravity(gravity.at(0)));
+  opts.shadow(shadow);
+  opts.backgroundColor(bg);
+  montageImages(out.get(), image->begin(), image->end(), opts);
   return out;
 }
 
@@ -259,4 +268,25 @@ XPtrImage magick_image_combine( XPtrImage input, const char * colorspace, const 
   XPtrImage output = create(1);
   output->push_back(x);
   return output;
+}
+
+// [[Rcpp::export]]
+XPtrImage magick_image_set_define( XPtrImage input, Rcpp::CharacterVector format,
+                                   Rcpp::CharacterVector name, Rcpp::CharacterVector value){
+  //NB: do NOT copy; modifies
+  if(!format.length() || !name.length() || !value.length())
+    throw std::runtime_error("Missing format or key");
+  std::string val(value.at(0));
+  std::string fmt(format.at(0));
+  std::string key(name.at(0));
+  for(size_t i = 0; i < input->size(); i++){
+    if(!val.length()){
+      input->at(i).defineSet(fmt, key, true); // empty string
+    } else if(Rcpp::CharacterVector::is_na(value.at(0))) {
+      input->at(i).defineSet(fmt, key, false); // unset
+    } else {
+      input->at(i).defineValue(fmt, key, val);
+    }
+  }
+  return input;
 }

@@ -9,7 +9,7 @@
 \description{
 The \code{magick} package for graphics and image processing in R. Important resources:
 \itemize{
-\item \href{https://bit.ly/magickintro}{R introduction vignette}: getting started
+\item \href{https://docs.ropensci.org/magick/articles/intro.html}{R introduction vignette}: getting started
 \item \href{https://www.imagemagick.org/Magick++/Image++.html}{Magick++ API} and
 \href{https://www.imagemagick.org/Magick++/STL.html}{Magick++ STL} detailed descriptions of methods and parameters
 }
@@ -43,6 +43,7 @@ Other image:
 \code{\link{attributes}()},
 \code{\link{color}},
 \code{\link{composite}},
+\code{\link{defines}},
 \code{\link{device}},
 \code{\link{edges}},
 \code{\link{editing}},

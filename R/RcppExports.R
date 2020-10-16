@@ -333,8 +333,8 @@ magick_image_fft <- function(image) {
     .Call('_magick_magick_image_fft', PACKAGE = 'magick', image)
 }
 
-magick_image_montage <- function(image) {
-    .Call('_magick_magick_image_montage', PACKAGE = 'magick', image)
+magick_image_montage <- function(image, geometry, tile, gravity, bg = "white", shadow = FALSE) {
+    .Call('_magick_magick_image_montage', PACKAGE = 'magick', image, geometry, tile, gravity, bg, shadow)
 }
 
 magick_image_strip <- function(input) {
@@ -347,6 +347,10 @@ magick_image_separate <- function(input, channel) {
 
 magick_image_combine <- function(input, colorspace, channel) {
     .Call('_magick_magick_image_combine', PACKAGE = 'magick', input, colorspace, channel)
+}
+
+magick_image_set_define <- function(input, format, name, value) {
+    .Call('_magick_magick_image_set_define', PACKAGE = 'magick', input, format, name, value)
 }
 
 list_options <- function(str) {
@@ -441,8 +445,8 @@ magick_image_implode <- function(input, factor) {
     .Call('_magick_magick_image_implode', PACKAGE = 'magick', input, factor)
 }
 
-magick_image_format <- function(input, format, type, space, depth, antialias, matte) {
-    .Call('_magick_magick_image_format', PACKAGE = 'magick', input, format, type, space, depth, antialias, matte)
+magick_image_format <- function(input, format, type, space, depth, antialias, matte, interlace) {
+    .Call('_magick_magick_image_format', PACKAGE = 'magick', input, format, type, space, depth, antialias, matte, interlace)
 }
 
 magick_image_page <- function(input, pagesize, density) {
@@ -471,5 +475,9 @@ magick_image_annotate <- function(input, text, gravity, location, rot, size, fon
 
 magick_image_compare <- function(input, reference_image, metric, fuzz_percent) {
     .Call('_magick_magick_image_compare', PACKAGE = 'magick', input, reference_image, metric, fuzz_percent)
+}
+
+magick_image_distort <- function(input, method, values, bestfit) {
+    .Call('_magick_magick_image_distort', PACKAGE = 'magick', input, method, values, bestfit)
 }
 

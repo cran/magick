@@ -31,12 +31,11 @@
 #' @family image
 #' @rdname editing
 #' @name editing
+#' @inheritParams defines
 #' @param path a file, url, or raster object or bitmap array
 #' @param image magick image object returned by [image_read()] or [image_graph()]
 #' @param density resolution to render pdf or svg
 #' @param strip drop image comments and metadata
-#' @param defines a named character vector with extra options to control reading.
-#' These are the `-define key{=value}` settings in the [command line tool](http://www.imagemagick.org/script/command-line-options.php#define).
 #' @examples
 #' # Download image from the web
 #' frink <- image_read("https://jeroen.github.io/images/frink.png")
@@ -96,7 +95,7 @@ For better results use image_read_svg() which uses the rsvg package.", call. = F
 
 #' @export
 #' @rdname editing
-#' @examples if(require(rsvg))
+#' @examples if(require(rsvg)){
 #' tiger <- image_read_svg("http://jeroen.github.io/images/tiger.svg")
 #' svgtxt <- '<?xml version="1.0" encoding="UTF-8"?>
 #' <svg width="400" height="400" viewBox="0 0 400 400" fill="none">
@@ -104,6 +103,7 @@ For better results use image_read_svg() which uses the rsvg package.", call. = F
 #'  <circle fill="yellow" cx="200" cy="200" r="90" />
 #' </svg>'
 #' circles <- image_read_svg(svgtxt)
+#' }
 image_read_svg <- function(path, width = NULL, height = NULL){
   path <- vapply(path, replace_url, character(1))
   images <- lapply(path, function(x){
@@ -210,7 +210,8 @@ convert_EBImage <- function(x){
 #' @param quality number between 0 and 100 for jpeg quality. Defaults to 75.
 #' @param comment text string added to the image metadata for supported formats
 image_write <- function(image, path = NULL, format = NULL, quality = NULL,
-                        depth = NULL, density = NULL, comment = NULL, flatten = FALSE){
+                        depth = NULL, density = NULL, comment = NULL, flatten = FALSE,
+                        defines = NULL){
   assert_image(image)
   if(!length(image))
     warning("Writing image with 0 frames")
@@ -221,6 +222,11 @@ image_write <- function(image, path = NULL, format = NULL, quality = NULL,
   depth <- as.integer(depth)
   density <- as.character(density)
   comment <- as.character(comment)
+  if(length(defines)){
+    image_set_defines(image, defines = defines)
+    defines[seq_along(defines)] = NA_character_;
+    on.exit(image_set_defines(image, defines = defines))
+  }
   buf <- magick_image_write(image, format, quality, depth, density, comment)
   if(is.character(path)){
     writeBin(buf, path)
@@ -239,17 +245,19 @@ image_write <- function(image, path = NULL, format = NULL, quality = NULL,
 #' @param colorspace string with a [`colorspace`](https://www.imagemagick.org/Magick++/Enumerations.html#ColorspaceType)
 #' from [colorspace_types][colorspace_types] for example `"gray"`, `"rgb"` or `"cmyk"`
 #' @param matte set to `TRUE` or `FALSE` to enable or disable transparency
+#' @param interlace string with [interlace](https://www.imagemagick.org/Magick++/Enumerations.html#InterlaceType)
 image_convert <- function(image, format = NULL, type = NULL, colorspace = NULL,
-                          depth = NULL, antialias = NULL, matte = NULL){
+                          depth = NULL, antialias = NULL, matte = NULL, interlace = NULL){
   assert_image(image)
   depth <- as.integer(depth)
   antialias <- as.logical(antialias)
   type <- as.character(type)
   colorspace <- as.character(colorspace)
   matte <- as.logical(matte)
+  interlace <- as.character(interlace)
   if(length(depth) && is.na(match(depth, c(8, 16))))
     stop('depth must be 8 or 16 bit')
-  magick_image_format(image, toupper(format), type, colorspace, depth, antialias, matte)
+  magick_image_format(image, toupper(format), type, colorspace, depth, antialias, matte, interlace)
 }
 
 image_write_frame <- function(image, format = "rgba", i = 1){
@@ -376,16 +384,4 @@ image_get_artifact <- function(image, artifact = ""){
 #' @rdname editing
 demo_image <- function(path){
   image_read(system.file('images', path, package = 'magick'))
-}
-
-validate_defines <- function(defines){
-  if(length(defines)){
-    if(!is.character(defines))
-      stop("Argumet 'defines' must be named character vector")
-    if(length(unique(names(defines))) != length(defines))
-      stop("Argument 'defines' does not have proper names")
-    return(defines)
-  } else {
-    return(character())
-  }
 }

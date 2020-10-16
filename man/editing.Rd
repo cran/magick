@@ -37,7 +37,8 @@ image_write(
   depth = NULL,
   density = NULL,
   comment = NULL,
-  flatten = FALSE
+  flatten = FALSE,
+  defines = NULL
 )
 
 image_convert(
@@ -47,7 +48,8 @@ image_convert(
   colorspace = NULL,
   depth = NULL,
   antialias = NULL,
-  matte = NULL
+  matte = NULL,
+  interlace = NULL
 )
 
 image_data(image, channels = NULL, frame = 1)
@@ -82,7 +84,8 @@ demo_image(path)
 \item{strip}{drop image comments and metadata}
 
 \item{defines}{a named character vector with extra options to control reading.
-These are the \verb{-define key\{=value\}} settings in the \href{http://www.imagemagick.org/script/command-line-options.php#define}{command line tool}.}
+These are the \verb{-define key\{=value\}} settings in the \href{http://www.imagemagick.org/script/command-line-options.php#define}{command line tool}.
+Use an empty string for value-less defines, and NA to unset a define.}
 
 \item{width}{in pixels}
 
@@ -115,6 +118,8 @@ from \link{colorspace_types} for example \code{"gray"}, \code{"rgb"} or \code{"c
 \item{antialias}{enable anti-aliasing for text and strokes}
 
 \item{matte}{set to \code{TRUE} or \code{FALSE} to enable or disable transparency}
+
+\item{interlace}{string with \href{https://www.imagemagick.org/Magick++/Enumerations.html#InterlaceType}{interlace}}
 
 \item{channels}{string with image channel(s) for example \code{"rgb"}, \code{"rgba"},
 \code{"cmyk"},\code{"gray"}, or \code{"ycbcr"}. Default is either \code{"gray"}, \code{"rgb"} or \code{"rgba"}
@@ -189,7 +194,7 @@ plot(raster)
 curl::curl_download("https://jeroen.github.io/images/example.webp", "example.webp")
 if(require(webp)) image_read(webp::read_webp("example.webp"))
 unlink(c("example.webp", "output.png"))
-if(require(rsvg))
+if(require(rsvg)){
 tiger <- image_read_svg("http://jeroen.github.io/images/tiger.svg")
 svgtxt <- '<?xml version="1.0" encoding="UTF-8"?>
 <svg width="400" height="400" viewBox="0 0 400 400" fill="none">
@@ -197,6 +202,7 @@ svgtxt <- '<?xml version="1.0" encoding="UTF-8"?>
  <circle fill="yellow" cx="200" cy="200" r="90" />
 </svg>'
 circles <- image_read_svg(svgtxt)
+}
 if(require(pdftools))
 image_read_pdf(file.path(R.home('doc'), 'NEWS.pdf'), pages = 1, density = 100)
 # create a solid canvas
@@ -213,6 +219,7 @@ Other image:
 \code{\link{attributes}()},
 \code{\link{color}},
 \code{\link{composite}},
+\code{\link{defines}},
 \code{\link{device}},
 \code{\link{edges}},
 \code{\link{effects}()},

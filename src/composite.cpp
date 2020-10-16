@@ -5,6 +5,8 @@
 
 Magick::Geometry apply_geom_gravity(Frame image, Magick::Geometry geom, Magick::GravityType gravity){
   MagickCore::RectangleInfo region(geom);
+  region.x = geom.xOff(); //auto-constructor loses negative sign
+  region.y = geom.yOff(); //https://github.com/ropensci/magick/issues/274
   MagickCore::GravityAdjustGeometry(image.columns(), image.rows(), gravity, &region);
   return region;
 }
@@ -129,6 +131,6 @@ Rcpp::CharacterVector magick_image_artifact(XPtrImage input, std::string name){
   }
   return artifacts;
 #else
-  Rcpp::warning("ImageMagick too old to support artifacts (requires >= 6.8.7)");
+  throw std::runtime_error("ImageMagick too old to support artifacts (requires >= 6.8.7)");
 #endif
 }
