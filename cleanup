@@ -1,2 +1,3 @@
 #!/bin/sh
 rm -f src/Makevars configure.log autobrew
+rm -Rf /private/var/folders/l5/gk7g18z52876d4lbk9tjhr0c0000gn/T/RtmprlOfzR/Rbuild3cb513c65539/.autobrew
