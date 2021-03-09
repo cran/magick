@@ -181,6 +181,10 @@ magick_image_quantize <- function(input, max, space, dither, depth) {
     .Call('_magick_magick_image_quantize', PACKAGE = 'magick', input, max, space, dither, depth)
 }
 
+magick_image_ordered_dither <- function(input, threshold_map) {
+    .Call('_magick_magick_image_ordered_dither', PACKAGE = 'magick', input, threshold_map)
+}
+
 magick_image_transparent <- function(input, color, fuzz_percent) {
     .Call('_magick_magick_image_transparent', PACKAGE = 'magick', input, color, fuzz_percent)
 }
@@ -201,6 +205,10 @@ magick_image_threshold_white <- function(input, threshold, channel) {
     .Call('_magick_magick_image_threshold_white', PACKAGE = 'magick', input, threshold, channel)
 }
 
+magick_image_level <- function(input, black_pct, white_pct, mid_point, channel) {
+    .Call('_magick_magick_image_level', PACKAGE = 'magick', input, black_pct, white_pct, mid_point, channel)
+}
+
 magick_image_composite <- function(input, composite_image, offset, gravity, composite, args) {
     .Call('_magick_magick_image_composite', PACKAGE = 'magick', input, composite_image, offset, gravity, composite, args)
 }
@@ -215,6 +223,10 @@ magick_image_frame <- function(input, color, geometry) {
 
 magick_image_shadow_mask <- function(input, geomstr) {
     .Call('_magick_magick_image_shadow_mask', PACKAGE = 'magick', input, geomstr)
+}
+
+magick_image_shade <- function(input, azimuth = 30, elevation = 30, color = FALSE) {
+    .Call('_magick_magick_image_shade', PACKAGE = 'magick', input, azimuth, elevation, color)
 }
 
 magick_image_crop <- function(input, geometry, gravity, repage) {
@@ -415,6 +427,10 @@ magick_image_noise <- function(input, noisetype) {
 
 magick_image_blur <- function(input, radius = 1, sigma = 0.5) {
     .Call('_magick_magick_image_blur', PACKAGE = 'magick', input, radius, sigma)
+}
+
+magick_image_motion_blur <- function(input, radius = 1, sigma = 0.5, angle = 0.0) {
+    .Call('_magick_magick_image_motion_blur', PACKAGE = 'magick', input, radius, sigma, angle)
 }
 
 magick_image_charcoal <- function(input, radius = 1, sigma = 0.5) {

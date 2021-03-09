@@ -87,6 +87,14 @@ XPtrImage magick_image_quantize( XPtrImage input, size_t max, Rcpp::CharacterVec
 }
 
 // [[Rcpp::export]]
+XPtrImage magick_image_ordered_dither( XPtrImage input, std::string threshold_map){
+  XPtrImage output = copy(input);
+  for(size_t i = 0; i < output->size(); i++)
+    output->at(i).orderedDither(threshold_map);
+  return output;
+}
+
+// [[Rcpp::export]]
 XPtrImage magick_image_transparent( XPtrImage input, const char * color, double fuzz_percent){
   double fuzz = fuzz_pct_to_abs(fuzz_percent);
   XPtrImage output = copy(input);
@@ -154,5 +162,21 @@ XPtrImage magick_image_threshold_white( XPtrImage input,  const std::string thre
 #else
   Rcpp::warning("ImageMagick too old to support whiteThreshold (requires >= 6.8.7)");
 #endif
+  return output;
+}
+
+// [[Rcpp::export]]
+XPtrImage magick_image_level( XPtrImage input, double black_pct, double white_pct, double mid_point,
+                              Rcpp::CharacterVector channel){
+  XPtrImage output = copy(input);
+  double black_point = fuzz_pct_to_abs(black_pct);
+  double white_point = fuzz_pct_to_abs(white_pct);
+  if(channel.length()){
+    Magick::ChannelType chan = Channel(std::string(channel.at(0)).c_str());
+    for(size_t i = 0; i < output->size(); i++)
+      output->at(i).levelChannel(chan, black_point, white_point, mid_point);
+  } else {
+    for_each(output->begin(), output->end(), Magick::levelImage(black_point, white_point, mid_point));
+  }
   return output;
 }

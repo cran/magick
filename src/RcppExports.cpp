@@ -543,6 +543,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// magick_image_ordered_dither
+XPtrImage magick_image_ordered_dither(XPtrImage input, std::string threshold_map);
+RcppExport SEXP _magick_magick_image_ordered_dither(SEXP inputSEXP, SEXP threshold_mapSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtrImage >::type input(inputSEXP);
+    Rcpp::traits::input_parameter< std::string >::type threshold_map(threshold_mapSEXP);
+    rcpp_result_gen = Rcpp::wrap(magick_image_ordered_dither(input, threshold_map));
+    return rcpp_result_gen;
+END_RCPP
+}
 // magick_image_transparent
 XPtrImage magick_image_transparent(XPtrImage input, const char * color, double fuzz_percent);
 RcppExport SEXP _magick_magick_image_transparent(SEXP inputSEXP, SEXP colorSEXP, SEXP fuzz_percentSEXP) {
@@ -606,6 +618,21 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// magick_image_level
+XPtrImage magick_image_level(XPtrImage input, double black_pct, double white_pct, double mid_point, Rcpp::CharacterVector channel);
+RcppExport SEXP _magick_magick_image_level(SEXP inputSEXP, SEXP black_pctSEXP, SEXP white_pctSEXP, SEXP mid_pointSEXP, SEXP channelSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtrImage >::type input(inputSEXP);
+    Rcpp::traits::input_parameter< double >::type black_pct(black_pctSEXP);
+    Rcpp::traits::input_parameter< double >::type white_pct(white_pctSEXP);
+    Rcpp::traits::input_parameter< double >::type mid_point(mid_pointSEXP);
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type channel(channelSEXP);
+    rcpp_result_gen = Rcpp::wrap(magick_image_level(input, black_pct, white_pct, mid_point, channel));
+    return rcpp_result_gen;
+END_RCPP
+}
 // magick_image_composite
 XPtrImage magick_image_composite(XPtrImage input, XPtrImage composite_image, const char * offset, const char * gravity, const char * composite, Rcpp::CharacterVector args);
 RcppExport SEXP _magick_magick_image_composite(SEXP inputSEXP, SEXP composite_imageSEXP, SEXP offsetSEXP, SEXP gravitySEXP, SEXP compositeSEXP, SEXP argsSEXP) {
@@ -658,6 +685,20 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< XPtrImage >::type input(inputSEXP);
     Rcpp::traits::input_parameter< const char * >::type geomstr(geomstrSEXP);
     rcpp_result_gen = Rcpp::wrap(magick_image_shadow_mask(input, geomstr));
+    return rcpp_result_gen;
+END_RCPP
+}
+// magick_image_shade
+XPtrImage magick_image_shade(XPtrImage input, double azimuth, double elevation, bool color);
+RcppExport SEXP _magick_magick_image_shade(SEXP inputSEXP, SEXP azimuthSEXP, SEXP elevationSEXP, SEXP colorSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtrImage >::type input(inputSEXP);
+    Rcpp::traits::input_parameter< double >::type azimuth(azimuthSEXP);
+    Rcpp::traits::input_parameter< double >::type elevation(elevationSEXP);
+    Rcpp::traits::input_parameter< bool >::type color(colorSEXP);
+    rcpp_result_gen = Rcpp::wrap(magick_image_shade(input, azimuth, elevation, color));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1288,6 +1329,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// magick_image_motion_blur
+XPtrImage magick_image_motion_blur(XPtrImage input, const double radius, const double sigma, const double angle);
+RcppExport SEXP _magick_magick_image_motion_blur(SEXP inputSEXP, SEXP radiusSEXP, SEXP sigmaSEXP, SEXP angleSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtrImage >::type input(inputSEXP);
+    Rcpp::traits::input_parameter< const double >::type radius(radiusSEXP);
+    Rcpp::traits::input_parameter< const double >::type sigma(sigmaSEXP);
+    Rcpp::traits::input_parameter< const double >::type angle(angleSEXP);
+    rcpp_result_gen = Rcpp::wrap(magick_image_motion_blur(input, radius, sigma, angle));
+    return rcpp_result_gen;
+END_RCPP
+}
 // magick_image_charcoal
 XPtrImage magick_image_charcoal(XPtrImage input, const double radius, const double sigma);
 RcppExport SEXP _magick_magick_image_charcoal(SEXP inputSEXP, SEXP radiusSEXP, SEXP sigmaSEXP) {
@@ -1553,15 +1608,18 @@ static const R_CallMethodDef CallEntries[] = {
     {"_magick_magick_image_equalize", (DL_FUNC) &_magick_magick_image_equalize, 1},
     {"_magick_magick_image_median", (DL_FUNC) &_magick_magick_image_median, 2},
     {"_magick_magick_image_quantize", (DL_FUNC) &_magick_magick_image_quantize, 5},
+    {"_magick_magick_image_ordered_dither", (DL_FUNC) &_magick_magick_image_ordered_dither, 2},
     {"_magick_magick_image_transparent", (DL_FUNC) &_magick_magick_image_transparent, 3},
     {"_magick_magick_image_background", (DL_FUNC) &_magick_magick_image_background, 2},
     {"_magick_magick_image_lat", (DL_FUNC) &_magick_magick_image_lat, 2},
     {"_magick_magick_image_threshold_black", (DL_FUNC) &_magick_magick_image_threshold_black, 3},
     {"_magick_magick_image_threshold_white", (DL_FUNC) &_magick_magick_image_threshold_white, 3},
+    {"_magick_magick_image_level", (DL_FUNC) &_magick_magick_image_level, 5},
     {"_magick_magick_image_composite", (DL_FUNC) &_magick_magick_image_composite, 6},
     {"_magick_magick_image_border", (DL_FUNC) &_magick_magick_image_border, 4},
     {"_magick_magick_image_frame", (DL_FUNC) &_magick_magick_image_frame, 3},
     {"_magick_magick_image_shadow_mask", (DL_FUNC) &_magick_magick_image_shadow_mask, 2},
+    {"_magick_magick_image_shade", (DL_FUNC) &_magick_magick_image_shade, 4},
     {"_magick_magick_image_crop", (DL_FUNC) &_magick_magick_image_crop, 4},
     {"_magick_magick_image_extent", (DL_FUNC) &_magick_magick_image_extent, 4},
     {"_magick_magick_image_artifact", (DL_FUNC) &_magick_magick_image_artifact, 2},
@@ -1612,6 +1670,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_magick_magick_image_connect", (DL_FUNC) &_magick_magick_image_connect, 2},
     {"_magick_magick_image_noise", (DL_FUNC) &_magick_magick_image_noise, 2},
     {"_magick_magick_image_blur", (DL_FUNC) &_magick_magick_image_blur, 3},
+    {"_magick_magick_image_motion_blur", (DL_FUNC) &_magick_magick_image_motion_blur, 4},
     {"_magick_magick_image_charcoal", (DL_FUNC) &_magick_magick_image_charcoal, 3},
     {"_magick_magick_image_deskew", (DL_FUNC) &_magick_magick_image_deskew, 2},
     {"_magick_magick_image_emboss", (DL_FUNC) &_magick_magick_image_emboss, 3},
