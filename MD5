@@ -1,7 +1,7 @@
-126fe2044c8f4daa29ccfd399a1b44f2 *DESCRIPTION
+4df50145032ee004163183740049bd2d *DESCRIPTION
 98c71b5eae0ac8dabb055bd8883b8398 *LICENSE
 e4d8c5f514ae35d4e24685556604ba24 *NAMESPACE
-327c8dfbed2369fb12029c5786a64826 *NEWS
+13cdfbc159dfe51aceb626cf7d52b92b *NEWS
 682fd2c9b0d1d4a2b897002f67667486 *R/EBImage.R
 60c339278987a6dddbf48be8cf9aed47 *R/RcppExports.R
 53832e30e4f9024064ccf20e0947d96c *R/analysis.R
@@ -10,7 +10,7 @@ ea11f4df1bfc83ddb70bc8f0dfc29f51 *R/attributes.R
 e611855e1aff58c6cf5955bc9564f9e0 *R/autoview.R
 9979955a7efea389166d00967c1166f9 *R/base.R
 fe107ff7fa55070d69824d8cb6abf7f0 *R/coder.R
-114cb91c527fff0383bbeb8be0173379 *R/color.R
+ba77f8ff38e4b5b288b7f1443f73085c *R/color.R
 59b91add4b8ccb3e72e691e6a3ffcf77 *R/composite.R
 c36c0b73b2ab37f565a2b5639afc4606 *R/defines.R
 510204b53f82a0f74ba3a469a0c7a271 *R/device.R
@@ -40,7 +40,7 @@ d41d8cd98f00b204e9800998ecf8427e *configure.win
 7c994af6e0e18d5d673c660e9895abcc *inst/WORDLIST
 1aa2647bace45a8245648ca49507dfd7 *inst/doc/intro.R
 1e2d15a8601b1eb6f6c9cc5170a2447a *inst/doc/intro.Rmd
-fb334a217da08d6964be0939558a1bd9 *inst/doc/intro.html
+52c11a8a954ee9e17adb8f0a5f750106 *inst/doc/intro.html
 0c94b7f085eadae0ef17b6b567a32905 *inst/images/building.jpg
 b371cc96fca027e7788ed35e75e7e6b7 *inst/images/man.gif
 d53e923a295b5b416a6f823eaaf3b9ec *inst/images/objects.gif
@@ -51,7 +51,7 @@ c8081c708f18aa08315d5d6feb5692da *man/analysis.Rd
 0102436a342d136e6bc6be42aadf5068 *man/as_EBImage.Rd
 e2a99fecae2602c54d4f6ae84c7100e3 *man/attributes.Rd
 bc36d28887e44cd6ca2627c42a4eb206 *man/autoviewer.Rd
-fc268a1f64eed25e8ca10d356f5394b7 *man/color.Rd
+a6bf755c2b00a3364aab1e35b622b6ad *man/color.Rd
 4ede4a781da4cf947b55f8cd0bc76398 *man/composite.Rd
 b9e2b970de7426f19dd4af1c1499c192 *man/config.Rd
 aaeff6aeb4c88d03cb14e6b8f31d255b *man/defines.Rd
@@ -74,7 +74,7 @@ b21fe48282a7266b57ed5658fdfc6128 *man/transform.Rd
 2e75d42b7c0ce24a167bdb9bf1428b89 *man/video.Rd
 ffb3e9a66e79e5078fbc60b1547fe4b7 *man/wizard.Rd
 c88a7675f384535de28ecc0a4ad8af16 *src/Makevars.in
-7f704b1d2634072675245b78a70dbebb *src/Makevars.win
+f029f2acb4e38a08b82dfa09b0cac8cd *src/Makevars.win
 550e4085b87ea86fb2509fef76033ee0 *src/RcppExports.cpp
 017eaf06d2bee74f9ecb346d97d7b2e9 *src/animation.cpp
 45f85c6924ac77fff23edbddedd0bf9d *src/attributes.cpp
