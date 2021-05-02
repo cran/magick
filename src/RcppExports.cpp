@@ -21,6 +21,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// magick_image_coalesce
+XPtrImage magick_image_coalesce(XPtrImage input);
+RcppExport SEXP _magick_magick_image_coalesce(SEXP inputSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< XPtrImage >::type input(inputSEXP);
+    rcpp_result_gen = Rcpp::wrap(magick_image_coalesce(input));
+    return rcpp_result_gen;
+END_RCPP
+}
 // magick_image_morph
 XPtrImage magick_image_morph(XPtrImage image, int frames);
 RcppExport SEXP _magick_magick_image_morph(SEXP imageSEXP, SEXP framesSEXP) {
@@ -1564,6 +1575,7 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_magick_magick_image_animate", (DL_FUNC) &_magick_magick_image_animate, 5},
+    {"_magick_magick_image_coalesce", (DL_FUNC) &_magick_magick_image_coalesce, 1},
     {"_magick_magick_image_morph", (DL_FUNC) &_magick_magick_image_morph, 2},
     {"_magick_magick_image_mosaic", (DL_FUNC) &_magick_magick_image_mosaic, 2},
     {"_magick_magick_image_flatten", (DL_FUNC) &_magick_magick_image_flatten, 2},

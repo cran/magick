@@ -22,6 +22,8 @@ image_animate(
   optimize = FALSE
 )
 
+image_coalesce(image)
+
 image_morph(image, frames = 8)
 
 image_mosaic(image, operator = NULL)

@@ -36,6 +36,15 @@ XPtrImage magick_image_animate( XPtrImage input, Rcpp::IntegerVector delay,
   return output;
 }
 
+
+// [[Rcpp::export]]
+XPtrImage magick_image_coalesce( XPtrImage input){
+  XPtrImage output = create();
+  // this fixes optimized gif images
+  coalesceImages( output.get(), input->begin(), input->end());
+  return output;
+}
+
 // [[Rcpp::export]]
 XPtrImage magick_image_morph( XPtrImage image, int frames){
   XPtrImage out = create();
