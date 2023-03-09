@@ -27,3 +27,15 @@ magick_config <- function(){
   out$threads = magick_threads()
   out
 }
+
+#' @rdname config
+#' @export
+#' @param seed integer with seed value to use
+#' @examples # Reproduce random image
+#' magick_set_seed(123)
+#' image_blank(200,200, pseudo_image = "plasma:fractal")
+magick_set_seed <- function(seed){
+  stopifnot(length(seed) == 1)
+  seed <- as.integer(seed)
+  set_magick_seed(seed)
+}

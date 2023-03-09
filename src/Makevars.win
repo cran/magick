@@ -10,8 +10,6 @@ PKG_CPPFLAGS = -I$(IMPATH)/include${LIBBUILD} \
 
 PKG_CXXFLAGS = -DMAGICKCORE_HDRI_ENABLE=0 -DMAGICKCORE_QUANTUM_DEPTH=16 -D_LIB
 
-CXX_STD = CXX11
-
 PKG_LIBS = \
 	-L$(IMPATH)/lib${LIBBUILD} \
 	-L$(IMPATH)/lib${R_ARCH}${CRT} \
@@ -32,7 +30,7 @@ clean:
 	rm -f $(OBJECTS) $(SHLIB)
 
 winlibs:
-	@echo "Linking to imagemagagick-$(VERSION)"
+	@echo "Linking to imagemagick-$(VERSION)"
 	"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" "../tools/winlibs.R" ${VERSION}
 
 .PHONY: all winlibs clean

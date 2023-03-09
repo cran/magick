@@ -3,14 +3,19 @@
 \name{coder_info}
 \alias{coder_info}
 \alias{magick_config}
+\alias{magick_set_seed}
 \title{Magick Configuration}
 \usage{
 coder_info(format)
 
 magick_config()
+
+magick_set_seed(seed)
 }
 \arguments{
 \item{format}{image format such as \code{png}, \code{tiff} or \code{pdf}.}
+
+\item{seed}{integer with seed value to use}
 }
 \description{
 ImageMagick can be configured to support various additional tool and formats
@@ -26,6 +31,9 @@ coder_info("jpg")
 coder_info("pdf")
 coder_info("tiff")
 coder_info("gif")
+# Reproduce random image
+magick_set_seed(123)
+image_blank(200,200, pseudo_image = "plasma:fractal")
 }
 \references{
 \url{https://www.imagemagick.org/Magick++/CoderInfo.html}
