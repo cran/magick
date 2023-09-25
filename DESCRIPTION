@@ -1,7 +1,7 @@
 Package: magick
 Type: Package
 Title: Advanced Graphics and Image-Processing in R
-Version: 2.7.5
+Version: 2.8.0
 Authors@R: person("Jeroen", "Ooms", role = c("aut", "cre"), email = "jeroen@berkeley.edu",
     comment = c(ORCID = "0000-0002-4035-0289"))
 Description: Bindings to 'ImageMagick': the most comprehensive open-source image
@@ -14,8 +14,8 @@ Description: Bindings to 'ImageMagick': the most comprehensive open-source image
     version of the package includes a native graphics device for creating 
     in-memory graphics or drawing onto images using pixel coordinates.
 License: MIT + file LICENSE
-URL: https://docs.ropensci.org/magick/ (website)
-        https://github.com/ropensci/magick (devel)
+URL: https://docs.ropensci.org/magick/
+        https://ropensci.r-universe.dev/magick
 BugReports: https://github.com/ropensci/magick/issues
 SystemRequirements: ImageMagick++: ImageMagick-c++-devel (rpm) or
         libmagick++-dev (deb)
@@ -29,8 +29,8 @@ Encoding: UTF-8
 RoxygenNote: 7.2.3
 Language: en-US
 NeedsCompilation: yes
-Packaged: 2023-08-07 11:37:02 UTC; jeroen
+Packaged: 2023-09-25 17:16:00 UTC; jeroen
 Author: Jeroen Ooms [aut, cre] (<https://orcid.org/0000-0002-4035-0289>)
 Maintainer: Jeroen Ooms <jeroen@berkeley.edu>
 Repository: CRAN
-Date/Publication: 2023-08-07 12:50:05 UTC
+Date/Publication: 2023-09-25 22:00:08 UTC

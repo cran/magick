@@ -1,7 +1,7 @@
-4ca33c39d0065d58506fa9a7dca5de8f *DESCRIPTION
+b7e2435ec8a1388bfeddd70d61bbb539 *DESCRIPTION
 98c71b5eae0ac8dabb055bd8883b8398 *LICENSE
 30a87c2aa3429540b4caf2dde3d23339 *NAMESPACE
-5ff184826f2da06735844769345051b8 *NEWS
+edddcf9f4dbbc646ed06700c534b953f *NEWS
 682fd2c9b0d1d4a2b897002f67667486 *R/EBImage.R
 0f4d8f4fd02c223f283af275d3d6d256 *R/RcppExports.R
 53832e30e4f9024064ccf20e0947d96c *R/analysis.R
@@ -38,9 +38,9 @@ ee531fd88d670b1ec68dc1e1bc92e757 *R/utils.R
 63a4bccb7d3d6396d05da554755b9b03 *configure
 d41d8cd98f00b204e9800998ecf8427e *configure.win
 7c994af6e0e18d5d673c660e9895abcc *inst/WORDLIST
-45ec16e4faeca72517dc0529be5b3602 *inst/doc/intro.R
+1aa2647bace45a8245648ca49507dfd7 *inst/doc/intro.R
 1e2d15a8601b1eb6f6c9cc5170a2447a *inst/doc/intro.Rmd
-8400932f845cf8516ff89613b0bc92fa *inst/doc/intro.html
+ef3d25323cd965eccbda622d475dd0b3 *inst/doc/intro.html
 0c94b7f085eadae0ef17b6b567a32905 *inst/images/building.jpg
 b371cc96fca027e7788ed35e75e7e6b7 *inst/images/man.gif
 d53e923a295b5b416a6f823eaaf3b9ec *inst/images/objects.gif
@@ -74,7 +74,7 @@ b21fe48282a7266b57ed5658fdfc6128 *man/transform.Rd
 2e75d42b7c0ce24a167bdb9bf1428b89 *man/video.Rd
 ffb3e9a66e79e5078fbc60b1547fe4b7 *man/wizard.Rd
 4cdf157508c65cf8620f370db9b450cc *src/Makevars.in
-a25b4cb21e631b23b62c5e79b9ad77e5 *src/Makevars.win
+a1cfc559583f685ed3943d911d92a125 *src/Makevars.win
 7fa6ea191c187821c87e2f17406b6ce3 *src/RcppExports.cpp
 b93fe8ef3aefeee7b8f594880730f88e *src/animation.cpp
 45f85c6924ac77fff23edbddedd0bf9d *src/attributes.cpp
@@ -98,5 +98,5 @@ ae30e16eddf5d12480c3df6ff4956227 *tests/encoding.R
 0bf21f6c581f0e82f9328cd8cda1af60 *tests/imagemagick.Rout.save
 bc882e5235bfdccc9e49f99290365b40 *tests/spelling.R
 99dbb39b565804b5e1cc1257ea170e0d *tools/mimetypes.R
-4553c2a8745ebb7d2a6b23e111c5b198 *tools/winlibs.R
+5e57a52d1a76fe5fb2c0192f5b1a5bbb *tools/winlibs.R
 1e2d15a8601b1eb6f6c9cc5170a2447a *vignettes/intro.Rmd

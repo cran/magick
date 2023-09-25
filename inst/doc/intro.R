@@ -8,13 +8,13 @@ library(magick)
 str(magick::magick_config())
 
 ## ---- eval = require(rsvg, quietly = TRUE)------------------------------------
-#  library(magick)
-#  tiger <- image_read_svg('http://jeroen.github.io/images/tiger.svg', width = 350)
-#  print(tiger)
+library(magick)
+tiger <- image_read_svg('http://jeroen.github.io/images/tiger.svg', width = 350)
+print(tiger)
 
 ## ---- eval = require(rsvg, quietly = TRUE)------------------------------------
-#  tiger_png <- image_convert(tiger, "png")
-#  image_info(tiger_png)
+tiger_png <- image_convert(tiger, "png")
+image_info(tiger_png)
 
 ## -----------------------------------------------------------------------------
 # Example image
