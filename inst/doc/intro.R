@@ -1,4 +1,4 @@
-## ---- echo = FALSE------------------------------------------------------------
+## ----echo = FALSE-------------------------------------------------------------
 dev.off <- function(){
   invisible(grDevices::dev.off())
 }
@@ -7,12 +7,12 @@ dev.off <- function(){
 library(magick)
 str(magick::magick_config())
 
-## ---- eval = require(rsvg, quietly = TRUE)------------------------------------
+## ----eval = require(rsvg, quietly = TRUE)-------------------------------------
 library(magick)
 tiger <- image_read_svg('http://jeroen.github.io/images/tiger.svg', width = 350)
 print(tiger)
 
-## ---- eval = require(rsvg, quietly = TRUE)------------------------------------
+## ----eval = require(rsvg, quietly = TRUE)-------------------------------------
 tiger_png <- image_convert(tiger, "png")
 image_info(tiger_png)
 
@@ -148,7 +148,7 @@ image_append(image_scale(img, "100"), stack = TRUE)
 bigdatafrink <- image_scale(image_rotate(image_background(frink, "none"), 300), "x200")
 image_composite(image_scale(bigdata, "x400"), bigdatafrink, offset = "+180+100")
 
-## ---- eval = require(pdftools, quietly = TRUE)--------------------------------
+## ----eval = require(pdftools, quietly = TRUE)---------------------------------
 manual <- image_read_pdf('https://cloud.r-project.org/web/packages/magick/magick.pdf', density = 72)
 image_info(manual)
 manual[1]
@@ -224,12 +224,12 @@ print(animation)
 ## -----------------------------------------------------------------------------
 plot(as.raster(frink))
 
-## ---- fig.width=7, fig.height=5-----------------------------------------------
+## ----fig.width=7, fig.height=5------------------------------------------------
 # Print over another graphic
 plot(cars)
 rasterImage(frink, 21, 0, 25, 80)
 
-## ---- fig.width=5, fig.height=3-----------------------------------------------
+## ----fig.width=5, fig.height=3------------------------------------------------
 library(ggplot2)
 library(grid)
 qplot(speed, dist, data = cars, geom = c("point", "smooth"))
@@ -238,7 +238,7 @@ grid.raster(frink)
 ## ----eval=FALSE---------------------------------------------------------------
 #  install.packages("tesseract")
 
-## ---- eval = require(tesseract, quietly = TRUE)-------------------------------
+## ----eval = require(tesseract, quietly = TRUE)--------------------------------
 img <- image_read("http://jeroen.github.io/images/testocr.png")
 print(img)
 
