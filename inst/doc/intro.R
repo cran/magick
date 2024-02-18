@@ -71,8 +71,8 @@ img_blurred <- image_convolve(img, kern)
 image_append(c(img, img_blurred))
 
 ## -----------------------------------------------------------------------------
-img %>% image_convolve('Sobel') %>% image_negate()
-img %>% image_convolve('DoG:0,0,2') %>% image_negate()
+img |> image_convolve('Sobel') |> image_negate()
+img |> image_convolve('DoG:0,0,2') |> image_negate()
 
 ## -----------------------------------------------------------------------------
 # Add some text
@@ -99,24 +99,24 @@ test <- image_annotate(test, "This is how we combine transformations", color = "
 print(test)
 
 ## -----------------------------------------------------------------------------
-image_read("https://jeroen.github.io/images/frink.png") %>%
-  image_rotate(270) %>%
-  image_background("blue", flatten = TRUE) %>%
-  image_border("red", "10x10") %>%
+image_read("https://jeroen.github.io/images/frink.png") |>
+  image_rotate(270) |>
+  image_background("blue", flatten = TRUE) |>
+  image_border("red", "10x10") |>
   image_annotate("The same thing with pipes", color = "white", size = 30)
 
 ## -----------------------------------------------------------------------------
 # Download earth gif and make it a bit smaller for vignette
-earth <- image_read("https://jeroen.github.io/images/earth.gif") %>%
-  image_scale("200x") %>%
+earth <- image_read("https://jeroen.github.io/images/earth.gif") |>
+  image_scale("200x") |>
   image_quantize(128)
 
 length(earth)
 earth
 head(image_info(earth))
 
-rev(earth) %>% 
-  image_flip() %>% 
+rev(earth) |> 
+  image_flip() |> 
   image_annotate("meanwhile in Australia", size = 20, color = "white")
 
 ## -----------------------------------------------------------------------------
@@ -159,9 +159,9 @@ image_animate(image_scale(img, "200x200"), fps = 1, dispose = "previous")
 ## -----------------------------------------------------------------------------
 newlogo <- image_scale(image_read("https://jeroen.github.io/images/Rlogo.png"))
 oldlogo <- image_scale(image_read("https://jeroen.github.io/images/Rlogo-old.png"))
-image_resize(c(oldlogo, newlogo), '200x150!') %>%
-  image_background('white') %>%
-  image_morph() %>%
+image_resize(c(oldlogo, newlogo), '200x150!') |>
+  image_background('white') |>
+  image_morph() |>
   image_animate(optimize = TRUE)
 
 ## -----------------------------------------------------------------------------

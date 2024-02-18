@@ -3,6 +3,7 @@
 \name{options}
 \alias{options}
 \alias{magick_options}
+\alias{magick_fonts}
 \alias{option_types}
 \alias{filter_types}
 \alias{metric_types}
@@ -20,9 +21,12 @@
 \alias{decoration_types}
 \alias{compress_types}
 \alias{distort_types}
+\alias{dump_option_info}
 \title{Magick Options}
 \usage{
 magick_options()
+
+magick_fonts()
 
 option_types()
 
@@ -57,11 +61,21 @@ decoration_types()
 compress_types()
 
 distort_types()
+
+dump_option_info(option = "font")
+}
+\arguments{
+\item{option}{one of the \link{option_types}}
 }
 \description{
 List option types and values supported in your version of ImageMagick. For
 descriptions see
 \href{https://www.imagemagick.org/Magick++/Enumerations.html}{ImageMagick Enumerations}.
+}
+\details{
+The \link{dump_option_info} function is equivalent to calling \code{convert -list [option]} on
+the command line. It does not return anything, it only makes ImageMagick print
+stuff to the console, use only for debugging.
 }
 \references{
 ImageMagick Manual: \href{https://www.imagemagick.org/Magick++/Enumerations.html}{Enumerations}
