@@ -1,7 +1,7 @@
-b1e1c59f38ac93872d04de4e99d4bae5 *DESCRIPTION
+76191955e7c6549937eb9f4969c215a6 *DESCRIPTION
 66b8d6ae536d10339b4a28d0c792c08c *LICENSE
 752987b72e0c70cfd182b5c1b4e3f0f6 *NAMESPACE
-737abda5c43adffe8cd65f965a7b86d5 *NEWS
+f66720018efb966cc423f3fd54e6d18b *NEWS
 682fd2c9b0d1d4a2b897002f67667486 *R/EBImage.R
 ad2dfe7ec75588e50eba24d4a6b8f29f *R/RcppExports.R
 53832e30e4f9024064ccf20e0947d96c *R/analysis.R
@@ -15,7 +15,7 @@ e32b426eeea30f12f46691b05e0327ee *R/composite.R
 c86dc0f163ac86225232b08759844168 *R/defines.R
 afde9c339f0f1bf0230171d290bada3e *R/device.R
 0c1878c322ca04e237b4ef8ea2ebd89b *R/edges.R
-62f0cede8f0e3558b66e463014b50ab3 *R/edit.R
+9b5655dbe4e65404b53ab2131875c44a *R/edit.R
 e66e9c22b9ff137445b845d4ee228616 *R/effects.R
 1ef42ffadd5c4cfbd0ca894dc321660f *R/fx.R
 ce95133085e7bf9f9f4e823c45e3763f *R/geometry.R
@@ -38,9 +38,9 @@ a8f4963fbeaee57d5b0c203b97680673 *cleanup
 b1f82f877d05ffc83a054ca9078db56e *configure
 d41d8cd98f00b204e9800998ecf8427e *configure.win
 7c994af6e0e18d5d673c660e9895abcc *inst/WORDLIST
-0f6944a0c6c05ef07d816eacdab4b423 *inst/doc/intro.R
+16450533cb9e1650fa3cdd4c0001b128 *inst/doc/intro.R
 c3bb4fc320f45ff0ccf02d88b2b9be7e *inst/doc/intro.Rmd
-83989e8df1bf75f2f44057d42454c845 *inst/doc/intro.html
+a992e7fb5c14e32e39286bc53f372e83 *inst/doc/intro.html
 0c94b7f085eadae0ef17b6b567a32905 *inst/images/building.jpg
 b371cc96fca027e7788ed35e75e7e6b7 *inst/images/man.gif
 d53e923a295b5b416a6f823eaaf3b9ec *inst/images/objects.gif
@@ -94,8 +94,6 @@ c9f567ff4b648578dbbb988c7550cbb8 *src/resize.cpp
 8adf630ed0b163f6eedaacede43aa2fd *src/segment.cpp
 ba5b17d3c81f6ba03c2332c6ee27b31b *src/transformations.cpp
 ae30e16eddf5d12480c3df6ff4956227 *tests/encoding.R
-923d35d299e196f86f0bdf8ff666bb7c *tests/imagemagick.R
-0bf21f6c581f0e82f9328cd8cda1af60 *tests/imagemagick.Rout.save
 bc882e5235bfdccc9e49f99290365b40 *tests/spelling.R
 99dbb39b565804b5e1cc1257ea170e0d *tools/mimetypes.R
 23982ca59570725bb8f5215f01ff11cd *tools/winlibs.R
