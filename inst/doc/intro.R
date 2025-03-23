@@ -236,12 +236,12 @@ qplot(speed, dist, data = cars, geom = c("point", "smooth"))
 grid.raster(frink)
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  install.packages("tesseract")
+# install.packages("tesseract")
 
 ## ----eval = require(tesseract, quietly = TRUE)--------------------------------
-#  img <- image_read("http://jeroen.github.io/images/testocr.png")
-#  print(img)
-#  
-#  # Extract text
-#  cat(image_ocr(img))
+img <- image_read("http://jeroen.github.io/images/testocr.png")
+print(img)
+
+# Extract text
+cat(image_ocr(img))
 

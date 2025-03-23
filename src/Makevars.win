@@ -1,4 +1,4 @@
-RWINLIB = ../windows/imagemagick
+RWINLIB = ../.libs/imagemagick
 OLDLIBDIR = lib${subst gcc,,${COMPILED_BY}}${R_ARCH}
 
 PKG_CPPFLAGS = \
@@ -27,12 +27,13 @@ PKG_LIBS = \
 	-lws2_32 -luserenv -lbcrypt -lurlmon -lrpcrt4 -lshlwapi -luuid $(NTDLL) \
 	-pthread
 
-all: clean winlibs
+all: $(SHLIB) cleanup
 
-clean:
-	rm -f  $(SHLIB)
+# Needed for parallel make
+$(OBJECTS): | $(RWINLIB)
 
-winlibs:
-	"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" "../tools/winlibs.R" ${VERSION}
+$(RWINLIB):
+	@"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" "../tools/winlibs.R"
 
-.PHONY: all winlibs clean
+cleanup: $(SHLIB)
+	@rm -Rf $(RWINLIB)

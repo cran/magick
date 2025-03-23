@@ -1,4 +1,4 @@
-76191955e7c6549937eb9f4969c215a6 *DESCRIPTION
+3a72a89f84cfa9df0cd2ef72fa876921 *DESCRIPTION
 66b8d6ae536d10339b4a28d0c792c08c *LICENSE
 752987b72e0c70cfd182b5c1b4e3f0f6 *NAMESPACE
 f66720018efb966cc423f3fd54e6d18b *NEWS
@@ -33,14 +33,14 @@ ff7d00dd6eb917f1cf9c8538c8747a8e *R/threshold.R
 a9572d91714be380fc751e8e0b14e3d6 *R/utils.R
 3100dad8520112646b5c25f1124f64b2 *R/video.R
 9df4d9136f0e6e2fd588cf7781f23390 *R/wizard.R
-00b49e335bd212714325e29ce8ce25be *build/vignette.rds
+723ff4c78784cdc857a70c1823d16bde *build/vignette.rds
 a8f4963fbeaee57d5b0c203b97680673 *cleanup
 b1f82f877d05ffc83a054ca9078db56e *configure
 d41d8cd98f00b204e9800998ecf8427e *configure.win
 7c994af6e0e18d5d673c660e9895abcc *inst/WORDLIST
-16450533cb9e1650fa3cdd4c0001b128 *inst/doc/intro.R
+19bfb9e0ec6ec13129eda78fda257943 *inst/doc/intro.R
 c3bb4fc320f45ff0ccf02d88b2b9be7e *inst/doc/intro.Rmd
-a992e7fb5c14e32e39286bc53f372e83 *inst/doc/intro.html
+f336267c8fa781d76f71dfdda2eb22de *inst/doc/intro.html
 0c94b7f085eadae0ef17b6b567a32905 *inst/images/building.jpg
 b371cc96fca027e7788ed35e75e7e6b7 *inst/images/man.gif
 d53e923a295b5b416a6f823eaaf3b9ec *inst/images/objects.gif
@@ -73,8 +73,8 @@ d36abcdc039f697bdc7152b4436a7ea8 *man/segmentation.Rd
 b21fe48282a7266b57ed5658fdfc6128 *man/transform.Rd
 2e75d42b7c0ce24a167bdb9bf1428b89 *man/video.Rd
 ffb3e9a66e79e5078fbc60b1547fe4b7 *man/wizard.Rd
-4cdf157508c65cf8620f370db9b450cc *src/Makevars.in
-fedece67fab92295fcc31acd6759c7d0 *src/Makevars.win
+9db9d3a7075963278cd1ba3f39378a0d *src/Makevars.in
+fdad9959248a39ddda900dd2178e54a5 *src/Makevars.win
 28b75519cfb3e91ccc275b4d479bd503 *src/RcppExports.cpp
 b93fe8ef3aefeee7b8f594880730f88e *src/animation.cpp
 45f85c6924ac77fff23edbddedd0bf9d *src/attributes.cpp
@@ -96,5 +96,5 @@ ba5b17d3c81f6ba03c2332c6ee27b31b *src/transformations.cpp
 ae30e16eddf5d12480c3df6ff4956227 *tests/encoding.R
 bc882e5235bfdccc9e49f99290365b40 *tests/spelling.R
 99dbb39b565804b5e1cc1257ea170e0d *tools/mimetypes.R
-23982ca59570725bb8f5215f01ff11cd *tools/winlibs.R
+6f36d64474c2ee3aba576d425551f464 *tools/winlibs.R
 c3bb4fc320f45ff0ccf02d88b2b9be7e *vignettes/intro.Rmd
