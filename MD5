@@ -1,7 +1,7 @@
-3a72a89f84cfa9df0cd2ef72fa876921 *DESCRIPTION
+8a273f8ee48188678f0df649ca6e0d59 *DESCRIPTION
 66b8d6ae536d10339b4a28d0c792c08c *LICENSE
 752987b72e0c70cfd182b5c1b4e3f0f6 *NAMESPACE
-f66720018efb966cc423f3fd54e6d18b *NEWS
+7ded9313cd02ea171db11dcbf68f7803 *NEWS
 682fd2c9b0d1d4a2b897002f67667486 *R/EBImage.R
 ad2dfe7ec75588e50eba24d4a6b8f29f *R/RcppExports.R
 53832e30e4f9024064ccf20e0947d96c *R/analysis.R
@@ -34,13 +34,13 @@ a9572d91714be380fc751e8e0b14e3d6 *R/utils.R
 3100dad8520112646b5c25f1124f64b2 *R/video.R
 9df4d9136f0e6e2fd588cf7781f23390 *R/wizard.R
 723ff4c78784cdc857a70c1823d16bde *build/vignette.rds
-a8f4963fbeaee57d5b0c203b97680673 *cleanup
-b1f82f877d05ffc83a054ca9078db56e *configure
+e77d4a1854afea63acf2bc33585f932d *cleanup
+6fce7f162b4d29be56ce34ba3c72a9e0 *configure
 d41d8cd98f00b204e9800998ecf8427e *configure.win
 7c994af6e0e18d5d673c660e9895abcc *inst/WORDLIST
 19bfb9e0ec6ec13129eda78fda257943 *inst/doc/intro.R
 c3bb4fc320f45ff0ccf02d88b2b9be7e *inst/doc/intro.Rmd
-f336267c8fa781d76f71dfdda2eb22de *inst/doc/intro.html
+095f3df4e4cd5638246bfd91fe5fbae3 *inst/doc/intro.html
 0c94b7f085eadae0ef17b6b567a32905 *inst/images/building.jpg
 b371cc96fca027e7788ed35e75e7e6b7 *inst/images/man.gif
 d53e923a295b5b416a6f823eaaf3b9ec *inst/images/objects.gif
