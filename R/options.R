@@ -2,7 +2,7 @@
 #'
 #' List option types and values supported in your version of ImageMagick. For
 #' descriptions see
-#' [ImageMagick Enumerations](https://www.imagemagick.org/Magick++/Enumerations.html).
+#' [ImageMagick Enumerations](https://imagemagick.org/Magick++/Enumerations.html).
 #'
 #' The [dump_option_info] function is equivalent to calling `convert -list [option]` on
 #' the command line. It does not return anything, it only makes ImageMagick print
@@ -12,7 +12,7 @@
 #' @family image
 #' @name options
 #' @export
-#' @references ImageMagick Manual: [Enumerations](https://www.imagemagick.org/Magick++/Enumerations.html)
+#' @references ImageMagick Manual: [Enumerations](https://imagemagick.org/Magick++/Enumerations.html)
 magick_options <- function(){
   types <- option_types()
   types <- types[types != "Undefined"]
@@ -126,6 +126,12 @@ compress_types <- function(){
 #' @rdname options
 distort_types <- function(){
   list_options('distort')
+}
+
+#' @export
+#' @rdname options
+virtual_pixel_methods <- function(){
+  list_options('virtualPixel')
 }
 
 #' @export

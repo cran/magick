@@ -2,7 +2,7 @@
 #'
 #' Functions to adjust contrast, brightness, colors of the image. Details below.
 #'
-#' For details see [Magick++ STL](https://www.imagemagick.org/Magick++/STL.html)
+#' For details see [Magick++ STL](https://imagemagick.org/Magick++/STL.html)
 #' documentation. Short descriptions:
 #'
 #'  - [image_modulate] adjusts brightness, saturation and hue of image relative to current.
@@ -18,11 +18,13 @@
 #'  - [image_enhance] tries to minimize noise
 #'  - [image_equalize] equalizes using histogram equalization
 #'  - [image_median] replaces each pixel with the median color in a circular neighborhood
+#'  - [image_virtual_pixel] sets the [virtual pixel](https://usage.imagemagick.org/misc/#virtual) filling method to use when a raw distortion transformation (e.g. [image_distort][image_distort]) introduces new pixels in the image.
+#'    Some high-level transformations (e.g. [image_rotate][image_rotate] and [image_shear][image_shear]) will override the virtual pixel value with a default one.
 #'
 #' Note that
 #' colors are also determined by image properties
-#' [imagetype](https://www.imagemagick.org/Magick++/Enumerations.html#ImageType) and
-#' [colorspace](https://www.imagemagick.org/Magick++/Enumerations.html#ColorspaceType)
+#' [imagetype](https://imagemagick.org/Magick++/Enumerations.html#ImageType) and
+#' [colorspace](https://imagemagick.org/Magick++/Enumerations.html#ColorspaceType)
 #' which can be modified via [image_convert()].
 #'
 #' @export
@@ -98,7 +100,7 @@ image_ordered_dither <- function(image, threshold_map){
 #' @export
 #' @rdname color
 #' @param channel a string with a
-#' [channel](https://www.imagemagick.org/Magick++/Enumerations.html#ChannelType) from
+#' [channel](https://imagemagick.org/Magick++/Enumerations.html#ChannelType) from
 #' [channel_types][channel_types] for example `"alpha"` or `"hue"` or `"cyan"`
 image_channel <- function(image, channel = 'lightness'){
   magick_image_channel(image, channel)
@@ -146,6 +148,24 @@ image_background <- function(image, color, flatten = TRUE){
   } else {
     return(out)
   }
+}
+
+#' @export
+#' @rdname color
+#' @inheritParams editing
+#' @param virtual_pixel_method a string with a [virtual pixel method](https://imagemagick.org/Magick++/Enumerations.html#VirtualPixelMethod) from [virtual_pixel_methods][virtual_pixel_methods].
+#' @examples
+#' # Black virtual pixel on a 45° rotation
+#' logo |> image_virtual_pixel("Black") |>
+#'   image_distort("AffineProjection", sqrt(0.5) * c(1,1,-1,1,0,0), bestfit = TRUE)
+#'
+#' # Tile virtual pixel on a 45° rotation
+#' logo |> image_virtual_pixel("Tile") |>
+#'  image_distort("AffineProjection", sqrt(0.5) * c(1,1,-1,1,0,0), bestfit = TRUE)
+#'
+image_virtual_pixel <- function(image, virtual_pixel_method) {
+  assert_image(image)
+  magick_image_virtual_pixel(image, virtual_pixel_method)
 }
 
 #' @export

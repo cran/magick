@@ -239,7 +239,7 @@ grid.raster(frink)
 # install.packages("tesseract")
 
 ## ----eval = require(tesseract, quietly = TRUE)--------------------------------
-img <- image_read("http://jeroen.github.io/images/testocr.png")
+img <- image_read("https://jeroen.github.io/images/testocr.png")
 print(img)
 
 # Extract text
